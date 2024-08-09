@@ -1,29 +1,25 @@
 <mat-toolbar>
   <mat-toolbar-row>
-    <app-button
-      name="{{ title() }}"
-      [selected]="''"
-      (click)="onSelect('{{title()}}')"
-    />
+    <app-button name="{{ title() }}" [selected]="''" (click)="onSelect('')" />
     <span class="spacer"></span>
     <app-button
       name="Create Quiz"
-      [selected]="selectedButton()"
+      [selected]="btnName()"
       (click)="onSelect('Create Quiz')"
     />
     <app-button
       name="My Quizzes"
-      [selected]="selectedButton()"
+      [selected]="btnName()"
       (click)="onSelect('My Quizzes')"
     />
     <app-button
       name="API Keys"
-      [selected]="selectedButton()"
+      [selected]="btnName()"
       (click)="onSelect('API Keys')"
     />
     <app-button
       name="Login"
-      [selected]="selectedButton()"
+      [selected]="btnName()"
       (click)="onSelect('Login')"
     />
   </mat-toolbar-row>

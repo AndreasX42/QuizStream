@@ -1,4 +1,4 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, input, output, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ButtonComponent } from '../shared/button/button.component';
@@ -12,9 +12,11 @@ import { ButtonComponent } from '../shared/button/button.component';
 })
 export class HeaderComponent {
   title = input<string>();
-  selectedButton = signal('');
+  btnName = signal<string>('');
+  selectedButton = output<string>();
 
   onSelect(btnName: string) {
-    this.selectedButton.set(btnName);
+    this.btnName.set(btnName);
+    this.selectedButton.emit(btnName);
   }
 }

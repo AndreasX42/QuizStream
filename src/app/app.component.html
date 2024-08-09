@@ -1,7 +1,9 @@
-<app-header title="{{ app_name }}" />
+<app-header title="{{ app_name }}" (selectedButton)="onSelectButton($event)" />
 
-@if(loggedIn()) {
-<app-quizzes />
-} @else if(!gettingStarted()) {
-<app-main />
+@if(selectedButton() === '') {
+<app-main (selectedButton)="onSelectButton($event)" />
+} @else if(selectedButton() === 'Create Quiz') {
+<app-new-quiz />
+} @else if(selectedButton() === 'Get Started') {
+<app-new-quiz />
 }

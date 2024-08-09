@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
@@ -8,4 +8,10 @@ import { MatButtonModule } from '@angular/material/button';
   templateUrl: './main.component.html',
   styleUrl: './main.component.css',
 })
-export class MainComponent {}
+export class MainComponent {
+  selectedButton = output<string>();
+
+  onSelected() {
+    this.selectedButton.emit('Get Started');
+  }
+}

@@ -1,26 +1,45 @@
-:host {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
 form {
-  padding: 2rem;
-  max-width: 30rem;
   margin: 2rem auto;
+  max-width: 30rem;
+  padding: 2rem;
   border-radius: 4px;
-  background: #f5f5f5;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  background-color: #f7f7f7;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
 }
 
-input {
-  display: flex;
-  justify-content: space-evenly;
-  gap: 1.5rem;
-}
-
-.button-container {
+.button {
   display: flex;
   justify-content: center;
-  margin-top: 10px;
+}
+
+.mat-form-field-link {
+  width: 100%;
+}
+
+.form-container {
+  display: flex;
+  justify-content: center; /* Center the form on the page */
+  margin-top: 20px; /* Adjust as needed */
+}
+
+.form-row {
+  display: flex;
+  justify-content: center; /* Center the fields within the form */
+  gap: 20px; /* Space between the fields */
+}
+
+.form-field {
+  width: 50%;
+  padding: 5px;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .form-field {
+    width: 100%;
+  }
 }
