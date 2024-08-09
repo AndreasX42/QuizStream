@@ -1,0 +1,9 @@
+/* navbar.component.css */
+mat-toolbar {
+  background-color: #d7e3ff; /* Adjust the color to match your Azure blue */
+  color: #005cbb;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
