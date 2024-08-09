@@ -1,5 +1,5 @@
 <div class="form-container">
-  <form (ngSubmit)="onAddKey(provider.value, key.value)">
+  <form (ngSubmit)="onAddKey(provider.value, key.value)" #form>
     <div class="form-row">
       <mat-form-field appearance="fill" class="form-field">
         <mat-label>Provider</mat-label>
@@ -14,8 +14,8 @@
         <input matInput #key />
       </mat-form-field>
     </div>
-    <div class="button">
-      <button mat-raised-button color="primary" type="submit">Submit</button>
+    <div class="form-row">
+      <button mat-raised-button color="primary">Submit</button>
     </div>
   </form>
 </div>

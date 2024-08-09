@@ -5,11 +5,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ButtonComponent } from '../../shared/button/button.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-new-quiz',
   standalone: true,
   imports: [
+    FormsModule,
     MatInputModule,
     MatSelectModule,
     MatButtonModule,

@@ -26,7 +26,7 @@ export class AppComponent {
   onSelectButton(btnName: string) {
     console.log('selected button ' + btnName);
     this.selectedButton.set(btnName);
-  }
+  } 
 
   loggedIn = input(false);
   gettingStarted = input(false);

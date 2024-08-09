@@ -8,11 +8,6 @@ form {
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
 }
 
-.button {
-  display: flex;
-  justify-content: center;
-}
-
 .mat-form-field-link {
   width: 100%;
 }
@@ -47,14 +42,10 @@ form {
   }
 }
 
-/* list */
 .table-container {
   margin: 2rem auto;
   max-width: 50rem;
   padding: 1rem;
-  background-color: #f7f7f7;
-  border-radius: 4px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
 }
 
 table {

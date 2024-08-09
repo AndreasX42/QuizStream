@@ -1,14 +1,13 @@
-import { Component, inject } from '@angular/core';
+import { Component, ElementRef, inject, viewChild } from '@angular/core';
 
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
-import { ButtonComponent } from '../shared/button/button.component';
 import { KeyService } from './key.service';
-import { Key } from './key.model';
 import { MatTableModule } from '@angular/material/table';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-key',
@@ -18,7 +17,7 @@ import { MatTableModule } from '@angular/material/table';
     MatButtonModule,
     MatInputModule,
     MatFormFieldModule,
-    ButtonComponent,
+    FormsModule,
     MatTableModule,
     MatIcon,
   ],
@@ -27,12 +26,14 @@ import { MatTableModule } from '@angular/material/table';
 })
 export class KeyComponent {
   private keyService: KeyService = inject(KeyService);
+  private form = viewChild.required<ElementRef<HTMLFormElement>>('form');
 
   keys = this.keyService.getKeys();
   displayedColumns: string[] = ['provider', 'key', 'delete'];
 
   onAddKey(provider: string, key: string) {
     this.keyService.addKey({ provider, key });
+    this.form().nativeElement.reset();
   }
 
   onDeleteKey(keyId: string) {

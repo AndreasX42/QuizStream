@@ -5,7 +5,9 @@ import { Key } from './key.model';
   providedIn: 'root',
 })
 export class KeyService {
-  private initKeyList: Key[] = [
+  private STORAGE_KEY = 'api-keys';
+
+  private keys = signal([
     {
       id: '1',
       provider: 'OpenAI',
@@ -16,9 +18,15 @@ export class KeyService {
       provider: 'OpenAI',
       key: '987987987',
     },
-  ];
+  ]);
 
-  private keys = signal<Key[]>(this.initKeyList);
+  constructor() {
+    const keys = sessionStorage.getItem(this.STORAGE_KEY);
+
+    if (keys) {
+      this.keys.set(JSON.parse(keys));
+    }
+  }
 
   getKeys() {
     return this.keys.asReadonly();
@@ -27,13 +35,22 @@ export class KeyService {
   addKey(keyData: { provider: string; key: string }) {
     const newKey: Key = {
       ...keyData,
-      id: Math.random().toString(),
+      id:
+        this.keys().length > 0
+          ? (Math.max(...this.keys().map((key) => +key.id)) + 1).toString()
+          : '0',
     };
 
     this.keys.update((oldKeys) => [...oldKeys, newKey]);
+    this.savekeys();
   }
 
   deleteKey(keyId: string) {
     this.keys.update((oldKeys) => oldKeys.filter((key) => key.id !== keyId));
+    this.savekeys();
+  }
+
+  private savekeys() {
+    sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.keys()));
   }
 }
