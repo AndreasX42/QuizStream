@@ -1,0 +1,35 @@
+<div class="quiz-list-container">
+  <div class="quiz-list">
+    @for(quiz of quizzes(); track quiz.id) {
+    <mat-card class="quiz-card" (click)="toggleExpansion(quiz.id)">
+      <mat-card-header>
+        <div class="header-content">
+          <mat-card-title class="mat-card-title">{{
+            quiz.name
+          }}</mat-card-title>
+          <span class="header-date">{{ quiz.date | date }}</span>
+        </div>
+      </mat-card-header>
+
+      @if(expandedQuizId() === quiz.id) {
+      <div>
+        <mat-card-content class="mat-card-content">
+          <p>Type: {{ quiz.type | titlecase }}</p>
+          <p>Difficulty: {{ quiz.difficulty | titlecase }}</p>
+          <p class="content-row">
+            <a [href]="quiz.videoLink" target="_blank">{{ quiz.videoLink }}</a>
+            <button
+              mat-raised-button
+              color="warn"
+              (click)="deleteQuiz(quiz.id)"
+            >
+              Delete
+            </button>
+          </p>
+        </mat-card-content>
+      </div>
+      }
+    </mat-card>
+    }
+  </div>
+</div>

@@ -1,0 +1,8 @@
+Quiz model:
+id
+userId
+date
+youtubeLink
+name (vid name)
+type
+difficulty

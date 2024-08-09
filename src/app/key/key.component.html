@@ -1,0 +1,51 @@
+<div class="form-container">
+  <form (ngSubmit)="onAddKey(provider.value, key.value)">
+    <div class="form-row">
+      <mat-form-field appearance="fill" class="form-field">
+        <mat-label>Provider</mat-label>
+        <mat-select #provider>
+          <mat-option value="openai">OpenAI</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="form-row">
+      <mat-form-field appearance="fill" class="mat-form-field-link">
+        <mat-label>Enter API Key</mat-label>
+        <input matInput #key />
+      </mat-form-field>
+    </div>
+    <div class="button">
+      <button mat-raised-button color="primary" type="submit">Submit</button>
+    </div>
+  </form>
+</div>
+
+<div class="table-container">
+  <table mat-table [dataSource]="keys()" class="mat-elevation-z8">
+    <!-- Provider Column -->
+    <ng-container matColumnDef="provider">
+      <th mat-header-cell *matHeaderCellDef>Provider</th>
+      <td mat-cell *matCellDef="let key">{{ key.provider }}</td>
+    </ng-container>
+
+    <!-- Key Column -->
+    <ng-container matColumnDef="key">
+      <th mat-header-cell *matHeaderCellDef>API Key</th>
+      <td mat-cell *matCellDef="let key">{{ key.key }}</td>
+    </ng-container>
+
+    <!-- Delete Column -->
+    <ng-container matColumnDef="delete">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let key">
+        <button mat-icon-button color="warn" (click)="onDeleteKey(key.id)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <!-- Header and Row Declarations -->
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+</div>

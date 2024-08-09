@@ -1,13 +1,20 @@
 import { Component, input, signal } from '@angular/core';
 import { HeaderComponent } from './header/header.component';
-import { QuizzesComponent } from './quiz/quizzes/quizzes.component';
+import { QuizListComponent } from './quiz/quiz-list/quiz-list.component';
 import { MainComponent } from './main/main.component';
-import { QuizFormComponent } from "./quiz/new-quiz/new-quiz.component";
+import { QuizFormComponent } from './quiz/new-quiz/new-quiz.component';
+import { KeyComponent } from "./key/key.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [HeaderComponent, QuizzesComponent, MainComponent, QuizFormComponent],
+  imports: [
+    HeaderComponent,
+    QuizListComponent,
+    MainComponent,
+    QuizFormComponent,
+    KeyComponent
+],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })

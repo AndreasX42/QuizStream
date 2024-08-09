@@ -1,6 +1,6 @@
 button[mat-button] {
   color: #005cbb;
-  margin-right: 20px;
+  margin-right: 10px;
 }
 
 button.active {

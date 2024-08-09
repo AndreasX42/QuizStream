@@ -1,6 +1,7 @@
 form {
   margin: 2rem auto;
-  max-width: 30rem;
+  max-width: 50rem;
+  min-width: 25rem;
   padding: 2rem;
   border-radius: 4px;
   background-color: #f7f7f7;
@@ -25,6 +26,7 @@ form {
 .form-row {
   display: flex;
   justify-content: center;
+  width: 100%;
   gap: 20px;
 }
 
@@ -39,7 +41,32 @@ form {
     align-items: center;
   }
 
-  .form-field {
+  .form-field,
+  .mat-form-field-link {
     width: 100%;
   }
+}
+
+/* list */
+.table-container {
+  margin: 2rem auto;
+  max-width: 50rem;
+  padding: 1rem;
+  background-color: #f7f7f7;
+  border-radius: 4px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
+}
+
+table {
+  width: 100%;
+}
+
+th.mat-header-cell,
+td.mat-cell {
+  text-align: left;
+  padding: 8px;
+}
+
+.mat-icon-button {
+  margin-left: 16px;
 }
