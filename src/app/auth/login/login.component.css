@@ -1,0 +1,11 @@
+.register-hint {
+  display: flex;
+  flex-wrap: wrap;
+  color: #44474e;
+  margin-top: 10px;
+  margin-bottom: 0px;
+}
+
+.register-hint:hover {
+  text-decoration: underline;
+}

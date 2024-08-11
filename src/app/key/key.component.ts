@@ -10,7 +10,6 @@ import { MatTableModule } from '@angular/material/table';
 import {
   FormControl,
   FormGroup,
-  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -28,7 +27,6 @@ import { DialogComponent } from '../shared/dialog/dialog.component';
     MatButtonModule,
     MatInputModule,
     MatFormFieldModule,
-    FormsModule,
     MatTableModule,
     MatIcon,
     ReactiveFormsModule,

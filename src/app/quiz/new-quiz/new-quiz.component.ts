@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -8,8 +8,6 @@ import { ButtonComponent } from '../../shared/button/button.component';
 import {
   FormControl,
   FormGroup,
-  FormsModule,
-  NgForm,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -24,7 +22,6 @@ import { DialogComponent } from '../../shared/dialog/dialog.component';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
@@ -47,10 +44,16 @@ export class QuizFormComponent {
     (value) => typeof value === 'string'
   );
 
+  youtubeRegExPattern =
+    /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|v\/|.+\?v=)?(\w{11})(\S+)?$/;
+
   form = new FormGroup({
     name: new FormControl('', { validators: [Validators.required] }),
     videoLink: new FormControl('', {
-      validators: [Validators.required],
+      validators: [
+        Validators.required,
+        Validators.pattern(this.youtubeRegExPattern),
+      ],
     }),
     type: new FormControl<QuizType>(QuizType.MULTIPLE_CHOICE, {
       validators: [Validators.required],

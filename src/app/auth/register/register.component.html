@@ -1,0 +1,59 @@
+<div class="form-container">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-row">
+      <mat-form-field appearance="fill" class="mat-form-field-link">
+        <mat-label>Enter username</mat-label>
+        <input matInput formControlName="name" formControlName="username" />
+      </mat-form-field>
+    </div>
+    <div class="form-row">
+      <mat-form-field appearance="fill" class="mat-form-field-link">
+        <mat-label>Enter Email address</mat-label>
+        <input
+          matInput
+          id="email"
+          type="email"
+          name="email"
+          formControlName="email"
+          formControlName="email"
+        />
+      </mat-form-field>
+    </div>
+    <div class="form-row" formGroupName="passwords">
+      <mat-form-field appearance="fill" class="mat-form-field-link">
+        <mat-label>Enter password</mat-label>
+        <input
+          matInput
+          id="password"
+          type="password"
+          name="password"
+          formControlName="password"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="mat-form-field-link">
+        <mat-label>Confirm password</mat-label>
+        <input
+          matInput
+          id="confirmPassword"
+          type="password"
+          name="confirmPassword"
+          formControlName="confirmPassword"
+        />
+      </mat-form-field>
+    </div>
+    <div class="form-row">
+      <button mat-raised-button>Submit</button>
+    </div>
+
+    @if (form.touched && form.invalid) {
+    <p>Hints:</p>
+    <ul>
+      <li>Email address should be valid.</li>
+      <li>Username should be at least 3 characters.</li>
+      <li>Password should be at least 6 characters.</li>
+      <li>Passwords should match.</li>
+    </ul>
+    }
+  </form>
+</div>

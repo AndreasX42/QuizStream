@@ -1,47 +1,3 @@
-form {
-  margin: 2rem auto;
-  max-width: 50rem;
-  min-width: 25rem;
-  padding: 2rem;
-  border-radius: 4px;
-  background-color: #f7f7f7;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
-}
-
-.mat-form-field-link {
-  width: 100%;
-}
-
-.form-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.form-row {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  gap: 20px;
-}
-
-.form-field {
-  width: 50%;
-  padding: 5px;
-}
-
-@media (max-width: 600px) {
-  .form-row {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .form-field,
-  .mat-form-field-link {
-    width: 100%;
-  }
-}
-
 .table-container {
   margin: 2rem auto;
   max-width: 50rem;
@@ -61,24 +17,3 @@ td.mat-cell {
 .mat-icon-button {
   margin-left: 16px;
 }
-
-.control:has(.ng-invalid.ng-touched.ng-dirty) label {
-  color: #f98b75;
-}
-
-input.ng-invalid.ng-touched.ng-dirty {
-  background-color: #fbdcd6;
-  border-color: #f84e2c;
-}
-
-.control-error {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  color: #ffca99;
-  height: 0.5rem;
-  padding: 0.25rem 0 0 0;
-  height: 1.5rem;
-  margin-bottom: 1rem;
-}
-

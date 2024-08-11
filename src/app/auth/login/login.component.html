@@ -1,0 +1,41 @@
+@if(register()) {
+<app-register />
+} @else {
+<div class="form-container">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-row">
+      <mat-form-field appearance="fill" class="mat-form-field-link">
+        <mat-label>Email</mat-label>
+        <input
+          matInput
+          id="email"
+          type="email"
+          name="email"
+          formControlName="email"
+        />
+      </mat-form-field>
+    </div>
+    <div class="form-row">
+      <mat-form-field appearance="fill" class="mat-form-field-link">
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          id="password"
+          type="password"
+          name="password"
+          formControlName="password"
+          formControlName="password"
+        />
+      </mat-form-field>
+    </div>
+    <div class="form-row">
+      <button mat-raised-button color="primary">Submit</button>
+    </div>
+    <p class="register-hint" (click)="onRegister()">Register here</p>
+
+    @if (form.touched && form.invalid) {
+    <p class="control-error">Email or password invalid!</p>
+    }
+  </form>
+</div>
+}

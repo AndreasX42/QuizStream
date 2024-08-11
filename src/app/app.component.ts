@@ -4,6 +4,7 @@ import { QuizListComponent } from './quiz/quiz-list/quiz-list.component';
 import { MainComponent } from './main/main.component';
 import { QuizFormComponent } from './quiz/new-quiz/new-quiz.component';
 import { KeyComponent } from "./key/key.component";
+import { LoginComponent } from "./auth/login/login.component";
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,8 @@ import { KeyComponent } from "./key/key.component";
     QuizListComponent,
     MainComponent,
     QuizFormComponent,
-    KeyComponent
+    KeyComponent,
+    LoginComponent
 ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
