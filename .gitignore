@@ -7,9 +7,12 @@
 /bazel-out
 
 # Node
-/node_modules
-npm-debug.log
-yarn-error.log
+**/node_modules
+**/npm-debug.log
+**/yarn-error.log
+
+# Python
+**/.venv
 
 # IDEs and editors
 .idea/
@@ -21,7 +24,7 @@ yarn-error.log
 *.sublime-workspace
 
 # Visual Studio Code
-.vscode/*
+**/.vscode/
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -29,7 +32,7 @@ yarn-error.log
 .history/*
 
 # Miscellaneous
-/.angular/cache
+app/.angular/cache
 .sass-cache/
 /connect.lock
 /coverage

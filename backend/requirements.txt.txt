@@ -1,0 +1,4 @@
+langchain==0.2.12
+langchain_community==0.2.11 
+youtube-transcript-api==0.6.2
+pytube==15.0.0
