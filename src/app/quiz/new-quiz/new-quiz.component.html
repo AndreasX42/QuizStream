@@ -1,16 +1,22 @@
 <div class="form-container">
-  <form (ngSubmit)="onSubmit(link.value, type.value, diff.value)" #form>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-row">
+      <mat-form-field appearance="fill" class="mat-form-field-link">
+        <mat-label>Enter Quiz Name</mat-label>
+        <input matInput formControlName="name" formControlName="name" />
+      </mat-form-field>
+    </div>
     <div class="form-row">
       <mat-form-field appearance="fill" class="mat-form-field-link">
         <mat-label>Enter YouTube Link</mat-label>
-        <input matInput #link />
+        <input matInput formControlName="videoLink" />
       </mat-form-field>
     </div>
     <div class="form-row">
       <mat-form-field appearance="fill" class="form-field">
         <mat-label>Quiz Type</mat-label>
-        <mat-select #type
-          ><mat-option *ngFor="let type of types" [value]="type">{{
+        <mat-select formControlName="type"
+          ><mat-option *ngFor="let type of quizTypesList" [value]="type">{{
             type
           }}</mat-option>
         </mat-select>
@@ -18,9 +24,9 @@
 
       <mat-form-field appearance="fill" class="form-field">
         <mat-label>Difficulty</mat-label>
-        <mat-select #diff
+        <mat-select formControlName="difficulty"
           ><mat-option
-            *ngFor="let difficulty of difficulties"
+            *ngFor="let difficulty of quizDifficultiesList"
             [value]="difficulty"
             >{{ difficulty }}
           </mat-option>
@@ -30,5 +36,8 @@
     <div class="button">
       <button mat-raised-button>Submit</button>
     </div>
+    @if (form.touched && form.invalid) {
+    <p class="control-error">Invalid input data!</p>
+    }
   </form>
 </div>

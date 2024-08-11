@@ -12,7 +12,9 @@
       <p>Type: {{ quiz().type | titlecase }}</p>
       <p>Difficulty: {{ quiz().difficulty | titlecase }}</p>
       <p class="content-row">
-        <a [href]="quiz().videoLink" target="_blank">{{ quiz().videoLink }}</a>
+        <a [href]="quiz().videoLink" target="_blank"
+          >{{ quiz().videoLink | slice : 0 : 35 }}...</a
+        >
         <button
           mat-raised-button
           color="warn"

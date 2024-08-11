@@ -7,9 +7,17 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { KeyService } from './../services/key.service';
 import { MatTableModule } from '@angular/material/table';
-import { FormsModule } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { KeyProvider } from './../models/key.model';
-import { CommonModule } from '@angular/common';
+import { CommonModule, SlicePipe } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogComponent } from '../shared/dialog/dialog.component';
 
 @Component({
   selector: 'app-key',
@@ -23,24 +31,47 @@ import { CommonModule } from '@angular/common';
     FormsModule,
     MatTableModule,
     MatIcon,
+    ReactiveFormsModule,
+    SlicePipe,
   ],
   templateUrl: './key.component.html',
   styleUrl: './key.component.css',
 })
 export class KeyComponent {
   private keyService: KeyService = inject(KeyService);
-  private form = viewChild.required<ElementRef<HTMLFormElement>>('form');
+  private dialog = inject(MatDialog);
 
   keys = this.keyService.getKeys();
   displayedColumns: string[] = ['provider', 'key', 'delete'];
-
-  providers = Object.values(KeyProvider).filter(
+  keyProvidersList = Object.values(KeyProvider).filter(
     (value) => typeof value === 'string'
   );
 
-  onAddKey(provider: KeyProvider, key: string) {
+  form = new FormGroup({
+    provider: new FormControl<KeyProvider>(KeyProvider.OpenAI, {
+      validators: [Validators.required],
+    }),
+    key: new FormControl('', {
+      validators: [Validators.required],
+    }),
+  });
+
+  onSubmit() {
+    if (this.form.invalid) {
+      return;
+    }
+
+    const provider = this.form.value.provider!;
+    const key = this.form.value.key!;
     this.keyService.addKey({ provider, key });
-    this.form().nativeElement.reset();
+
+    const dialogRef = this.dialog.open(DialogComponent, {
+      data: { message: 'API key was added successfully!' },
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      location.reload();
+    });
   }
 
   onDeleteKey(keyId: string) {

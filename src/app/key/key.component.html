@@ -1,10 +1,12 @@
 <div class="form-container">
-  <form (ngSubmit)="onAddKey(provider.value, key.value)" #form>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="form-row">
       <mat-form-field appearance="fill" class="form-field">
         <mat-label>Provider</mat-label>
-        <mat-select #provider>
-          <mat-option *ngFor="let provider of providers" [value]="provider"
+        <mat-select formControlName="provider">
+          <mat-option
+            *ngFor="let provider of keyProvidersList"
+            [value]="provider"
             >{{ provider }}
           </mat-option>
         </mat-select>
@@ -13,7 +15,7 @@
     <div class="form-row">
       <mat-form-field appearance="fill" class="mat-form-field-link">
         <mat-label>Enter API Key</mat-label>
-        <input matInput #key />
+        <input matInput formControlName="key" />
       </mat-form-field>
     </div>
     <div class="form-row">
@@ -33,7 +35,7 @@
     <!-- Key Column -->
     <ng-container matColumnDef="key">
       <th mat-header-cell *matHeaderCellDef>API Key</th>
-      <td mat-cell *matCellDef="let key">{{ key.key }}</td>
+      <td mat-cell *matCellDef="let key">{{ key.key | slice : 0 : 35 }}...</td>
     </ng-container>
 
     <!-- Delete Column -->

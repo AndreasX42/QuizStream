@@ -33,6 +33,7 @@ export class QuizService {
   }
 
   addQuiz(quizData: {
+    name: string;
     videoLink: string;
     type: QuizType;
     difficulty: QuizDifficulty;
@@ -44,7 +45,6 @@ export class QuizService {
           ? (Math.max(...this.quizzes().map((quiz) => +quiz.id)) + 1).toString()
           : '0',
       userId: '0',
-      name: 'Test video',
       date: Date.now().toString(),
     };
 

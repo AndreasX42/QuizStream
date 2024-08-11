@@ -1,4 +1,4 @@
-import { DatePipe, TitleCasePipe } from '@angular/common';
+import { DatePipe, SlicePipe, TitleCasePipe } from '@angular/common';
 import {
   Component,
   ElementRef,
@@ -15,7 +15,7 @@ import { QuizService } from '../../services/quiz.service';
 @Component({
   selector: 'app-quiz',
   standalone: true,
-  imports: [MatCardModule, DatePipe, TitleCasePipe, MatButtonModule],
+  imports: [MatCardModule, DatePipe, TitleCasePipe, MatButtonModule, SlicePipe],
   templateUrl: './quiz.component.html',
   styleUrl: './quiz.component.css',
 })
