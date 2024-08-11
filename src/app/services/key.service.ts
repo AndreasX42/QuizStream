@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { Key } from './key.model';
+import { Key, KeyProvider } from './../models/key.model';
 
 @Injectable({
   providedIn: 'root',
@@ -32,7 +32,7 @@ export class KeyService {
     return this.keys.asReadonly();
   }
 
-  addKey(keyData: { provider: string; key: string }) {
+  addKey(keyData: { provider: KeyProvider; key: string }) {
     const newKey: Key = {
       ...keyData,
       id:

@@ -8,6 +8,12 @@ export interface Quiz {
   difficulty: QuizDifficulty;
 }
 
-export type QuizType = 'MULTIPLE_CHOICE' | 'TEXT_BASED';
+export enum QuizDifficulty {
+  EASY = 'Easy',
+  MEDIUM = 'Medium',
+  HARD = 'Hard',
+}
 
-export type QuizDifficulty = 'EASY' | 'MEDIUM' | 'HARD';
+export enum QuizType {
+  MULTIPLE_CHOICE = 'Multiple Choice',
+}

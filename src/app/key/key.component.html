@@ -4,7 +4,9 @@
       <mat-form-field appearance="fill" class="form-field">
         <mat-label>Provider</mat-label>
         <mat-select #provider>
-          <mat-option value="openai">OpenAI</mat-option>
+          <mat-option *ngFor="let provider of providers" [value]="provider"
+            >{{ provider }}
+          </mat-option>
         </mat-select>
       </mat-form-field>
     </div>

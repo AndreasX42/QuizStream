@@ -1,31 +1,34 @@
 <div class="form-container">
-  <form>
+  <form (ngSubmit)="onSubmit(link.value, type.value, diff.value)" #form>
     <div class="form-row">
       <mat-form-field appearance="fill" class="mat-form-field-link">
         <mat-label>Enter YouTube Link</mat-label>
-        <input matInput />
+        <input matInput #link />
       </mat-form-field>
     </div>
     <div class="form-row">
       <mat-form-field appearance="fill" class="form-field">
         <mat-label>Quiz Type</mat-label>
-        <mat-select>
-          <mat-option value="mc">Multiple Choice</mat-option>
-          <mat-option value="text">Text based</mat-option>
+        <mat-select #type
+          ><mat-option *ngFor="let type of types" [value]="type">{{
+            type
+          }}</mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="form-field">
         <mat-label>Difficulty</mat-label>
-        <mat-select>
-          <mat-option value="easy">Easy</mat-option>
-          <mat-option value="medium">Medium</mat-option>
-          <mat-option value="hard">Hard</mat-option>
+        <mat-select #diff
+          ><mat-option
+            *ngFor="let difficulty of difficulties"
+            [value]="difficulty"
+            >{{ difficulty }}
+          </mat-option>
         </mat-select>
       </mat-form-field>
     </div>
     <div class="button">
-      <button mat-raised-button type="submit">Submit</button>
+      <button mat-raised-button>Submit</button>
     </div>
   </form>
 </div>

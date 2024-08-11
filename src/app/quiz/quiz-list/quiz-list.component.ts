@@ -5,8 +5,9 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 
-import { QuizService } from '../quizzes.service';
+import { QuizService } from '../../services/quiz.service';
 import { DatePipe, TitleCasePipe } from '@angular/common';
+import { QuizComponent } from '../quiz/quiz.component';
 
 @Component({
   selector: 'app-quiz-list',
@@ -19,6 +20,7 @@ import { DatePipe, TitleCasePipe } from '@angular/common';
     DatePipe,
     TitleCasePipe,
     MatButtonModule,
+    QuizComponent,
   ],
   templateUrl: './quiz-list.component.html',
   styleUrl: './quiz-list.component.css',
