@@ -1,0 +1,1 @@
+from backend.quiz_generation.generator import agenerate_quiz

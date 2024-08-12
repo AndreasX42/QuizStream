@@ -1,3 +1,15 @@
+langchain==0.2.12
 langchain_community==0.2.11 
+langchain-openai==0.1.21
+langchain-postgres==0.0.9
+
 youtube-transcript-api==0.6.2
 pytube==15.0.0
+python-dotenv==1.0.1 
+
+fastapi==0.112.0 
+pydantic==2.8.2 
+uvicorn==0.30.5 
+
+SQLAlchemy==2.0.32 
+psycopg[binary]==3.2.1 

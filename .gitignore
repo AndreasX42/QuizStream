@@ -13,6 +13,10 @@
 
 # Python
 **/.venv
+**/.ipynb_checkpoints/
+**/__pycache__/
+postgres/data
+.env
 
 # IDEs and editors
 .idea/
