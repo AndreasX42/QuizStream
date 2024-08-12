@@ -1,3 +1,7 @@
+TABLE_COLLECTION = "langchain_pg_collection"
+TABLE_DOCS = "langchain_pg_embedding"
+
+
 from backend.commons.db.database import (
     SessionLocal as SessionLocal,
     DATABASE_URL as CONNECTION_STRING,
@@ -12,3 +16,5 @@ from backend.commons.db.pgvector import (
     get_by_ids,
     list_collections,
 )
+
+from backend.commons.db.database import Base, engine

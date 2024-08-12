@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from backend.api.routers import quiz_router
+from backend.commons.db import Base, engine
 
 app = FastAPI(
     title="QuizManager Documentation",
@@ -11,3 +12,5 @@ app = FastAPI(
 )
 
 app.include_router(quiz_router.router)
+
+Base.metadata.create_all(bind=engine)

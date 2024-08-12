@@ -6,13 +6,15 @@ from langchain.docstore.document import Document
 from sqlalchemy import MetaData, Table, select, update
 from typing import Optional
 
-from backend.commons.db import SessionLocal, CONNECTION_STRING
+from backend.commons.db import (
+    SessionLocal,
+    CONNECTION_STRING,
+    TABLE_COLLECTION,
+    TABLE_DOCS,
+)
 
 import datetime as dt
 import uuid
-
-TABLE_COLLECTION = "langchain_pg_collection"
-TABLE_DOCS = "langchain_pg_embedding"
 
 
 def create_collection(

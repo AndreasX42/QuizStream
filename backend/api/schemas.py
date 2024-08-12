@@ -6,7 +6,6 @@ import re
 
 class QuizCreateRequest(BaseModel):
     quiz_name: str = Field(min_length=3, description="Name of quiz")
-    user_id: str = Field(min_length=1, description="User id")
     api_keys: dict[str, str] = Field(description="Dictionary of API keys.")
     youtube_url: HttpUrl
 
@@ -26,6 +25,10 @@ class QuizCreateRequest(BaseModel):
             raise ValueError("Invalid YouTube video URL")
 
         return value
+
+
+class QuizDeleteRequest(BaseModel):
+    quiz_name: str = Field(min_length=3, description="Name of quiz")
 
 
 class QuizDTO(BaseModel):

@@ -16,7 +16,6 @@ from backend.commons.db import create_collection
 async def agenerate_quiz(
     quiz_name: str,
     youtube_url: str,
-    user_id: str,
     api_keys: dict[str, str],
 ):
 
@@ -37,8 +36,7 @@ async def agenerate_quiz(
 
     # upsert into vector database
     # TODO: Are embeddings necessary in the future?
-    collection_name = f"userid_{user_id}_quizname_{quiz_name}"
-    collection_id, qa_ids = create_collection(collection_name, qa_pairs, video_metadata)
+    collection_id, qa_ids = create_collection(quiz_name, qa_pairs, video_metadata)
 
     return collection_id, qa_ids
 
