@@ -4,7 +4,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { ButtonComponent } from '../../shared/button/button.component';
 import {
   FormControl,
   FormGroup,
@@ -16,6 +15,7 @@ import { QuizService } from '../../services/quiz.service';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from '../../shared/dialog/dialog.component';
+import { CanDeactivateFn } from '@angular/router';
 
 @Component({
   selector: 'app-new-quiz',
@@ -26,13 +26,12 @@ import { DialogComponent } from '../../shared/dialog/dialog.component';
     MatSelectModule,
     MatButtonModule,
     MatFormFieldModule,
-    ButtonComponent,
     ReactiveFormsModule,
   ],
   templateUrl: './new-quiz.component.html',
   styleUrl: './new-quiz.component.css',
 })
-export class QuizFormComponent {
+export class NewQuizComponent {
   private quizService: QuizService = inject(QuizService);
   private dialog = inject(MatDialog);
 
@@ -83,3 +82,12 @@ export class QuizFormComponent {
     });
   }
 }
+
+export const canLeaveEditPage: CanDeactivateFn<NewQuizComponent> = (
+  component
+) => {
+  if (component.form.touched && component.form.invalid) {
+    return window.confirm('Do you really want to leave?');
+  }
+  return true;
+};

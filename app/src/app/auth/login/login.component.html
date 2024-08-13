@@ -1,6 +1,3 @@
-@if(register()) {
-<app-register />
-} @else {
 <div class="form-container">
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="form-row">
@@ -20,22 +17,30 @@
         <mat-label>Password</mat-label>
         <input
           matInput
-          id="password"
-          type="password"
-          name="password"
+          id="email"
+          type="email"
+          name="email"
           formControlName="password"
-          formControlName="password"
+          [type]="hide() ? 'password' : 'text'"
         />
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="onHide($event)"
+          [attr.aria-label]="'Hide password'"
+          [attr.aria-pressed]="hide()"
+        >
+          <mat-icon>{{ hide() ? "visibility_off" : "visibility" }}</mat-icon>
+        </button>
       </mat-form-field>
     </div>
     <div class="form-row">
-      <button mat-raised-button color="primary">Submit</button>
+      <a mat-raised-button routerLink="/" color="primary">Submit</a>
     </div>
-    <p class="register-hint" (click)="onRegister()">Register here</p>
+    <a class="register-hint" routerLink="/register">Register here</a>
 
     @if (form.touched && form.invalid) {
     <p class="control-error">Email or password invalid!</p>
     }
   </form>
 </div>
-}

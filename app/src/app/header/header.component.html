@@ -1,26 +1,30 @@
 <mat-toolbar>
   <mat-toolbar-row>
-    <app-button name="{{ title() }}" [selected]="''" (click)="onSelect('')" />
+    <a mat-button routerLink="/">
+      {{ title() }}
+    </a>
+
     <span class="spacer"></span>
-    <app-button
-      name="Create Quiz"
-      [selected]="btnName()"
-      (click)="onSelect('Create Quiz')"
-    />
-    <app-button
-      name="My Quizzes"
-      [selected]="btnName()"
-      (click)="onSelect('My Quizzes')"
-    />
-    <app-button
-      name="API Keys"
-      [selected]="btnName()"
-      (click)="onSelect('API Keys')"
-    />
-    <app-button
-      name="Login"
-      [selected]="btnName()"
-      (click)="onSelect('Login')"
-    />
+
+    <a
+      mat-button
+      [routerLink]="['/quizzes']"
+      [routerLinkActiveOptions]="{ exact: true }"
+      routerLinkActive="selected"
+    >
+      My Quizzes
+    </a>
+
+    <a mat-button [routerLink]="['quizzes', 'new']" routerLinkActive="selected">
+      Create Quiz
+    </a>
+
+    <a mat-button [routerLink]="['keys']" routerLinkActive="selected">
+      API Keys
+    </a>
+
+    <a mat-button [routerLink]="['login']" routerLinkActive="selected">
+      Login
+    </a>
   </mat-toolbar-row>
 </mat-toolbar>

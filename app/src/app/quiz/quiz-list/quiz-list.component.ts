@@ -8,6 +8,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { QuizService } from '../../services/quiz.service';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { QuizComponent } from '../quiz/quiz.component';
+import { Quiz } from '../../models/quiz.model';
+import { ResolveFn } from '@angular/router';
 
 @Component({
   selector: 'app-quiz-list',
@@ -39,3 +41,20 @@ export class QuizListComponent {
     this.quizService.deleteQuiz(quizId);
   }
 }
+
+export const resolveQuizzes: ResolveFn<Quiz[]> = (
+  activatedRouteSnapshot,
+  routerState
+) => {
+  const order = activatedRouteSnapshot.queryParams['order'];
+  const quizService = inject(QuizService);
+  const quizzes = quizService.getQuizzes()();
+
+  if (order && order === 'asc') {
+    quizzes.sort((a, b) => (a.id > b.id ? 1 : -1));
+  } else {
+    quizzes.sort((a, b) => (a.id > b.id ? -1 : 1));
+  }
+
+  return quizzes.length ? quizzes : [];
+};

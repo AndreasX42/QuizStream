@@ -1,10 +1,11 @@
 import { Component, input, signal } from '@angular/core';
 import { HeaderComponent } from './header/header.component';
 import { QuizListComponent } from './quiz/quiz-list/quiz-list.component';
-import { MainComponent } from './main/main.component';
-import { QuizFormComponent } from './quiz/new-quiz/new-quiz.component';
-import { KeyComponent } from "./key/key.component";
-import { LoginComponent } from "./auth/login/login.component";
+import { StartPageComponent } from './start/start.page.component';
+import { NewQuizComponent } from './quiz/new-quiz/new-quiz.component';
+import { KeyComponent } from './key/key.component';
+import { LoginComponent } from './auth/login/login.component';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -12,23 +13,17 @@ import { LoginComponent } from "./auth/login/login.component";
   imports: [
     HeaderComponent,
     QuizListComponent,
-    MainComponent,
-    QuizFormComponent,
+    StartPageComponent,
+    NewQuizComponent,
     KeyComponent,
-    LoginComponent
-],
+    LoginComponent,
+    RouterOutlet,
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
 export class AppComponent {
-  app_name = 'QuizStream!?';
-
-  selectedButton = signal<string>('');
-
-  onSelectButton(btnName: string) {
-    console.log('selected button ' + btnName);
-    this.selectedButton.set(btnName);
-  } 
+  app_name = 'QuizStream';
 
   loggedIn = input(false);
   gettingStarted = input(false);

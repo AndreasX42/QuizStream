@@ -1,8 +1,8 @@
-<h3 mat-dialog-title>{{ data.message }}</h3>
-<!--<mat-dialog-content
-  >Quiz was created successfully!</mat-dialog-content
->
-!-->
-<mat-dialog-actions>
-  <button mat-button mat-dialog-close>Close</button>
-</mat-dialog-actions>
+<div class="dialog-container">
+  <h3 mat-dialog-title>
+    <mat-icon color="primary">check_circle</mat-icon> {{ data.message }}
+  </h3>
+  <mat-dialog-actions align="center">
+    <button mat-raised-button mat-dialog-close>Close</button>
+  </mat-dialog-actions>
+</div>

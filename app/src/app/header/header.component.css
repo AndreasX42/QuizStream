@@ -1,9 +1,17 @@
-/* navbar.component.css */
 mat-toolbar {
-  background-color: #d7e3ff; /* Adjust the color to match your Azure blue */
+  background-color: #d7e3ff;
   color: #005cbb;
+}
+
+a[mat-button] {
+  color: #005cbb;
+  margin-right: 10px;
 }
 
 .spacer {
   flex: 1 1 auto;
+}
+
+.selected {
+  background-color: #c1d5f8;
 }

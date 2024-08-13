@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, signal } from '@angular/core';
 import { RegisterComponent } from '../register/register.component';
 import {
   FormControl,
@@ -11,7 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogComponent } from '../../shared/dialog/dialog.component';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -23,6 +23,7 @@ import { DialogComponent } from '../../shared/dialog/dialog.component';
     MatFormFieldModule,
     MatIcon,
     ReactiveFormsModule,
+    RouterLink,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
@@ -30,7 +31,8 @@ import { DialogComponent } from '../../shared/dialog/dialog.component';
 export class LoginComponent {
   private dialog = inject(MatDialog);
 
-  register = signal(false);
+  loggedIn = signal(false);
+  hide = signal(true);
 
   form = new FormGroup({
     email: new FormControl('', {
@@ -49,16 +51,13 @@ export class LoginComponent {
     const email = this.form.value.email;
     const password = this.form.value.password;
 
-    const dialogRef = this.dialog.open(DialogComponent, {
-      data: { message: 'Logged in successfully!' },
-    });
+    this.loggedIn.set(true);
 
-    dialogRef.afterClosed().subscribe(() => {
-      location.reload();
-    });
+    console.log(email, password);
   }
 
-  onRegister() {
-    this.register.set(true);
+  onHide(event: MouseEvent) {
+    this.hide.set(!this.hide());
+    event.stopPropagation();
   }
 }

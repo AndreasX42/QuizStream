@@ -1,0 +1,8 @@
+.dialog-container {
+  font-family: "Open Sans", sans-serif;
+  padding: 10px;
+}
+
+h3[mat-dialog-title] mat-icon {
+  vertical-align: middle;
+}

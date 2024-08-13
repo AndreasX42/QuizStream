@@ -1,12 +1,16 @@
 import { Component, Inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
   MatDialogClose,
   MatDialogContent,
+  MatDialogModule,
   MatDialogTitle,
 } from '@angular/material/dialog';
+import { MatIcon } from '@angular/material/icon';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @Component({
   selector: 'app-dialog',
@@ -19,6 +23,9 @@ import {
     MatDialogActions,
     MatDialogClose,
     MatButtonModule,
+    MatIcon,
+    MatCardModule,
+    MatDialogModule,
   ],
 })
 export class DialogComponent {

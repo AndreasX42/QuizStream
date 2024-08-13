@@ -76,7 +76,7 @@ export class RegisterComponent {
     console.log(username, email, password);
 
     const dialogRef = this.dialog.open(DialogComponent, {
-      data: { message: 'Registered successfully!' },
+      data: { message: 'Registered successfully! You can log in now.' },
     });
 
     dialogRef.afterClosed().subscribe(() => {

@@ -1,8 +1,0 @@
-button[mat-button] {
-  color: #005cbb;
-  margin-right: 10px;
-}
-
-button.active {
-  background-color: #c1d5f8;
-}
