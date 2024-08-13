@@ -1,4 +1,10 @@
-import { Component, ElementRef, inject, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -17,6 +23,7 @@ import { KeyProvider } from './../models/key.model';
 import { CommonModule, SlicePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from '../shared/dialog/dialog.component';
+import { ErrorManagerFactory } from '../shared/error.manager.factory';
 
 @Component({
   selector: 'app-key',
@@ -39,7 +46,10 @@ export class KeyComponent {
   private keyService: KeyService = inject(KeyService);
   private dialog = inject(MatDialog);
 
+  keyErrorMessage = signal('');
+
   keys = this.keyService.getKeys();
+
   displayedColumns: string[] = ['provider', 'key', 'delete'];
   keyProvidersList = Object.values(KeyProvider).filter(
     (value) => typeof value === 'string'
@@ -54,8 +64,15 @@ export class KeyComponent {
     }),
   });
 
+  updateKeyErrorMessage = ErrorManagerFactory.getFormErrorHandler(
+    this.form.controls.key,
+    this.keyErrorMessage.set,
+    { required: 'Must not be blank' }
+  );
+
   onSubmit() {
     if (this.form.invalid) {
+      this.updateKeyErrorMessage();
       return;
     }
 

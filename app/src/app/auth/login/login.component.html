@@ -1,7 +1,7 @@
 <div class="form-container">
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="form-row">
-      <mat-form-field appearance="fill" class="mat-form-field-link">
+      <mat-form-field appearance="fill" class="mat-form-field-text">
         <mat-label>Email</mat-label>
         <input
           matInput
@@ -9,11 +9,15 @@
           type="email"
           name="email"
           formControlName="email"
+          (blur)="updateEmailErrorMessage()"
         />
+        @if (form.controls.email.invalid) {
+        <mat-error>{{ emailErrorMessage() }}</mat-error>
+        }
       </mat-form-field>
     </div>
     <div class="form-row">
-      <mat-form-field appearance="fill" class="mat-form-field-link">
+      <mat-form-field appearance="fill" class="mat-form-field-text">
         <mat-label>Password</mat-label>
         <input
           matInput
@@ -21,9 +25,11 @@
           type="email"
           name="email"
           formControlName="password"
+          (blur)="updatePwdErrorMessage()"
           [type]="hide() ? 'password' : 'text'"
         />
         <button
+          type="button"
           mat-icon-button
           matSuffix
           (click)="onHide($event)"
@@ -32,15 +38,14 @@
         >
           <mat-icon>{{ hide() ? "visibility_off" : "visibility" }}</mat-icon>
         </button>
+        @if (form.controls.password.invalid) {
+        <mat-error>{{ pwdErrorMessage() }}</mat-error>
+        }
       </mat-form-field>
     </div>
     <div class="form-row">
-      <a mat-raised-button routerLink="/" color="primary">Submit</a>
+      <button mat-raised-button color="primary">Submit</button>
     </div>
-    <a class="register-hint" routerLink="/register">Register here</a>
-
-    @if (form.touched && form.invalid) {
-    <p class="control-error">Email or password invalid!</p>
-    }
+    <a class="auth-hint" routerLink="/register">Register here</a>
   </form>
 </div>

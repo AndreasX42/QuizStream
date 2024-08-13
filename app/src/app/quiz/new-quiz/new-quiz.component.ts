@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -16,6 +16,7 @@ import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from '../../shared/dialog/dialog.component';
 import { CanDeactivateFn } from '@angular/router';
+import { ErrorManagerFactory } from '../../shared/error.manager.factory';
 
 @Component({
   selector: 'app-new-quiz',
@@ -34,6 +35,9 @@ import { CanDeactivateFn } from '@angular/router';
 export class NewQuizComponent {
   private quizService: QuizService = inject(QuizService);
   private dialog = inject(MatDialog);
+
+  nameErrorMessage = signal('');
+  linkErrorMessage = signal('');
 
   quizTypesList = Object.values(QuizType).filter(
     (value) => typeof value === 'string'
@@ -62,8 +66,22 @@ export class NewQuizComponent {
     }),
   });
 
+  updateNameErrorMessage = ErrorManagerFactory.getFormErrorHandler(
+    this.form.controls.name,
+    this.nameErrorMessage.set,
+    { required: 'Must not be blank' }
+  );
+
+  updateLinkErrorMessage = ErrorManagerFactory.getFormErrorHandler(
+    this.form.controls.videoLink,
+    this.linkErrorMessage.set,
+    { required: 'Must not be blank', pattern: 'Must be a valid YouTube link' }
+  );
+
   onSubmit() {
     if (this.form.invalid) {
+      this.updateNameErrorMessage();
+      this.updateLinkErrorMessage();
       return;
     }
 

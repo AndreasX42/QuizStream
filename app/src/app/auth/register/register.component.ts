@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -12,6 +12,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { DialogComponent } from '../../shared/dialog/dialog.component';
 import { CommonModule } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
+import { MatIcon } from '@angular/material/icon';
+import { ErrorManagerFactory } from '../../shared/error.manager.factory';
 
 function equalValues(controlName1: string, controlName2: string) {
   return (control: AbstractControl) => {
@@ -20,6 +23,11 @@ function equalValues(controlName1: string, controlName2: string) {
 
     if (val1 === val2) {
       return null;
+    }
+
+    const errorMessage = { valuesNotEqual: true };
+    if (controlName2 === 'confirmPassword') {
+      control.get(controlName2)?.setErrors(errorMessage);
     }
 
     return { valuesNotEqual: true };
@@ -35,12 +43,21 @@ function equalValues(controlName1: string, controlName2: string) {
     MatButtonModule,
     MatFormFieldModule,
     ReactiveFormsModule,
+    MatIcon,
+    RouterLink,
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
 })
 export class RegisterComponent {
   private dialog = inject(MatDialog);
+  private router = inject(Router);
+
+  hide = signal(true);
+  usernameErrorMessage = signal('');
+  emailErrorMessage = signal('');
+  pwdErrorMessage = signal('');
+  confirmPwdErrorMessage = signal('');
 
   form = new FormGroup({
     username: new FormControl('', {
@@ -64,8 +81,49 @@ export class RegisterComponent {
     ),
   });
 
+  updateUsernameErrorMessage = ErrorManagerFactory.getFormErrorHandler(
+    this.form.get('username')!,
+    this.usernameErrorMessage.set,
+    {
+      required: 'Must not be blank',
+      minlength: 'Must be at least 3 charachters',
+    }
+  );
+
+  updateEmailErrorMessage = ErrorManagerFactory.getFormErrorHandler(
+    this.form.get('email')!,
+    this.emailErrorMessage.set,
+    {
+      required: 'Must not be blank',
+      email: 'Must be valid email',
+    }
+  );
+
+  updatePwdErrorMessage = ErrorManagerFactory.getFormErrorHandler(
+    this.form.controls.passwords.get('password')!,
+    this.pwdErrorMessage.set,
+    {
+      required: 'Must not be blank',
+      minlength: 'Must be at least 6 characters',
+    }
+  );
+
+  updateConfirmPwdErrorMessage = ErrorManagerFactory.getFormErrorHandler(
+    this.form.controls.passwords.get('confirmPassword')!,
+    this.confirmPwdErrorMessage.set,
+    {
+      required: 'Must not be blank',
+      minlength: 'Must be at least 6 characters',
+      valuesNotEqual: 'Passwords must match',
+    }
+  );
+
   onSubmit() {
     if (this.form.invalid) {
+      this.updateUsernameErrorMessage();
+      this.updateEmailErrorMessage();
+      this.updatePwdErrorMessage();
+      this.updateConfirmPwdErrorMessage();
       return;
     }
 
@@ -79,8 +137,13 @@ export class RegisterComponent {
       data: { message: 'Registered successfully! You can log in now.' },
     });
 
-    dialogRef.afterClosed().subscribe(() => {
-      location.reload();
+    this.router.navigate(['/login'], {
+      replaceUrl: true,
     });
+  }
+
+  onHide(event: MouseEvent) {
+    this.hide.set(!this.hide());
+    event.stopPropagation();
   }
 }

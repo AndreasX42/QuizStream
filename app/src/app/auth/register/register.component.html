@@ -1,37 +1,65 @@
 <div class="form-container">
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="form-row">
-      <mat-form-field appearance="fill" class="mat-form-field-link">
-        <mat-label>Enter username</mat-label>
-        <input matInput formControlName="name" formControlName="username" />
+      <mat-form-field appearance="fill" class="mat-form-field-text">
+        <mat-label>Username</mat-label>
+        <input
+          matInput
+          id="username"
+          type="username"
+          name="username"
+          formControlName="username"
+          (blur)="updateUsernameErrorMessage()"
+        />
+        @if (usernameErrorMessage() !== '') {
+        <mat-error>{{ usernameErrorMessage() }}</mat-error>
+        }
       </mat-form-field>
     </div>
     <div class="form-row">
-      <mat-form-field appearance="fill" class="mat-form-field-link">
-        <mat-label>Enter Email address</mat-label>
+      <mat-form-field appearance="fill" class="mat-form-field-text">
+        <mat-label>Email address</mat-label>
         <input
           matInput
           id="email"
           type="email"
           name="email"
           formControlName="email"
-          formControlName="email"
+          (blur)="updateEmailErrorMessage()"
         />
+        @if (emailErrorMessage() !== '') {
+        <mat-error>{{ emailErrorMessage() }}</mat-error>
+        }
       </mat-form-field>
     </div>
     <div class="form-row" formGroupName="passwords">
-      <mat-form-field appearance="fill" class="mat-form-field-link">
-        <mat-label>Enter password</mat-label>
+      <mat-form-field appearance="fill" class="mat-form-field-text">
+        <mat-label>Password</mat-label>
         <input
           matInput
           id="password"
           type="password"
           name="password"
           formControlName="password"
+          (blur)="updatePwdErrorMessage()"
+          [type]="hide() ? 'password' : 'text'"
         />
+        <button
+          type="button"
+          mat-icon-button
+          matSuffix
+          (click)="onHide($event)"
+          [attr.aria-label]="'Hide password'"
+          [attr.aria-pressed]="hide()"
+        >
+          <mat-icon>{{ hide() ? "visibility_off" : "visibility" }}</mat-icon>
+        </button>
+        @if (pwdErrorMessage() !== '') {
+        <mat-error>{{ pwdErrorMessage() }}</mat-error>
+        }
       </mat-form-field>
 
-      <mat-form-field appearance="fill" class="mat-form-field-link">
+      <mat-form-field appearance="fill" class="mat-form-field-text">
         <mat-label>Confirm password</mat-label>
         <input
           matInput
@@ -39,21 +67,27 @@
           type="password"
           name="confirmPassword"
           formControlName="confirmPassword"
+          (blur)="updateConfirmPwdErrorMessage()"
+          [type]="hide() ? 'password' : 'text'"
         />
+        <button
+          type="button"
+          mat-icon-button
+          matSuffix
+          (click)="onHide($event)"
+          [attr.aria-label]="'Hide password'"
+          [attr.aria-pressed]="hide()"
+        >
+          <mat-icon>{{ hide() ? "visibility_off" : "visibility" }}</mat-icon>
+        </button>
+        @if (confirmPwdErrorMessage() !== '') {
+        <mat-error form.errors>{{ confirmPwdErrorMessage() }}</mat-error>
+        }
       </mat-form-field>
     </div>
     <div class="form-row">
       <button mat-raised-button>Submit</button>
     </div>
-
-    @if (form.touched && form.invalid) {
-    <p>Hints:</p>
-    <ul>
-      <li>Email address should be valid.</li>
-      <li>Username should be at least 3 characters.</li>
-      <li>Password should be at least 6 characters.</li>
-      <li>Passwords should match.</li>
-    </ul>
-    }
+    <a class="auth-hint" routerLink="/login">Login here</a>
   </form>
 </div>

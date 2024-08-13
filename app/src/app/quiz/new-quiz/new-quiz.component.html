@@ -1,19 +1,34 @@
 <div class="form-container">
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="form-row">
-      <mat-form-field appearance="fill" class="mat-form-field-link">
-        <mat-label>Enter Quiz Name</mat-label>
-        <input matInput formControlName="name" formControlName="name" />
+      <mat-form-field appearance="fill" class="mat-form-field-text">
+        <mat-label>Quiz Name</mat-label>
+        <input
+          matInput
+          formControlName="name"
+          formControlName="name"
+          (blur)="updateNameErrorMessage()"
+        />
+        @if (nameErrorMessage() !== '') {
+        <mat-error>{{ nameErrorMessage() }}</mat-error>
+        }
       </mat-form-field>
     </div>
     <div class="form-row">
-      <mat-form-field appearance="fill" class="mat-form-field-link">
-        <mat-label>Enter YouTube Link</mat-label>
-        <input matInput formControlName="videoLink" />
+      <mat-form-field appearance="fill" class="mat-form-field-text">
+        <mat-label>YouTube Link</mat-label>
+        <input
+          matInput
+          formControlName="videoLink"
+          (blur)="updateLinkErrorMessage()"
+        />
+        @if (linkErrorMessage() !== '') {
+        <mat-error>{{ linkErrorMessage() }}</mat-error>
+        }
       </mat-form-field>
     </div>
     <div class="form-row">
-      <mat-form-field appearance="fill" class="form-field">
+      <mat-form-field appearance="fill" class="mat-form-field-option">
         <mat-label>Quiz Type</mat-label>
         <mat-select formControlName="type"
           ><mat-option *ngFor="let type of quizTypesList" [value]="type">{{
@@ -22,7 +37,7 @@
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field appearance="fill" class="form-field">
+      <mat-form-field appearance="fill" class="mat-form-field-option">
         <mat-label>Difficulty</mat-label>
         <mat-select formControlName="difficulty"
           ><mat-option
@@ -36,8 +51,5 @@
     <div class="form-row">
       <button mat-raised-button>Submit</button>
     </div>
-    @if (form.touched && form.invalid) {
-    <p class="control-error">Invalid input data!</p>
-    }
   </form>
 </div>

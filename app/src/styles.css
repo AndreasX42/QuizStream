@@ -4,6 +4,8 @@
   box-sizing: border-box;
 }
 
+/* CSS for Forms */
+
 form {
   margin: 2rem auto;
   max-width: 50rem;
@@ -14,26 +16,27 @@ form {
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
 }
 
-.mat-form-field-link {
-  width: 100%;
-}
-
 .form-container {
   display: flex;
   justify-content: center;
   margin-top: 20px;
 }
 
-.form-row {
+.form-container .mat-form-field-text {
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+.form-container .form-row {
   display: flex;
   justify-content: center;
   width: 100%;
   gap: 20px;
 }
 
-.form-field {
+.form-container .mat-form-field-option {
   width: 50%;
-  padding: 5px;
+  padding: 0px;
 }
 
 @media (max-width: 600px) {
@@ -43,42 +46,12 @@ form {
   }
 
   .form-field,
-  .mat-form-field-link {
+  mat-form-field-text {
     width: 100%;
   }
 }
 
-.mat-icon-button {
-  margin-left: 16px;
-}
-
-.control-error {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  color: #d51c1c;
-  height: 0.5rem;
-  padding: 0.25rem 0 0 0;
-  height: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-.button-flat:hover,
-.button-flat:focus {
-  background-color: transparent;
-  color: #869999;
-}
-
-[formgroupname].ng-invalid.ng-touched.ng-dirty label,
-.control:has(.ng-invalid.ng-touched.ng-dirty) label {
-  color: #d51c1c;
-}
-
-[formgroupname].ng-invalid.ng-touched.ng-dirty input,
-input.ng-invalid.ng-touched.ng-dirty {
-  background-color: #fbdcd6;
-  border-color: #f84e2c;
-}
+/* CSS for messages on main page */
 
 .main-page-container {
   margin-top: 35px;

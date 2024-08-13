@@ -3,6 +3,9 @@
   padding: 10px;
 }
 
-h3[mat-dialog-title] mat-icon {
-  vertical-align: middle;
+.dialog-title {
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  margin: 0;
 }

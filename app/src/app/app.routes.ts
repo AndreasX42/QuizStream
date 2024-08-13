@@ -38,7 +38,7 @@ export const routes: Routes = [
   {
     path: 'quizzes/new',
     component: NewQuizComponent,
-    canDeactivate: [canLeaveEditPage],
+    // canDeactivate: [canLeaveEditPage],
   },
   {
     path: 'keys',

@@ -1,4 +1,4 @@
-.register-hint {
+.auth-hint {
   display: flex;
   flex-wrap: wrap;
   color: #44474e;
@@ -6,6 +6,6 @@
   margin-bottom: 0px;
 }
 
-.register-hint:hover {
+.auth-hint:hover {
   text-decoration: underline;
 }

@@ -1,7 +1,7 @@
 <div class="form-container">
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="form-row">
-      <mat-form-field appearance="fill" class="form-field">
+      <mat-form-field appearance="fill" class="mat-form-field-option">
         <mat-label>Provider</mat-label>
         <mat-select formControlName="provider">
           <mat-option
@@ -13,9 +13,16 @@
       </mat-form-field>
     </div>
     <div class="form-row">
-      <mat-form-field appearance="fill" class="mat-form-field-link">
-        <mat-label>Enter API Key</mat-label>
-        <input matInput formControlName="key" />
+      <mat-form-field appearance="fill" class="mat-form-field-text">
+        <mat-label>API Key</mat-label>
+        <input
+          matInput
+          formControlName="key"
+          (blur)="updateKeyErrorMessage()"
+        />
+        @if (keyErrorMessage() !== '') {
+        <mat-error>{{ keyErrorMessage() }}</mat-error>
+        }
       </mat-form-field>
     </div>
     <div class="form-row">
