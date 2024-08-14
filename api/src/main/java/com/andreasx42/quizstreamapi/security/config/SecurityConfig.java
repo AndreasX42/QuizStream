@@ -1,10 +1,9 @@
-package com.andreasx42.quizstreamapi.config;
+package com.andreasx42.quizstreamapi.security.config;
 
-import com.andreasx42.quizstreamapi.security.SecurityConstants;
 import com.andreasx42.quizstreamapi.security.filter.AuthenticationFilter;
 import com.andreasx42.quizstreamapi.security.filter.ExceptionHandlerFilter;
 import com.andreasx42.quizstreamapi.security.filter.JWTAuthorizationFilter;
-import com.andreasx42.quizstreamapi.service.api.IUserService;
+import com.andreasx42.quizstreamapi.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,12 +20,13 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private AuthenticationManager authenticationManager;
-    private IUserService userService;
+    private UserService userService;
+    private JwtConfig jwtConfig;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        AuthenticationFilter authFilter = new AuthenticationFilter(authenticationManager);
+        AuthenticationFilter authFilter = new AuthenticationFilter(authenticationManager, jwtConfig);
         authFilter.setFilterProcessesUrl(SecurityConstants.AUTH_PATH);
 
         http
@@ -48,7 +48,7 @@ public class SecurityConfig {
                         .authenticated())
                 .addFilterBefore(new ExceptionHandlerFilter(), AuthenticationFilter.class)
                 .addFilter(authFilter)
-                .addFilterAfter(new JWTAuthorizationFilter(userService), AuthenticationFilter.class)
+                .addFilterAfter(new JWTAuthorizationFilter(userService, jwtConfig), AuthenticationFilter.class)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

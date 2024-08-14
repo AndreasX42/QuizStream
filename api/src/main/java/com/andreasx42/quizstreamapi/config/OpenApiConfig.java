@@ -13,7 +13,7 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("QuizStream API")
-                        .description("An API that manages the QuizStream app")
+                        .description("API that manages the QuizStream app")
                         .version("v0.1"));
     }
 
