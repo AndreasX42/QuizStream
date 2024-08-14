@@ -11,7 +11,11 @@
           formControlName="username"
           (blur)="updateUsernameErrorMessage()"
         />
-        @if (usernameErrorMessage() !== '') {
+
+        <!-- Display check if input valid, else the error message -->
+        @if(usernameErrorMessage() === '') {
+        <mat-icon matSuffix matSuffix>check_circle</mat-icon>
+        } @else {
         <mat-error>{{ usernameErrorMessage() }}</mat-error>
         }
       </mat-form-field>
@@ -27,7 +31,11 @@
           formControlName="email"
           (blur)="updateEmailErrorMessage()"
         />
-        @if (emailErrorMessage() !== '') {
+
+        <!-- Display check if input valid, else the error message -->
+        @if(emailErrorMessage() === '') {
+        <mat-icon matSuffix matSuffix>check_circle</mat-icon>
+        } @else {
         <mat-error>{{ emailErrorMessage() }}</mat-error>
         }
       </mat-form-field>
@@ -44,6 +52,13 @@
           (blur)="updatePwdErrorMessage()"
           [type]="hide() ? 'password' : 'text'"
         />
+
+        <!-- Display check if pwd and confirmPwd valid -->
+        @if(pwdErrorMessage() === '' && confirmPwdErrorMessage() === '') {
+        <mat-icon matSuffix matSuffix>check_circle</mat-icon>
+        }
+
+        <!-- Button to show or hide password -->
         <button
           type="button"
           mat-icon-button
@@ -54,6 +69,8 @@
         >
           <mat-icon>{{ hide() ? "visibility_off" : "visibility" }}</mat-icon>
         </button>
+
+        <!-- Display invalid password error message  -->
         @if (pwdErrorMessage() !== '') {
         <mat-error>{{ pwdErrorMessage() }}</mat-error>
         }
@@ -70,6 +87,13 @@
           (blur)="updateConfirmPwdErrorMessage()"
           [type]="hide() ? 'password' : 'text'"
         />
+
+        <!-- Display check if pwd and confirmPwd valid -->
+        @if(pwdErrorMessage() === '' && confirmPwdErrorMessage() === '') {
+        <mat-icon matSuffix matSuffix>check_circle</mat-icon>
+        }
+
+        <!-- Button to show or hide password -->
         <button
           type="button"
           mat-icon-button
@@ -80,6 +104,8 @@
         >
           <mat-icon>{{ hide() ? "visibility_off" : "visibility" }}</mat-icon>
         </button>
+
+        <!-- Display invalid password error message  -->
         @if (confirmPwdErrorMessage() !== '') {
         <mat-error form.errors>{{ confirmPwdErrorMessage() }}</mat-error>
         }

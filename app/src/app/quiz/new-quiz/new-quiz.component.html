@@ -9,7 +9,11 @@
           formControlName="name"
           (blur)="updateNameErrorMessage()"
         />
-        @if (nameErrorMessage() !== '') {
+
+        <!-- Display check if input valid, else the error message -->
+        @if(nameErrorMessage() === '') {
+        <mat-icon matSuffix matSuffix>check_circle</mat-icon>
+        } @else {
         <mat-error>{{ nameErrorMessage() }}</mat-error>
         }
       </mat-form-field>
@@ -22,7 +26,11 @@
           formControlName="videoLink"
           (blur)="updateLinkErrorMessage()"
         />
-        @if (linkErrorMessage() !== '') {
+
+        <!-- Display check if input valid, else the error message -->
+        @if(linkErrorMessage() === '') {
+        <mat-icon matSuffix matSuffix>check_circle</mat-icon>
+        } @else {
         <mat-error>{{ linkErrorMessage() }}</mat-error>
         }
       </mat-form-field>

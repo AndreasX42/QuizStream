@@ -32,8 +32,8 @@ export class LoginComponent {
 
   loggedIn = signal(false);
   hide = signal(true);
-  emailErrorMessage = signal('');
-  pwdErrorMessage = signal('');
+  emailErrorMessage = signal<string | undefined>(undefined);
+  pwdErrorMessage = signal<string | undefined>(undefined);
 
   form = new FormGroup({
     email: new FormControl('', {

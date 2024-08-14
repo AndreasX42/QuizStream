@@ -17,6 +17,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from '../../shared/dialog/dialog.component';
 import { CanDeactivateFn } from '@angular/router';
 import { ErrorManagerFactory } from '../../shared/error.manager.factory';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-new-quiz',
@@ -28,6 +29,7 @@ import { ErrorManagerFactory } from '../../shared/error.manager.factory';
     MatButtonModule,
     MatFormFieldModule,
     ReactiveFormsModule,
+    MatIcon,
   ],
   templateUrl: './new-quiz.component.html',
   styleUrl: './new-quiz.component.css',
@@ -36,8 +38,8 @@ export class NewQuizComponent {
   private quizService: QuizService = inject(QuizService);
   private dialog = inject(MatDialog);
 
-  nameErrorMessage = signal('');
-  linkErrorMessage = signal('');
+  nameErrorMessage = signal<string | undefined>(undefined);
+  linkErrorMessage = signal<string | undefined>(undefined);
 
   quizTypesList = Object.values(QuizType).filter(
     (value) => typeof value === 'string'
@@ -51,7 +53,9 @@ export class NewQuizComponent {
     /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|v\/|.+\?v=)?(\w{11})(\S+)?$/;
 
   form = new FormGroup({
-    name: new FormControl('', { validators: [Validators.required] }),
+    name: new FormControl('', {
+      validators: [Validators.required, Validators.minLength(3)],
+    }),
     videoLink: new FormControl('', {
       validators: [
         Validators.required,
@@ -69,7 +73,10 @@ export class NewQuizComponent {
   updateNameErrorMessage = ErrorManagerFactory.getFormErrorHandler(
     this.form.controls.name,
     this.nameErrorMessage.set,
-    { required: 'Must not be blank' }
+    {
+      required: 'Must not be blank',
+      minlength: 'Must be at least 3 characters',
+    }
   );
 
   updateLinkErrorMessage = ErrorManagerFactory.getFormErrorHandler(

@@ -54,10 +54,10 @@ export class RegisterComponent {
   private router = inject(Router);
 
   hide = signal(true);
-  usernameErrorMessage = signal('');
-  emailErrorMessage = signal('');
-  pwdErrorMessage = signal('');
-  confirmPwdErrorMessage = signal('');
+  usernameErrorMessage = signal<string | undefined>(undefined);
+  emailErrorMessage = signal<string | undefined>(undefined);
+  pwdErrorMessage = signal<string | undefined>(undefined);
+  confirmPwdErrorMessage = signal<string | undefined>(undefined);
 
   form = new FormGroup({
     username: new FormControl('', {
