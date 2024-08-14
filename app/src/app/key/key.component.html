@@ -20,7 +20,10 @@
           formControlName="key"
           (blur)="updateKeyErrorMessage()"
         />
-        @if (keyErrorMessage() !== '') {
+        <!-- Display check if input valid, else the error message -->
+        @if(keyErrorMessage() === '') {
+        <mat-icon matSuffix matSuffix>check_circle</mat-icon>
+        } @else {
         <mat-error>{{ keyErrorMessage() }}</mat-error>
         }
       </mat-form-field>

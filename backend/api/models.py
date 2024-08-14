@@ -2,10 +2,12 @@ from sqlalchemy import (
     Column,
     String,
     Integer,
+    BigInteger,
     DateTime,
     Boolean,
     JSON,
     ForeignKey,
+    Enum,
 )
 import datetime as dt
 
@@ -15,6 +17,13 @@ from sqlalchemy.schema import Index, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 
 from backend.commons.db import Base
+
+from enum import Enum as PythonEnum
+
+
+class Role(str, PythonEnum):
+    USER = "USER"
+    ADMIN = "ADMIN"
 
 
 class LangchainPGCollection(Base):
@@ -54,13 +63,13 @@ class LangchainPGEmbedding(Base):
 
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, index=True, unique=True)
-    hashed_password = Column(String, index=False, unique=False)
-    email = Column(String, index=True, unique=True)
+    id = Column(BigInteger, primary_key=True, index=True)
+    username = Column(String, index=False, unique=True, nullable=False)
+    password = Column(String, index=False, unique=False, nullable=False)
+    email = Column(String, index=False, unique=True, nullable=False)
     date_created = Column(DateTime, default=dt.datetime.now(dt.UTC))
     is_active = Column(Boolean, default=True)
-    role = Column(String, default="user", index=True)
+    role = Column(Enum(Role), default=Role.USER)
 
 
 class UserToQuiz(Base):

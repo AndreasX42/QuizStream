@@ -1,5 +1,19 @@
 version: "3"
 services:
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: ./api
+    container_name: api
+    ports:
+      - "9090:9090"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/quizstream_db
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=my_password
+      - SERVER_PORT=9090
+    depends_on:
+      - postgres
   backend:
     build:
       dockerfile: Dockerfile
@@ -10,12 +24,14 @@ services:
     volumes:
       - ./backend:/backend/
     environment:
-      - POSTGRES_DATABASE=postgres_db
+      - POSTGRES_DATABASE=quizstream_db
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=my_password
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
       - POSTGRES_DRIVER=psycopg
+    depends_on:
+      - postgres
     restart: always
   postgres:
     build:
@@ -29,6 +45,7 @@ services:
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=my_password
+      - POSTGRES_DB=quizstream_db
     restart: always
   pgadmin:
     image: dpage/pgadmin4:8.10

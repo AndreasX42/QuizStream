@@ -18,6 +18,9 @@
 postgres/data
 .env
 
+# Java
+api/target
+
 # IDEs and editors
 .idea/
 .project

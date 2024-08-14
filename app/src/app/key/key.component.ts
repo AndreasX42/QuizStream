@@ -46,7 +46,7 @@ export class KeyComponent {
   private keyService: KeyService = inject(KeyService);
   private dialog = inject(MatDialog);
 
-  keyErrorMessage = signal('');
+  keyErrorMessage = signal<string | undefined>(undefined);
 
   keys = this.keyService.getKeys();
 
