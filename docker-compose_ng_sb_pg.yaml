@@ -1,5 +1,17 @@
   version: "3"
   services:
+    app:
+      build:
+        context: ./app
+        dockerfile: Dockerfile.dev
+      container_name: app
+      ports:
+        - "4200:4200"
+      volumes:
+        - ./app:/app
+        - /app/node_modules
+      environment:
+        - CHOKIDAR_USEPOLLING=true
     api:
       build:
         dockerfile: Dockerfile.dev
@@ -16,7 +28,8 @@
         - SPRING_DATASOURCE_PASSWORD=my_password
         - SERVER_PORT=9090
         - JWT_SECRET="bQeThWmZq4t7w!z$C&F)J@NcRfUjXn2r5u8x/A?D*G-KaPdSgVkYp3s6v9y$B&E)"
-          - JAVA_OPTS=-Dspring.devtools.restart.enabled=true -Dspring.devtools.livereload.enabled=true
+       # - JAVA_OPTS=-Dspring.devtools.restart.enabled=true -Dspring.devtools.livereload.enabled=true
+       # - SPRING_DEVTOOLS_RESTART_TRIGGERFILE=.trigger
       depends_on:
         - postgres
     postgres:
@@ -32,4 +45,13 @@
         - POSTGRES_USER=admin
         - POSTGRES_PASSWORD=my_password
         - POSTGRES_DB=quizstream_db
+      restart: always
+    pgadmin:
+      image: dpage/pgadmin4:8.10
+      container_name: pgadmin
+      environment:
+        - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+        - PGADMIN_DEFAULT_PASSWORD=my_password
+      ports:
+        - "5050:80"
       restart: always

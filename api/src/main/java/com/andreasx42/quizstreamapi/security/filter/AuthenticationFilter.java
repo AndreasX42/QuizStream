@@ -45,6 +45,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
 
+
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.getWriter()
                 .write(failed.getMessage());

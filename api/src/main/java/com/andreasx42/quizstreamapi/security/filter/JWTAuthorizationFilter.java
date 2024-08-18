@@ -57,7 +57,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
             return;
         }
 
-        User user = userService.getByName(username);
+        User user = userService.getByUserName(username);
 
         Set<SimpleGrantedAuthority> authority = Collections
                 .singleton(new SimpleGrantedAuthority(user.getRole()

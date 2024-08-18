@@ -81,39 +81,39 @@ export class RegisterComponent {
     ),
   });
 
-  updateUsernameErrorMessage = ErrorManagerFactory.getFormErrorHandler(
+  updateUsernameErrorMessage = ErrorManagerFactory.getFormErrorManager(
     this.form.get('username')!,
     this.usernameErrorMessage.set,
     {
-      required: 'Must not be blank',
-      minlength: 'Must be at least 3 charachters',
+      required: ErrorManagerFactory.MSG_IS_REQUIRED,
+      minlength: ErrorManagerFactory.MSG_AT_LEAST_3_CHARS,
     }
   );
 
-  updateEmailErrorMessage = ErrorManagerFactory.getFormErrorHandler(
+  updateEmailErrorMessage = ErrorManagerFactory.getFormErrorManager(
     this.form.get('email')!,
     this.emailErrorMessage.set,
     {
-      required: 'Must not be blank',
-      email: 'Must be valid email',
+      required: ErrorManagerFactory.MSG_IS_REQUIRED,
+      email: ErrorManagerFactory.MSG_VALID_EMAIL,
     }
   );
 
-  updatePwdErrorMessage = ErrorManagerFactory.getFormErrorHandler(
+  updatePwdErrorMessage = ErrorManagerFactory.getFormErrorManager(
     this.form.controls.passwords.get('password')!,
     this.pwdErrorMessage.set,
     {
-      required: 'Must not be blank',
-      minlength: 'Must be at least 6 characters',
+      required: ErrorManagerFactory.MSG_IS_REQUIRED,
+      minlength: ErrorManagerFactory.MSG_AT_LEAST_6_CHARS,
     }
   );
 
-  updateConfirmPwdErrorMessage = ErrorManagerFactory.getFormErrorHandler(
+  updateConfirmPwdErrorMessage = ErrorManagerFactory.getFormErrorManager(
     this.form.controls.passwords.get('confirmPassword')!,
     this.confirmPwdErrorMessage.set,
     {
-      required: 'Must not be blank',
-      minlength: 'Must be at least 6 characters',
+      required: ErrorManagerFactory.MSG_IS_REQUIRED,
+      minlength: ErrorManagerFactory.MSG_AT_LEAST_6_CHARS,
       valuesNotEqual: 'Passwords must match',
     }
   );

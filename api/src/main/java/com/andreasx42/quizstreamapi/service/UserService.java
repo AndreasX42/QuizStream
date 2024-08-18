@@ -25,7 +25,7 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserMapper userMapper;
 
-    public User getByName(String username) {
+    public User getByUserName(String username) {
         Optional<User> userOptional = userRepository.findByUsername(username);
         return userOptional.orElseThrow(() -> new EntityNotFoundException(username, User.class));
     }
@@ -85,7 +85,7 @@ public class UserService {
                 throw new DuplicateEntityException("email", userDto.email(), User.class);
             }
         }
-        
+
         // Check if username needs to be updated
         if (Objects.nonNull((userDto.username()))) {
             boolean updatesUsername = !userDto.username()

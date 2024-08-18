@@ -1,0 +1,33 @@
+FROM node:20
+
+EXPOSE 4200
+
+WORKDIR /app
+
+RUN npm install -g @angular/cli @angular/material
+
+COPY ./ ./
+
+RUN npm install
+
+CMD ["ng", "serve", "--host", "0.0.0.0", "--poll", "2000"]
+
+FROM node:20-alpine AS build
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install --silent
+
+COPY ./ ./
+
+RUN npm run build --prod
+
+FROM nginx:alpine
+
+EXPOSE 80
+
+COPY --from=build /app/dist/app /usr/share/nginx/html
+
+CMD ["nginx", "-g", "daemon off;"]

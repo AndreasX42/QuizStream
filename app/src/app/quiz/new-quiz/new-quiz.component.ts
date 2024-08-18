@@ -70,19 +70,22 @@ export class NewQuizComponent {
     }),
   });
 
-  updateNameErrorMessage = ErrorManagerFactory.getFormErrorHandler(
+  updateNameErrorMessage = ErrorManagerFactory.getFormErrorManager(
     this.form.controls.name,
     this.nameErrorMessage.set,
     {
-      required: 'Must not be blank',
-      minlength: 'Must be at least 3 characters',
+      required: ErrorManagerFactory.MSG_IS_REQUIRED,
+      minlength: ErrorManagerFactory.MSG_AT_LEAST_3_CHARS,
     }
   );
 
-  updateLinkErrorMessage = ErrorManagerFactory.getFormErrorHandler(
+  updateLinkErrorMessage = ErrorManagerFactory.getFormErrorManager(
     this.form.controls.videoLink,
     this.linkErrorMessage.set,
-    { required: 'Must not be blank', pattern: 'Must be a valid YouTube link' }
+    {
+      required: ErrorManagerFactory.MSG_IS_REQUIRED,
+      pattern: ErrorManagerFactory.MSG_VALID_YOUTUBE_LINK,
+    }
   );
 
   onSubmit() {

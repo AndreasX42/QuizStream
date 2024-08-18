@@ -1,0 +1,31 @@
+.profile {
+  margin: 2rem auto;
+  max-width: 50rem;
+  min-width: 25rem;
+  padding: 2rem;
+  border-radius: 4px;
+  background-color: #f7f7f7;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
+}
+
+.profile-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.profile-container h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.profile-container p {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.logout-button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}

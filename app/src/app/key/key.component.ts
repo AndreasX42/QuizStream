@@ -64,10 +64,10 @@ export class KeyComponent {
     }),
   });
 
-  updateKeyErrorMessage = ErrorManagerFactory.getFormErrorHandler(
+  updateKeyErrorMessage = ErrorManagerFactory.getFormErrorManager(
     this.form.controls.key,
     this.keyErrorMessage.set,
-    { required: 'Must not be blank' }
+    { required: ErrorManagerFactory.MSG_IS_REQUIRED }
   );
 
   onSubmit() {

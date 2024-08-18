@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { Router, RouterLink } from '@angular/router';
 import { ErrorManagerFactory } from '../../shared/error.manager.factory';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -29,15 +30,17 @@ import { ErrorManagerFactory } from '../../shared/error.manager.factory';
 })
 export class LoginComponent {
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
+  private authService = inject(AuthService);
 
   loggedIn = signal(false);
   hide = signal(true);
-  emailErrorMessage = signal<string | undefined>(undefined);
+  usernameErrorMessage = signal<string | undefined>(undefined);
   pwdErrorMessage = signal<string | undefined>(undefined);
 
   form = new FormGroup({
-    email: new FormControl('', {
-      validators: [Validators.email, Validators.required],
+    username: new FormControl('', {
+      validators: [Validators.required, Validators.minLength(3)],
     }),
     password: new FormControl('', {
       validators: [Validators.required, Validators.minLength(6)],
@@ -46,20 +49,29 @@ export class LoginComponent {
 
   onSubmit() {
     if (this.form.invalid) {
-      this.updateEmailErrorMessage();
+      this.updateUsernameErrorMessage();
       this.updatePwdErrorMessage();
       return;
     }
 
-    const email = this.form.value.email;
-    const password = this.form.value.password;
+    const username = this.form.value.username!;
+    const password = this.form.value.password!;
 
-    this.loggedIn.set(true);
+    this.login(username, password);
+  }
 
-    console.log(email, password);
+  login(username: string, password: string) {
+    const sub = this.authService.login(username, password).subscribe({
+      next: () => {
+        this.router.navigate(['/profile']);
+      },
+      // error: (err) => {
+      //   this.errorMessage = 'Invalid credentials. Please try again.';
+      // },
+    });
 
-    this.router.navigate(['/'], {
-      replaceUrl: true,
+    this.destroyRef.onDestroy(() => {
+      sub.unsubscribe();
     });
   }
 
@@ -68,20 +80,20 @@ export class LoginComponent {
     event.stopPropagation();
   }
 
-  updateEmailErrorMessage = ErrorManagerFactory.getFormErrorHandler(
-    this.form.get('email')!,
-    this.emailErrorMessage.set,
+  updateUsernameErrorMessage = ErrorManagerFactory.getFormErrorManager(
+    this.form.get('username')!,
+    this.usernameErrorMessage.set,
     {
-      required: 'Must not be blank',
-      email: 'Must be valid email',
+      required: ErrorManagerFactory.MSG_IS_REQUIRED,
+      username: ErrorManagerFactory.MSG_AT_LEAST_3_CHARS,
     }
   );
-  updatePwdErrorMessage = ErrorManagerFactory.getFormErrorHandler(
+  updatePwdErrorMessage = ErrorManagerFactory.getFormErrorManager(
     this.form.get('password')!,
     this.pwdErrorMessage.set,
     {
-      required: 'Must not be blank',
-      minlength: 'Must be at least 6 characters',
+      required: ErrorManagerFactory.MSG_IS_REQUIRED,
+      minlength: ErrorManagerFactory.MSG_AT_LEAST_6_CHARS,
     }
   );
 }

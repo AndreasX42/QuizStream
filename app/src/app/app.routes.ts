@@ -16,6 +16,7 @@ import {
 import { KeyComponent } from './key/key.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
+import { ProfileComponent } from './auth/profile/profile.component';
 
 const dummyCanMatch: CanMatchFn = (route, segments) => {
   const router = inject(Router);
@@ -51,6 +52,10 @@ export const routes: Routes = [
   {
     path: 'register',
     component: RegisterComponent,
+  },
+  {
+    path: 'profile',
+    component: ProfileComponent,
   },
   {
     path: '**',

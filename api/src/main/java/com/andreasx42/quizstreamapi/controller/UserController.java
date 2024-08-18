@@ -35,11 +35,22 @@ public class UserController {
     @Operation(summary = "Returns a user based on id")
     @ApiResponses(value = {@ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "200", description = "User found", content = @Content(schema = @Schema(implementation = UserOutboundDto.class))),})
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "id/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("#id == principal.id or hasAuthority('ADMIN')")
     public ResponseEntity<UserOutboundDto> getUserById(@PathVariable Long id) {
 
         UserOutboundDto userDto = userMapper.mapFromEntityOutbound(userService.getById(id));
+        return new ResponseEntity<>(userDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Returns a user based on username")
+    @ApiResponses(value = {@ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "200", description = "User found", content = @Content(schema = @Schema(implementation = UserOutboundDto.class))),})
+    @GetMapping(value = "name/{userName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("#userName == principal.username or hasAuthority('ADMIN')")
+    public ResponseEntity<UserOutboundDto> getUserByUserName(@PathVariable String userName) {
+
+        UserOutboundDto userDto = userMapper.mapFromEntityOutbound(userService.getByUserName(userName));
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 

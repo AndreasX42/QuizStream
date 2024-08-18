@@ -23,8 +23,12 @@
       API Keys
     </a>
 
-    <a mat-button [routerLink]="['login']" routerLinkActive="selected">
-      Login
+    <a
+      mat-button
+      [routerLink]="isLoggedIn() ? ['login'] : ['profile']"
+      routerLinkActive="selected"
+    >
+      {{ isLoggedIn() ? "Profile" : "Login" }}
     </a>
   </mat-toolbar-row>
 </mat-toolbar>

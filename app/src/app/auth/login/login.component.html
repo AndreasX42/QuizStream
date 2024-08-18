@@ -2,21 +2,21 @@
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="form-row">
       <mat-form-field appearance="fill" class="mat-form-field-text">
-        <mat-label>Email</mat-label>
+        <mat-label>Username</mat-label>
         <input
           matInput
-          id="email"
-          type="email"
-          name="email"
-          formControlName="email"
-          (blur)="updateEmailErrorMessage()"
+          id="username"
+          type="username"
+          name="username"
+          formControlName="username"
+          (blur)="updateUsernameErrorMessage()"
         />
 
         <!-- Display check if input valid, else the error message -->
-        @if(emailErrorMessage() === '') {
+        @if(usernameErrorMessage() === '') {
         <mat-icon matSuffix matSuffix>check_circle</mat-icon>
         } @else {
-        <mat-error>{{ emailErrorMessage() }}</mat-error>
+        <mat-error>{{ usernameErrorMessage() }}</mat-error>
         }
       </mat-form-field>
     </div>
@@ -25,9 +25,9 @@
         <mat-label>Password</mat-label>
         <input
           matInput
-          id="email"
-          type="email"
-          name="email"
+          id="password"
+          type="password"
+          name="password"
           formControlName="password"
           (blur)="updatePwdErrorMessage()"
           [type]="hide() ? 'password' : 'text'"
