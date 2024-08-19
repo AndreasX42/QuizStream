@@ -11,7 +11,6 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from '@angular/common/http';
-import { AppInitService } from './services/app.init.service';
 import { AuthInterceptor } from './shared/interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -25,13 +24,6 @@ export const appConfig: ApplicationConfig = {
     ),
     provideAnimations(),
     provideHttpClient(withInterceptorsFromDi()),
-    {
-      provide: APP_INITIALIZER,
-      useFactory: (appInitService: AppInitService) => () =>
-        appInitService.initApp(),
-      deps: [AppInitService],
-      multi: true,
-    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

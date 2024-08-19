@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -7,10 +7,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { DialogComponent } from '../../shared/dialog/dialog.component';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
@@ -52,6 +50,7 @@ function equalValues(controlName1: string, controlName2: string) {
 })
 export class RegisterComponent {
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
   private authService = inject(AuthService);
 
   hide = signal(true);
@@ -121,6 +120,7 @@ export class RegisterComponent {
 
   onSubmit() {
     if (this.form.invalid) {
+      // update error messages for all form fields
       this.updateUsernameErrorMessage();
       this.updateEmailErrorMessage();
       this.updatePwdErrorMessage();
@@ -133,19 +133,15 @@ export class RegisterComponent {
     const password = this.form.value.passwords!.password!;
 
     this.register(username, email, password);
-
-    this.router.navigate(['/login'], {
-      replaceUrl: true,
-    });
   }
 
   register(username: string, email: string, password: string) {
-    const sub = this.authService.register(username, email, password).subscribe({
-      next: () => {
-        this.router.navigate(['/profile'], {
-          replaceUrl: true,
-        });
-      },
+    const sub = this.authService
+      .register(username, email, password)
+      .subscribe();
+
+    this.destroyRef.onDestroy(() => {
+      sub.unsubscribe();
     });
   }
 

@@ -3,9 +3,9 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { Configs } from '../shared/configs';
-import { ErrorService } from './error.service';
+import { Configs } from '../shared/api.configs';
 import { User } from '../models/user.model';
+import { MessageService } from './message.service';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +17,7 @@ export class AuthService {
 
   private httpClient = inject(HttpClient);
   private router = inject(Router);
-  private errorService = inject(ErrorService);
+  private messageService = inject(MessageService);
 
   localStorageTokenKey = 'jwt-token';
   localStorageUsernameKey = 'qs-username';
@@ -68,22 +68,16 @@ export class AuthService {
           }
         }),
         catchError((error) => {
+          let errorMessage = MessageService.MSG_UNKNOWN_ERROR;
           if (
             typeof error.error === 'string' &&
             error.error.includes('Incorrect')
           ) {
-            this.errorService.showError('Username or password incorrect.');
-            return throwError(
-              () => new Error('Username or password incorrect.')
-            );
-          } else {
-            this.errorService.showError(
-              'Something went wrong, please try again later.'
-            );
-            return throwError(
-              () => new Error('Something went wrong, please try again later.')
-            );
+            errorMessage = MessageService.MSG_LOGIN_ERROR_USERNAME_OR_PASSWORD;
           }
+
+          this.messageService.showError(errorMessage);
+          return throwError(() => new Error(errorMessage));
         })
       );
   }
@@ -109,13 +103,17 @@ export class AuthService {
             }
           },
           complete: () => {
-            this.errorService.showSuccess(
-              'Registered successfully, you can log in now.'
+            this.router.navigate(['/login'], {
+              replaceUrl: true,
+            });
+
+            this.messageService.showSuccess(
+              MessageService.MSG_REGISTER_SUCCESS
             );
           },
         }),
         catchError((error) => {
-          let errorMessage = 'Something went wrong, please try again later.';
+          let errorMessage = MessageService.MSG_UNKNOWN_ERROR;
           if (
             error.error &&
             error.error.messages &&
@@ -124,7 +122,7 @@ export class AuthService {
             errorMessage = error.error.messages.join('\n');
           }
 
-          this.errorService.showError(errorMessage);
+          this.messageService.showError(errorMessage);
           return throwError(() => new Error(errorMessage));
         })
       );
@@ -150,10 +148,8 @@ export class AuthService {
           },
         }),
         catchError((error) => {
-          console.log('HIIIIIIIIIIIIIIIII');
-
-          this.errorService.showError(
-            'Something went wront loading profile data, please try again later.'
+          this.messageService.showError(
+            MessageService.MSG_LOAD_PROFILE_DATA_ERROR
           );
           this.router.navigate(['/']);
           return throwError(() => new Error(error.message));
@@ -162,6 +158,10 @@ export class AuthService {
   }
 
   logout(): void {
+    if (this.isTokenExpired()) {
+      this.messageService.showError(MessageService.MSG_SESSION_EXPIRED_ERROR);
+    }
+
     this._isLoggedIn.set(false);
     this._userToken.set(undefined);
     this._userName.set(undefined);
@@ -172,7 +172,13 @@ export class AuthService {
   }
 
   // Helper method to decode the JWT
-  decodeToken(token: string) {
+  decodeToken() {
+    const token = localStorage.getItem(this.localStorageTokenKey);
+
+    if (!token) {
+      return null;
+    }
+
     try {
       return JSON.parse(atob(token.split('.')[1]));
     } catch (error) {
@@ -181,8 +187,14 @@ export class AuthService {
   }
 
   // Helper method to check if the token is expired
-  isTokenExpired(token: string): boolean {
-    const decodedToken = this.decodeToken(token);
+  isTokenExpired(): boolean {
+    const token = localStorage.getItem(this.localStorageTokenKey);
+
+    if (!token) {
+      return false;
+    }
+
+    const decodedToken = this.decodeToken();
     if (!decodedToken) {
       return true;
     }

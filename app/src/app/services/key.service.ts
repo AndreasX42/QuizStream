@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { Key, KeyProvider } from './../models/key.model';
+import { Util } from '../shared/util';
 
 @Injectable({
   providedIn: 'root',
@@ -35,10 +36,7 @@ export class KeyService {
   addKey(keyData: { provider: KeyProvider; key: string }) {
     const newKey: Key = {
       ...keyData,
-      id:
-        this.keys().length > 0
-          ? (Math.max(...this.keys().map((key) => +key.id)) + 1).toString()
-          : '0',
+      id: Util.getNextIncrement(this.keys()),
     };
 
     this.keys.update((oldKeys) => [...oldKeys, newKey]);

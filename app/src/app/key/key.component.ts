@@ -1,10 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  inject,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -21,9 +15,9 @@ import {
 } from '@angular/forms';
 import { KeyProvider } from './../models/key.model';
 import { CommonModule, SlicePipe } from '@angular/common';
-import { MatDialog } from '@angular/material/dialog';
-import { DialogComponent } from '../shared/dialog/dialog.component';
 import { ErrorManagerFactory } from '../shared/error.manager.factory';
+import { Router } from '@angular/router';
+import { MessageService } from '../services/message.service';
 
 @Component({
   selector: 'app-key',
@@ -43,8 +37,9 @@ import { ErrorManagerFactory } from '../shared/error.manager.factory';
   styleUrl: './key.component.css',
 })
 export class KeyComponent {
-  private keyService: KeyService = inject(KeyService);
-  private dialog = inject(MatDialog);
+  private router = inject(Router);
+  private keyService = inject(KeyService);
+  private messageService = inject(MessageService);
 
   keyErrorMessage = signal<string | undefined>(undefined);
 
@@ -72,6 +67,7 @@ export class KeyComponent {
 
   onSubmit() {
     if (this.form.invalid) {
+      // update error message for key field
       this.updateKeyErrorMessage();
       return;
     }
@@ -80,12 +76,10 @@ export class KeyComponent {
     const key = this.form.value.key!;
     this.keyService.addKey({ provider, key });
 
-    const dialogRef = this.dialog.open(DialogComponent, {
-      data: { message: 'API key was added successfully!' },
-    });
+    this.messageService.showSuccess('API key was added successfully!');
 
-    dialogRef.afterClosed().subscribe(() => {
-      location.reload();
+    this.router.navigate(['/keys'], {
+      replaceUrl: true,
     });
   }
 

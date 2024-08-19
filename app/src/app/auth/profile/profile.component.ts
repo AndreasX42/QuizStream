@@ -1,9 +1,6 @@
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
-import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { MatButton } from '@angular/material/button';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorService } from '../../services/error.service';
 import { interval } from 'rxjs';
 
 @Component({
@@ -15,7 +12,6 @@ import { interval } from 'rxjs';
 })
 export class ProfileComponent implements OnInit {
   private authService = inject(AuthService);
-  private errorService = inject(ErrorService);
   private destroyRef = inject(DestroyRef);
 
   sessionTimeLeft = signal<string | undefined>(undefined);
@@ -48,7 +44,7 @@ export class ProfileComponent implements OnInit {
   initializeSessionTimer(): void {
     const token = this.authService.getJwtToken();
     if (token) {
-      const decodedToken = this.authService.decodeToken(token);
+      const decodedToken = this.authService.decodeToken();
       const expiryTime = decodedToken.exp * 1000;
 
       interval(1000).subscribe(() => {
@@ -58,9 +54,6 @@ export class ProfileComponent implements OnInit {
         if (timeLeft <= 0) {
           this.sessionTimeLeft.set('Session expired');
           this.authService.logout();
-          this.errorService.showError(
-            'Your session has expired. Please log in again.'
-          );
         } else {
           this.sessionTimeLeft.set(this.formatTimeLeft(timeLeft));
         }

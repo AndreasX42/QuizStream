@@ -1,6 +1,6 @@
 import { Component, inject, input } from '@angular/core';
+import { MessageService } from '../../services/message.service';
 import { ModalComponent } from '../modal.component';
-
 import {
   MatDialogActions,
   MatDialogContent,
@@ -8,10 +8,9 @@ import {
   MatDialogTitle,
 } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MessageService } from '../../services/message.service';
 
 @Component({
-  selector: 'app-error-modal',
+  selector: 'app-warn-modal',
   standalone: true,
   imports: [
     ModalComponent,
@@ -21,15 +20,15 @@ import { MessageService } from '../../services/message.service';
     MatDialogModule,
     MatButtonModule,
   ],
-  templateUrl: './error-modal.component.html',
-  styleUrl: './error-modal.component.css',
+  templateUrl: './warn-modal.component.html',
+  styleUrl: './warn-modal.component.css',
 })
-export class ErrorModalComponent {
+export class WarnModalComponent {
   title = input<string>();
   message = input<string>();
   private messageService = inject(MessageService);
 
-  onClearError() {
-    this.messageService.clearError();
+  onClearWarning() {
+    this.messageService.clearWarning();
   }
 }

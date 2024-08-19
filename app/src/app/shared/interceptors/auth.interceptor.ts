@@ -18,6 +18,11 @@ export class AuthInterceptor implements HttpInterceptor {
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
+    // always check first, if token still valid
+    if (this.authService.isTokenExpired()) {
+      this.authService.logout();
+    }
+
     const token = this.authService.getJwtToken();
     if (token) {
       const clonedRequest = req.clone({

@@ -13,11 +13,10 @@ import {
 import { QuizDifficulty, QuizType } from '../../models/quiz.model';
 import { QuizService } from '../../services/quiz.service';
 import { CommonModule } from '@angular/common';
-import { MatDialog } from '@angular/material/dialog';
-import { DialogComponent } from '../../shared/dialog/dialog.component';
-import { CanDeactivateFn } from '@angular/router';
+import { CanDeactivateFn, Router } from '@angular/router';
 import { ErrorManagerFactory } from '../../shared/error.manager.factory';
 import { MatIcon } from '@angular/material/icon';
+import { MessageService } from '../../services/message.service';
 
 @Component({
   selector: 'app-new-quiz',
@@ -35,8 +34,9 @@ import { MatIcon } from '@angular/material/icon';
   styleUrl: './new-quiz.component.css',
 })
 export class NewQuizComponent {
-  private quizService: QuizService = inject(QuizService);
-  private dialog = inject(MatDialog);
+  private router = inject(Router);
+  private quizService = inject(QuizService);
+  private messageService = inject(MessageService);
 
   nameErrorMessage = signal<string | undefined>(undefined);
   linkErrorMessage = signal<string | undefined>(undefined);
@@ -101,12 +101,10 @@ export class NewQuizComponent {
     const difficulty = this.form.value.difficulty!;
     this.quizService.addQuiz({ name, videoLink, type, difficulty });
 
-    const dialogRef = this.dialog.open(DialogComponent, {
-      data: { message: 'Quiz was created successfully!' },
-    });
+    this.messageService.showSuccess('Quiz was created successfully!');
 
-    dialogRef.afterClosed().subscribe(() => {
-      location.reload();
+    this.router.navigate(['/quizzes'], {
+      replaceUrl: true,
     });
   }
 }

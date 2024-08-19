@@ -9,7 +9,6 @@ import { MatIcon } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
 import { Router, RouterLink } from '@angular/router';
 import { ErrorManagerFactory } from '../../shared/error.manager.factory';
 import { AuthService } from '../../services/auth.service';
@@ -49,6 +48,7 @@ export class LoginComponent {
 
   onSubmit() {
     if (this.form.invalid) {
+      // update error messages of all form fields
       this.updateUsernameErrorMessage();
       this.updatePwdErrorMessage();
       return;
@@ -84,7 +84,7 @@ export class LoginComponent {
     this.usernameErrorMessage.set,
     {
       required: ErrorManagerFactory.MSG_IS_REQUIRED,
-      username: ErrorManagerFactory.MSG_AT_LEAST_3_CHARS,
+      minlength: ErrorManagerFactory.MSG_AT_LEAST_3_CHARS,
     }
   );
   updatePwdErrorMessage = ErrorManagerFactory.getFormErrorManager(

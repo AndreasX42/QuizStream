@@ -7,7 +7,7 @@ import {
   MatDialogTitle,
 } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { ErrorService } from '../../services/error.service';
+import { MessageService } from '../../services/message.service';
 
 @Component({
   selector: 'app-success-modal',
@@ -26,9 +26,9 @@ import { ErrorService } from '../../services/error.service';
 export class SuccessModalComponent {
   title = input<string>();
   message = input<string>();
-  private errorService = inject(ErrorService);
+  private messageService = inject(MessageService);
 
   onClearSuccess() {
-    this.errorService.clearSuccess();
+    this.messageService.clearSuccess();
   }
 }

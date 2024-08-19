@@ -1,6 +1,6 @@
 import { CanMatchFn, RedirectCommand, Router, Routes } from '@angular/router';
 
-import { NotFoundComponent } from './not-found/not-found.component';
+import { NotFoundComponent } from './shared/not-found/not-found.component';
 
 import { StartPageComponent } from './start/start.page.component';
 import {
@@ -25,15 +25,18 @@ export const routes: Routes = [
   {
     path: 'quizzes',
     component: QuizListComponent,
+    canActivate: [AuthGuard],
   },
   {
     path: 'quizzes/new',
     component: NewQuizComponent,
+    canActivate: [AuthGuard],
     // canDeactivate: [canLeaveEditPage],
   },
   {
     path: 'keys',
     component: KeyComponent,
+    canActivate: [AuthGuard],
   },
   {
     path: 'login',

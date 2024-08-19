@@ -7,8 +7,9 @@ import { KeyComponent } from './key/key.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RouterOutlet } from '@angular/router';
 import { ErrorModalComponent } from './modal/error-modal/error-modal.component';
-import { ErrorService } from './services/error.service';
 import { SuccessModalComponent } from './modal/success-modal/success-modal.component';
+import { MessageService } from './services/message.service';
+import { WarnModalComponent } from './modal/warn-modal/warn-modal.component';
 
 @Component({
   selector: 'app-root',
@@ -23,6 +24,7 @@ import { SuccessModalComponent } from './modal/success-modal/success-modal.compo
     RouterOutlet,
     ErrorModalComponent,
     SuccessModalComponent,
+    WarnModalComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
@@ -30,7 +32,8 @@ import { SuccessModalComponent } from './modal/success-modal/success-modal.compo
 export class AppComponent {
   app_name = 'QuizStream';
 
-  private errorService = inject(ErrorService);
-  error = this.errorService.error;
-  success = this.errorService.success;
+  private messageService = inject(MessageService);
+  error = this.messageService.error;
+  success = this.messageService.success;
+  warning = this.messageService.warning;
 }

@@ -1,5 +1,6 @@
 import { Injectable, OnInit, signal } from '@angular/core';
 import { Quiz, QuizDifficulty, QuizType } from './../models/quiz.model';
+import { Util } from '../shared/util';
 
 @Injectable({
   providedIn: 'root',
@@ -40,10 +41,7 @@ export class QuizService {
   }) {
     const newQuiz: Quiz = {
       ...quizData,
-      id:
-        this.quizzes().length > 0
-          ? (Math.max(...this.quizzes().map((quiz) => +quiz.id)) + 1).toString()
-          : '0',
+      id: Util.getNextIncrement(this.quizzes()),
       userId: '0',
       date: Date.now().toString(),
     };
