@@ -63,11 +63,10 @@ export class LoginComponent {
   login(username: string, password: string) {
     const sub = this.authService.login(username, password).subscribe({
       next: () => {
-        this.router.navigate(['/profile']);
+        this.router.navigate(['/profile'], {
+          replaceUrl: true,
+        });
       },
-      // error: (err) => {
-      //   this.errorMessage = 'Invalid credentials. Please try again.';
-      // },
     });
 
     this.destroyRef.onDestroy(() => {

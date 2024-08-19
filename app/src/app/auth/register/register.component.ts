@@ -15,6 +15,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 import { ErrorManagerFactory } from '../../shared/error.manager.factory';
+import { AuthService } from '../../services/auth.service';
 
 function equalValues(controlName1: string, controlName2: string) {
   return (control: AbstractControl) => {
@@ -50,8 +51,8 @@ function equalValues(controlName1: string, controlName2: string) {
   styleUrl: './register.component.css',
 })
 export class RegisterComponent {
-  private dialog = inject(MatDialog);
   private router = inject(Router);
+  private authService = inject(AuthService);
 
   hide = signal(true);
   usernameErrorMessage = signal<string | undefined>(undefined);
@@ -128,17 +129,23 @@ export class RegisterComponent {
     }
 
     const username = this.form.value.username!;
-    const email = this.form.value.email;
+    const email = this.form.value.email!;
     const password = this.form.value.passwords!.password!;
 
-    console.log(username, email, password);
-
-    const dialogRef = this.dialog.open(DialogComponent, {
-      data: { message: 'Registered successfully! You can log in now.' },
-    });
+    this.register(username, email, password);
 
     this.router.navigate(['/login'], {
       replaceUrl: true,
+    });
+  }
+
+  register(username: string, email: string, password: string) {
+    const sub = this.authService.register(username, email, password).subscribe({
+      next: () => {
+        this.router.navigate(['/profile'], {
+          replaceUrl: true,
+        });
+      },
     });
   }
 

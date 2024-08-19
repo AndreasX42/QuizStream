@@ -1,3 +1,9 @@
+@if (error()) {
+<app-error-modal title="An error occurred!" [message]="error()" />
+} @if (success()) {
+<app-success-modal title="Action successful!" [message]="success()" />
+}
+
 <app-header title="{{ app_name }}" />
 
 <main>

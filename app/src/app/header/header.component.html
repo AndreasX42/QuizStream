@@ -19,13 +19,13 @@
       Create Quiz
     </a>
 
-    <a mat-button [routerLink]="['keys']" routerLinkActive="selected">
+    <a mat-button [routerLink]="['/keys']" routerLinkActive="selected">
       API Keys
     </a>
 
     <a
       mat-button
-      [routerLink]="isLoggedIn() ? ['login'] : ['profile']"
+      [routerLink]="isLoggedIn() ? ['/profile'] : ['/login']"
       routerLinkActive="selected"
     >
       {{ isLoggedIn() ? "Profile" : "Login" }}

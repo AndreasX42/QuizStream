@@ -1,0 +1,21 @@
+.dialog-container {
+  padding: 10px;
+  text-align: center;
+}
+
+.dialog-title {
+  color: #ff6b6b;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 10px;
+}
+
+.dialog-content {
+  color: #333;
+  font-size: 1rem;
+  margin: 20px;
+}
+
+.dialog-button {
+  margin: 10px;
+}

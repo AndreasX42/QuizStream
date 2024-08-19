@@ -1,7 +1,10 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { MatButton } from '@angular/material/button';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ErrorService } from '../../services/error.service';
+import { interval } from 'rxjs';
 
 @Component({
   selector: 'app-profile',
@@ -12,24 +15,62 @@ import { MatButton } from '@angular/material/button';
 })
 export class ProfileComponent implements OnInit {
   private authService = inject(AuthService);
-  private router = inject(Router);
+  private errorService = inject(ErrorService);
+  private destroyRef = inject(DestroyRef);
 
-  username = signal<string | undefined>(undefined);
-  email = signal<string | undefined>(undefined);
-  userId = signal<number | undefined>(undefined);
+  sessionTimeLeft = signal<string | undefined>(undefined);
+  user = this.authService.user;
 
   ngOnInit(): void {
     // Fetch user details from the AuthService
-    const user = { username: 'admin', email: '123', id: 0 };
-    if (user) {
-      this.username.set(user.username);
-      this.email.set(user.email);
-      this.userId.set(user.id);
+    const storedUsername = localStorage.getItem(
+      this.authService.localStorageUsernameKey
+    );
+
+    if (storedUsername) {
+      const sub = this.authService
+        .getUserByUserName(storedUsername)
+        .subscribe();
+
+      this.destroyRef.onDestroy(() => {
+        sub.unsubscribe();
+      });
     }
+
+    // Initialize session expiry countdown
+    this.initializeSessionTimer();
   }
 
   logout(): void {
     this.authService.logout();
-    this.router.navigate(['/login']); // Redirect to the login page after logout
+  }
+
+  initializeSessionTimer(): void {
+    const token = this.authService.getJwtToken();
+    if (token) {
+      const decodedToken = this.authService.decodeToken(token);
+      const expiryTime = decodedToken.exp * 1000;
+
+      interval(1000).subscribe(() => {
+        const currentTime = Date.now();
+        const timeLeft = expiryTime - currentTime;
+
+        if (timeLeft <= 0) {
+          this.sessionTimeLeft.set('Session expired');
+          this.authService.logout();
+          this.errorService.showError(
+            'Your session has expired. Please log in again.'
+          );
+        } else {
+          this.sessionTimeLeft.set(this.formatTimeLeft(timeLeft));
+        }
+      });
+    }
+  }
+
+  formatTimeLeft(timeLeft: number): string {
+    const minutes = Math.floor((timeLeft / 1000 / 60) % 60);
+    const seconds = Math.floor((timeLeft / 1000) % 60);
+    return `${minutes}m ${seconds}s`;
   }
 }
