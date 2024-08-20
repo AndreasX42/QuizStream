@@ -1,5 +1,6 @@
-from backend.api.schemas import QuizCreateRequest, QuizDeleteRequest, QuizDTO
+from backend.api.schemas import QuizCreateRequest, QuizDTO
 from sqlalchemy.orm import Session
+import uuid
 from sqlalchemy import select, delete
 from backend.quiz_generation import agenerate_quiz
 from backend.commons.db import get_collection_metadata
@@ -34,6 +35,21 @@ async def create_quiz(
     return get_collection_metadata(collection_id)
 
 
+async def get_quiz_by_id(quiz_id: uuid, session: Session) -> QuizDTO:
+
+    quiz = (
+        session.execute(
+            select(LangchainPGCollection.cmetadata).where(
+                LangchainPGCollection.uuid == quiz_id
+            )
+        )
+        .scalar()
+        .all()
+    )
+
+    return QuizDTO.model_validate(quiz, from_attributes=True)
+
+
 async def get_quizzes_by_user_id(user_id: int, session: Session) -> list[QuizDTO]:
 
     collection_ids = (
@@ -62,32 +78,10 @@ async def get_quizzes_by_user_id(user_id: int, session: Session) -> list[QuizDTO
     ]
 
 
-async def delete_quiz(user_id: int, data: QuizDeleteRequest, session: Session) -> None:
-
-    result = session.execute(
-        select(UserToQuiz).where(
-            UserToQuiz.user_id == user_id, UserToQuiz.quiz_name == data.quiz_name
-        )
-    )
-
-    user_quiz_mapping = result.scalars().first()
-
-    if not user_quiz_mapping:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Quiz {data.quiz_name} not found for user {user_id}.",
-        )
+async def delete_quiz_by_id(quiz_id: uuid, session: Session) -> None:
 
     session.execute(
-        delete(UserToQuiz).where(
-            UserToQuiz.user_id == user_id, UserToQuiz.quiz_name == data.quiz_name
-        )
-    )
-
-    session.execute(
-        delete(LangchainPGCollection).where(
-            LangchainPGCollection.uuid == user_quiz_mapping.collection_id
-        )
+        delete(LangchainPGCollection).where(LangchainPGCollection.uuid == quiz_id)
     )
 
     session.commit()

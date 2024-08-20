@@ -1,9 +1,9 @@
 export interface Quiz {
   id: string;
-  userId: string;
+  userId: number;
   name: string;
   videoLink: string;
-  date: string;
+  dateCreated: string;
   type: QuizType;
   difficulty: QuizDifficulty;
 }

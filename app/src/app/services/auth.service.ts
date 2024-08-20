@@ -165,6 +165,7 @@ export class AuthService {
     this._isLoggedIn.set(false);
     this._userToken.set(undefined);
     this._userName.set(undefined);
+    this._user.set(undefined);
     localStorage.removeItem(this.localStorageTokenKey);
     localStorage.removeItem(this.localStorageUsernameKey);
 

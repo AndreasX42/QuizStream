@@ -27,10 +27,6 @@ class QuizCreateRequest(BaseModel):
         return value
 
 
-class QuizDeleteRequest(BaseModel):
-    quiz_name: str = Field(min_length=3, description="Name of quiz")
-
-
 class QuizDTO(BaseModel):
     date_created: str = Field(
         default_factory=lambda: datetime.now(timezone.utc).strftime(
@@ -39,7 +35,9 @@ class QuizDTO(BaseModel):
         description="Date when quiz was created",
     )
     num_tries: int = Field(min=0, description="Number of attempts to solve the quiz")
-    accuracy: float = Field(min=0.0, description="Rate of correctly solved questions")
+    num_correct_answers: int = Field(
+        min=0, description="Number of correctly solved questions"
+    )
     video_metadata: dict[str, Any] = Field(
         description="Additional information about video."
     )

@@ -1,89 +1,111 @@
 package com.andreasx42.quizstreamapi.controller;
 
-/*
+import com.andreasx42.quizstreamapi.dto.quiz.QuizCreateDto;
+import com.andreasx42.quizstreamapi.dto.quiz.QuizOutboundDto;
+import com.andreasx42.quizstreamapi.dto.quiz.QuizUpdateDto;
+import com.andreasx42.quizstreamapi.exception.ErrorResponse;
+import com.andreasx42.quizstreamapi.service.QuizService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
 @RestController
-@RequestMapping("/quizzes")
+@RequestMapping
+        ("/quizzes")
 @AllArgsConstructor
 @Tag(name = "Quiz Controller", description = "Endpoints to create and manage quizzes")
 public class QuizController {
 
     private final QuizService quizService;
-    private final QuizMapper quizMapper;
 
     // GET quiz by quiz id
-    @GetMapping(value = "/{quizId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Returns a quiz based on provided quiz ID")
+    @GetMapping(value = "{quizName}/users/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("#userId == principal.id or hasAuthority('ADMIN')")
+    @Operation(summary = "Returns a quiz based on provided user id and quiz name")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "404", description = "Quiz doesn't exist", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "200", description = "Successful retrieval of quiz", content = @Content(schema = @Schema(implementation = QuizDto.class))),
+            @ApiResponse(responseCode = "200", description = "Successful retrieval of quiz", content = @Content(schema = @Schema(implementation = QuizOutboundDto.class))),
     })
-    public ResponseEntity<QuizDto> getQuizById(@PathVariable Long quizId) {
+    public ResponseEntity<QuizOutboundDto> getQuizByUserIdAndName(@PathVariable Long userId, @PathVariable String quizName) {
 
-        QuizDto quizDto = quizMapper.mapFromEntity(quizService.getById(quizId));
-        return new ResponseEntity<>(quizDto, HttpStatus.OK);
+        QuizOutboundDto quiz = quizService.getQuizByUserIdAndName(userId, quizName);
+        return new ResponseEntity<>(quiz, HttpStatus.OK);
     }
 
     // GET all quizzes by userid
-    @GetMapping(value = "/user/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/users/{userId}/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("#userId == principal.id or hasAuthority('ADMIN')")
     @Operation(summary = "Retrieves paged list of quizzes of user")
-    @ApiResponse(responseCode = "200", description = "Successful retrieval of all quizzes of user", content = @Content(array = @ArraySchema(schema = @Schema(implementation = QuizDto.class))))
-    public ResponseEntity<Page<QuizDto>> getAllQuizzesOfUser(@PathVariable Long userId, Pageable pageable) {
+    @ApiResponse(responseCode = "200", description = "Successful retrieval of all quizzes of user", content = @Content(array = @ArraySchema(schema = @Schema(implementation = QuizOutboundDto.class))))
+    public ResponseEntity<Page<QuizOutboundDto>> getAllQuizzesOfUser(@PathVariable Long userId, Pageable pageable) {
 
-        Page<QuizDto> quizzes = quizService.getAllByUserId(userId, pageable);
+        Page<QuizOutboundDto> quizzes = quizService.getAllByUserId(userId, pageable);
         return new ResponseEntity<>(quizzes, HttpStatus.OK);
     }
 
     // GET all quizzes
     @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Retrieves paged list of quizzes")
-    @ApiResponse(responseCode = "200", description = "Successful retrieval of all quizzes", content = @Content(array = @ArraySchema(schema = @Schema(implementation = QuizDto.class))))
-    public ResponseEntity<Page<QuizDto>> getAllQuizzes(Pageable pageable) {
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Operation(summary = "Retrieves paged list of all quizzes")
+    @ApiResponse(responseCode = "200", description = "Successful retrieval of all quizzes", content = @Content(array = @ArraySchema(schema = @Schema(implementation = QuizOutboundDto.class))))
+    public ResponseEntity<Page<QuizOutboundDto>> getAllQuizzes(Pageable pageable) {
 
-        Page<QuizDto> quizzes = quizService.getAll(pageable);
+        Page<QuizOutboundDto> quizzes = quizService.getAll(pageable);
         return new ResponseEntity<>(quizzes, HttpStatus.OK);
     }
 
     // CREATE quiz by userid
-    @PostMapping(value = "/user/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/users/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("#userId == principal.id or hasAuthority('ADMIN')")
     @Operation(summary = "Creates a quiz from provided payload")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful creation of quiz", content = @Content(schema = @Schema(implementation = QuizDto.class))),
+            @ApiResponse(responseCode = "200", description = "Successful creation of quiz", content = @Content(schema = @Schema(implementation = QuizOutboundDto.class))),
             @ApiResponse(responseCode = "400", description = "Bad request: unsuccessful submission", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public ResponseEntity<QuizDto> createQuiz(@PathVariable Long userId, @RequestBody QuizDto quizDto) {
+    public ResponseEntity<QuizOutboundDto> createQuiz(@PathVariable Long userId, @RequestBody QuizCreateDto quizDto) {
 
-        quizDto = quizService.create(userId, quizDto);
-        return new ResponseEntity<>(quizDto, HttpStatus.CREATED);
+        QuizOutboundDto createdQuiz = quizService.create(userId, quizDto);
+        return new ResponseEntity<>(createdQuiz, HttpStatus.CREATED);
     }
 
     // UPDATE quiz by userid and quizid
-    @PutMapping(value = "/user/{userId}/quiz/{quizId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/users/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("#userId == principal.id or hasAuthority('ADMIN')")
-    @Operation(summary = "Updates a quiz by user and quiz IDs and provided payload")
+    @Operation(summary = "Updates a quiz by user id, quiz name and provided payload")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful update of quiz", content = @Content(schema = @Schema(implementation = QuizDto.class))),
+            @ApiResponse(responseCode = "200", description = "Successful update of quiz", content = @Content(schema = @Schema(implementation = QuizOutboundDto.class))),
             @ApiResponse(responseCode = "400", description = "Bad request: unsuccessful submission", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public ResponseEntity<QuizDto> updateQuiz(@PathVariable Long userId, @PathVariable Long quizId,
-                                              @RequestBody QuizDto quizDto) {
+    public ResponseEntity<QuizOutboundDto> updateQuiz(@PathVariable Long userId,
+                                                      @RequestBody QuizUpdateDto quizDto) {
 
-        quizDto = quizService.update(quizId, quizDto);
-        return new ResponseEntity<>(quizDto, HttpStatus.OK);
+        QuizOutboundDto updatedQuiz = quizService.update(userId, quizDto);
+        return new ResponseEntity<>(updatedQuiz, HttpStatus.OK);
     }
 
-    // DELETE quiz by userid and quizid
-    @DeleteMapping("/user/{userId}/quiz/{quizId}")
+    // DELETE quiz by userid and quiz name
+    @DeleteMapping("{quizName}/users/{userId}")
     @PreAuthorize("#userId == principal.id or hasAuthority('ADMIN')")
-    @Operation(summary = "Deletes quiz with given user and quiz IDs")
+    @Operation(summary = "Deletes quiz with given user id and quiz name")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful deletion of quiz", content = @Content(schema = @Schema(implementation = HttpStatus.class))),
             @ApiResponse(responseCode = "400", description = "Bad request: unsuccessful submission", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public ResponseEntity<HttpStatus> deleteQuiz(@PathVariable Long userId, @PathVariable Long quizId) {
+    public ResponseEntity<HttpStatus> deleteQuiz(@PathVariable Long userId, @PathVariable String quizName) {
 
-        quizService.delete(quizId);
+        quizService.delete(userId, quizName);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
-*/

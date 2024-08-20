@@ -8,7 +8,6 @@ import com.andreasx42.quizstreamapi.exception.DuplicateEntityException;
 import com.andreasx42.quizstreamapi.exception.EntityNotFoundException;
 import com.andreasx42.quizstreamapi.repository.UserRepository;
 import com.andreasx42.quizstreamapi.util.mapper.UserMapper;
-import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,12 +17,17 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserMapper userMapper;
+
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, UserMapper userMapper) {
+        this.userRepository = userRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.userMapper = userMapper;
+    }
 
     public User getByUserName(String username) {
         Optional<User> userOptional = userRepository.findByUsername(username);

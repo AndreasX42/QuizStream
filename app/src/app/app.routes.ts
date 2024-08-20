@@ -31,7 +31,7 @@ export const routes: Routes = [
     path: 'quizzes/new',
     component: NewQuizComponent,
     canActivate: [AuthGuard],
-    // canDeactivate: [canLeaveEditPage],
+    canDeactivate: [canLeaveEditPage],
   },
   {
     path: 'keys',
@@ -45,6 +45,7 @@ export const routes: Routes = [
   {
     path: 'register',
     component: RegisterComponent,
+    canDeactivate: [canLeaveEditPage],
   },
   {
     path: 'profile',

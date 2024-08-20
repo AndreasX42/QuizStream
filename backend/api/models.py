@@ -75,7 +75,7 @@ class User(Base):
 class UserToQuiz(Base):
     __tablename__ = "users_quizzes"
     user_id = Column(
-        Integer, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
+        BigInteger, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
     )
     quiz_name = Column(
         String, ForeignKey("langchain_pg_collection.name"), primary_key=True

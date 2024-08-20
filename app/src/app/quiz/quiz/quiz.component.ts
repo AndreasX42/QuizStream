@@ -1,12 +1,5 @@
 import { DatePipe, SlicePipe, TitleCasePipe } from '@angular/common';
-import {
-  Component,
-  ElementRef,
-  inject,
-  input,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { Quiz } from '../../models/quiz.model';

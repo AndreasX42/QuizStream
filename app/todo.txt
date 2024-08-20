@@ -1,4 +1,7 @@
 Todo:
 
 - reload keys page on submit
-- should i store user inside AuthService? Multithreading
+- improve authService.user initialization, currently after login when /profile is rendered a getUserByUserName call requests user data
+
+backend:
+- implement get_quiz_by_user_id_and_quiz_name
