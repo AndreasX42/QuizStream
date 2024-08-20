@@ -4,14 +4,16 @@ FROM python:3.11
 EXPOSE 8080
 
 # Install dependencies
-WORKDIR /
+WORKDIR /qs_backend
 
 COPY ./requirements.txt ./
 RUN pip install --no-cache-dir --upgrade -r ./requirements.txt
 
 # Copy all into image
-COPY ./ ./
+COPY ./ ./backend
 
-RUN chmod +x wait-for-it.sh
+RUN chmod +x ./backend/wait-for-it.sh
 
-ENTRYPOINT ["/bin/bash", "-c", "./wait-for-it.sh postgres:5432 --timeout=60 -- uvicorn backend.api:app --host 0.0.0.0 --port 8080 --reload"]
+ENV PYTHONPATH "${PYTHONPATH}:/qs_backend"
+
+ENTRYPOINT ["/bin/bash", "-c", "./backend/wait-for-it.sh postgres:5432 --timeout=60 -- uvicorn backend.api:app --host 0.0.0.0 --port 8080 --reload --reload-dir ./backend --reload-include '*.*'"]

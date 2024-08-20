@@ -9,8 +9,8 @@ python-dotenv==1.0.1
 
 fastapi==0.112.0 
 pydantic==2.8.2 
-uvicorn==0.30.5 
+uvicorn==0.30.5
+watchfiles==0.23.0 
 
 SQLAlchemy==2.0.32 
-psycopg[binary]==3.2.1 
-#asyncpg==0.29.0 
+psycopg[binary]==3.2.1

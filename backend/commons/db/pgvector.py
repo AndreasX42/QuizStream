@@ -29,8 +29,6 @@ def create_collection(
         use_jsonb=True,
         collection_metadata={
             "date_created": dt.datetime.now(dt.UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "num_tries": 0,
-            "num_correct_answers": 0,
             "collection_name": collection_name,
             "video_metadata": video_metadata,
         },

@@ -1,14 +1,12 @@
 package com.andreasx42.quizstreamapi.entity;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.io.Serializable;
 import java.util.UUID;
 
 
@@ -36,18 +34,11 @@ public class UsersQuizzes {
 
     @Column(name = "collection_id", nullable = false)
     private UUID collectionId;
-}
 
-@Embeddable
-@Getter
-@Setter
-@EqualsAndHashCode
-class UsersQuizzesId implements Serializable {
+    @Column(name = "num_tries", nullable = false, columnDefinition = "int default 0")
+    private int numTries = 0;
 
-    @Column(name = "user_id")
-    private Long userId;
-
-    @Column(name = "quiz_name")
-    private String quizName;
+    @Column(name = "num_correct_answers", nullable = false, columnDefinition = "int default 0")
+    private int numCorrectAnswers = 0;
 
 }

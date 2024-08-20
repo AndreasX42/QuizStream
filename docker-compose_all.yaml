@@ -1,12 +1,27 @@
 version: "3"
 services:
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile.dev
+    container_name: app
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./app:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
   api:
     build:
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
       context: ./api
     container_name: api
     ports:
       - "9090:9090"
+    volumes:
+      - ./api:/api
+      - /api/target
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/quizstream_db
       - SPRING_DATASOURCE_USERNAME=admin
@@ -17,7 +32,7 @@ services:
       - postgres
   backend:
     build:
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
       context: ./backend
     container_name: backend
     ports:

@@ -84,3 +84,5 @@ class UserToQuiz(Base):
         UUID(as_uuid=True),
         ForeignKey("langchain_pg_collection.uuid", ondelete="CASCADE"),
     )
+    num_tries = Column(Integer, default=0)
+    num_correct_answers = Column(Integer, default=0)

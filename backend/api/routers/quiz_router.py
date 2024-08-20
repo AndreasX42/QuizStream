@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from starlette import status
-import uuid
+from uuid import UUID
 
 from backend.api.services import quiz_service
 from backend.api.schemas import QuizDTO
@@ -17,7 +17,7 @@ router = APIRouter(
     response_model=QuizDTO,
     status_code=status.HTTP_200_OK,
 )
-async def get_quiz_by_id(quiz_id: uuid, session: Session = Depends(get_db)):
+async def get_quiz_by_id(quiz_id: UUID, session: Session = Depends(get_db)):
     return await quiz_service.get_quiz_by_id(quiz_id, session)
 
 
@@ -26,7 +26,7 @@ async def get_quiz_by_id(quiz_id: uuid, session: Session = Depends(get_db)):
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_quiz_by_id(
-    quiz_id: uuid,
+    quiz_id: UUID,
     session: Session = Depends(get_db),
 ):
 
