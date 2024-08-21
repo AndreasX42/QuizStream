@@ -21,13 +21,15 @@ services:
       - "9090:9090"
     volumes:
       - ./api:/api
-      - /api/target
+    #  - /api/target
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/quizstream_db
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=my_password
       - SERVER_PORT=9090
       - JWT_SECRET="bQeThWmZq4t7w!z$C&F)J@NcRfUjXn2r5u8x/A?D*G-KaPdSgVkYp3s6v9y$B&E)"
+      - JAVA_OPTS=-Dspring.devtools.restart.enabled=true -Dspring.devtools.livereload.enabled=true
+      - SPRING_PROFILES_ACTIVE=dev
     depends_on:
       - postgres
   backend:
@@ -38,7 +40,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./backend:/backend/
+      - ./backend:/qs_backend/backend/
     environment:
       - POSTGRES_DATABASE=quizstream_db
       - POSTGRES_USER=admin

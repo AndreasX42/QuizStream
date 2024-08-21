@@ -3,25 +3,16 @@ package com.andreasx42.quizstreamapi.dto.quiz;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record QuizOutboundDto(
 
-        @NotNull String name,
-        @NotNull LocalDateTime dateCreated,
+        @NotNull Long userId,
+        @NotNull UUID quizId,
+        @NotNull String quizName,
+        @NotNull LocalDate dateCreated,
         @NotNull Integer numTries,
-        @NotNull Double accuracy,
-        @NotNull VideoMetaDataDto metadata) {
-
+        @NotNull Integer numCorrect,
+        @NotNull VideoMetadataDto metadata) {
 
 }
-
-record VideoMetaDataDto(
-        @NotNull String title,
-        @NotNull String videoUrl,
-        @NotNull String thumbnailUrl,
-        @NotNull String description,
-        @NotNull Integer viewers,
-        @NotNull LocalDate publishDate,
-        @NotNull String author
-) {}

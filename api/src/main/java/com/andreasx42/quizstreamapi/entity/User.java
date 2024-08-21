@@ -1,5 +1,6 @@
 package com.andreasx42.quizstreamapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -18,6 +20,15 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @NoArgsConstructor
 public class User {
+
+    public enum Role {
+        USER, ADMIN
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.dateCreated = LocalDateTime.now();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,17 +60,8 @@ public class User {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
-    /*@JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Quiz> todos;
-    */
-    
-    public enum Role {
-        USER, ADMIN
-    }
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserQuiz> quizzes;
 
-    @PrePersist
-    protected void onCreate() {
-        this.dateCreated = LocalDateTime.now();
-    }
 }

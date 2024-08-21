@@ -27,6 +27,9 @@ public class LangchainPGCollection {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(columnDefinition = "json")
+    @Column(columnDefinition = "json", updatable = false)
     private String cmetadata;
+
+    @OneToOne(mappedBy = "langchainCollection", cascade = CascadeType.ALL, orphanRemoval = true)
+    private UserQuiz userQuiz;
 }

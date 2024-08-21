@@ -1,5 +1,6 @@
 package com.andreasx42.quizstreamapi;
 
+import com.andreasx42.quizstreamapi.exception.BadBackendResponseException;
 import com.andreasx42.quizstreamapi.exception.DuplicateEntityException;
 import com.andreasx42.quizstreamapi.exception.EntityNotFoundException;
 import com.andreasx42.quizstreamapi.exception.ErrorResponse;
@@ -26,6 +27,11 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 
     @ExceptionHandler(DuplicateEntityException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateResource(DuplicateEntityException ex, WebRequest request) {
+        return handleErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(BadBackendResponseException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateResource(BadBackendResponseException ex, WebRequest request) {
         return handleErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, request);
     }
 

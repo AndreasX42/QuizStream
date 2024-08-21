@@ -6,9 +6,9 @@ import java.util.Map;
 
 public record QuizCreateDto(
 
+        @NotNull Long userId,
         @NotNull String name,
         @NotNull String videoUrl,
         @NotNull Map<String, String> apiKeys) {
-
 
 }

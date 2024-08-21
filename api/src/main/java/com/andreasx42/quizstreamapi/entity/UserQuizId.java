@@ -2,22 +2,23 @@ package com.andreasx42.quizstreamapi.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 @Embeddable
 @Getter
 @Setter
 @EqualsAndHashCode
-public class UsersQuizzesId implements Serializable {
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserQuizId implements Serializable {
 
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "quiz_name")
-    private String quizName;
+    @Column(name = "quiz_id")
+    private UUID quizId;
 
 }

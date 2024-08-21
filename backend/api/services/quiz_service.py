@@ -1,4 +1,4 @@
-from backend.api.schemas import QuizCreateRequest, QuizDTO
+from backend.api.schemas import QuizCreateRequestDto, QuizOutboundDto
 from sqlalchemy.orm import Session
 import uuid
 from sqlalchemy import select, delete
@@ -9,8 +9,8 @@ from fastapi import HTTPException, status
 
 
 async def create_quiz(
-    user_id: int, quiz_data: QuizCreateRequest, session: Session
-) -> QuizDTO:
+    user_id: int, quiz_data: QuizCreateRequestDto, session: Session
+) -> QuizOutboundDto:
 
     # check quiz name is unique
     assert_quiz_name_not_exists(user_id, quiz_data.quiz_name, session)
@@ -23,19 +23,28 @@ async def create_quiz(
     collection_id, qa_ids = await agenerate_quiz(**quiz_data_dict)
 
     # insert the mapping into the users_quizzes table
-    new_mapping = UserToQuiz(
+    user_to_quiz = UserToQuiz(
         user_id=user_id,
-        quiz_name=quiz_data.quiz_name,
-        collection_id=collection_id,
+        quiz_id=collection_id,
     )
 
-    session.add(new_mapping)
+    session.add(user_to_quiz)
     session.commit()
 
-    return get_collection_metadata(collection_id)
+    collection_metadata = get_collection_metadata(collection_id)
+    quizResultDto = QuizOutboundDto(
+        user_id=user_id,
+        quiz_id=collection_id,
+        quiz_name=quiz_data.quiz_name,
+        **collection_metadata,
+    )
+    
+    print(quizResultDto)
+
+    return quizResultDto
 
 
-async def get_quiz_by_id(quiz_id: uuid, session: Session) -> QuizDTO:
+async def get_quiz_by_id(quiz_id: uuid, session: Session) -> QuizOutboundDto:
 
     quiz = (
         session.execute(
@@ -47,10 +56,12 @@ async def get_quiz_by_id(quiz_id: uuid, session: Session) -> QuizDTO:
         .all()
     )
 
-    return QuizDTO.model_validate(quiz, from_attributes=True)
+    return QuizOutboundDto.model_validate(quiz, from_attributes=True)
 
 
-async def get_quizzes_by_user_id(user_id: int, session: Session) -> list[QuizDTO]:
+async def get_quizzes_by_user_id(
+    user_id: int, session: Session
+) -> list[QuizOutboundDto]:
 
     collection_ids = (
         session.execute(
@@ -74,7 +85,8 @@ async def get_quizzes_by_user_id(user_id: int, session: Session) -> list[QuizDTO
     )
 
     return [
-        QuizDTO.model_validate(quiz, from_attributes=True) for quiz in quiz_metadata
+        QuizOutboundDto.model_validate(quiz, from_attributes=True)
+        for quiz in quiz_metadata
     ]
 
 
@@ -89,11 +101,22 @@ async def delete_quiz_by_id(quiz_id: uuid, session: Session) -> None:
 
 def assert_quiz_name_not_exists(user_id: int, quiz_name: str, session: Session):
     """Check on uniqueness of quiz name"""
+
+    quizzes_same_name = (
+        session.execute(
+            select(LangchainPGCollection.uuid).where(
+                LangchainPGCollection.name == quiz_name
+            )
+        )
+        .scalars()
+        .all()
+    )
+
     existing_quiz = (
         session.execute(
             select(UserToQuiz).where(
+                UserToQuiz.quiz_id.in_(quizzes_same_name),
                 UserToQuiz.user_id == user_id,
-                UserToQuiz.quiz_name == quiz_name,
             )
         )
         .scalars()

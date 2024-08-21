@@ -1,10 +1,11 @@
 from pydantic import BaseModel, Field, HttpUrl, field_validator
 from datetime import datetime, timezone
+from uuid import uuid4, UUID
 from typing import Any
 import re
 
 
-class QuizCreateRequest(BaseModel):
+class QuizCreateRequestDto(BaseModel):
     quiz_name: str = Field(min_length=3, description="Name of quiz")
     api_keys: dict[str, str] = Field(description="Dictionary of API keys.")
     youtube_url: HttpUrl
@@ -27,17 +28,14 @@ class QuizCreateRequest(BaseModel):
         return value
 
 
-class QuizDTO(BaseModel):
+class QuizOutboundDto(BaseModel):
+    user_id: int = Field(min=0, description="User id")
+    quiz_id: UUID = Field(default_factory=uuid4, description="Quiz id")
+    quiz_name: str = Field(min_length=1, description="Name of quiz")
     date_created: str = Field(
         default_factory=lambda: datetime.now(timezone.utc).strftime(
             "%Y-%m-%dT%H:%M:%SZ"
         ),
         description="Date when quiz was created",
     )
-    num_tries: int = Field(min=0, description="Number of attempts to solve the quiz")
-    num_correct_answers: int = Field(
-        min=0, description="Number of correctly solved questions"
-    )
-    video_metadata: dict[str, Any] = Field(
-        description="Additional information about video."
-    )
+    video_metadata: dict[str, Any] = Field(description="Additional video information.")

@@ -8,6 +8,7 @@ import uuid
 import asyncio
 import itertools
 from json import JSONDecodeError
+from fastapi import HTTPException, status
 
 from backend.commons.prompts import QA_GENERATION_PROMPT
 from backend.commons.db import create_collection
@@ -29,7 +30,6 @@ async def agenerate_quiz(
 
     # split transcript into chunks
     chunks, video_metadata = chunk_transcript(transcript)
-    video_metadata.update({"quiz_name": quiz_name})
 
     # generate question-answer set
     qa_pairs = await agenerate_qa_from_transcript(chunks, api_keys)

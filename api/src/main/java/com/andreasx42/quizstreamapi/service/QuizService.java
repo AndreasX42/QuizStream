@@ -3,59 +3,89 @@ package com.andreasx42.quizstreamapi.service;
 import com.andreasx42.quizstreamapi.dto.quiz.QuizCreateDto;
 import com.andreasx42.quizstreamapi.dto.quiz.QuizOutboundDto;
 import com.andreasx42.quizstreamapi.dto.quiz.QuizUpdateDto;
-import com.andreasx42.quizstreamapi.entity.UsersQuizzes;
-import com.andreasx42.quizstreamapi.exception.EntityNotFoundException;
-import com.andreasx42.quizstreamapi.repository.UsersQuizzesRepository;
+import com.andreasx42.quizstreamapi.entity.UserQuiz;
+import com.andreasx42.quizstreamapi.exception.BadBackendResponseException;
+import com.andreasx42.quizstreamapi.util.mapper.QuizMapper;
+import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class QuizService {
 
-    private final UsersQuizzesRepository usersQuizzesRepository;
+    private final UserQuizService userQuizService;
+    private final QuizMapper quizMapper;
 
-    public QuizService(UsersQuizzesRepository usersQuizzesRepository) {
-        this.usersQuizzesRepository = usersQuizzesRepository;
+    private static final Logger logger = LoggerFactory.getLogger(QuizService.class);
+
+    private final RestTemplate restTemplate;
+
+
+    public Page<QuizOutboundDto> getAllUserQuizzes(Long userId, Pageable pageable) {
+        return userQuizService.getAllUserQuizzes(userId, pageable)
+                .map(quizMapper::convertToQuizOutboundDto);
     }
 
-    public QuizOutboundDto getQuizByUserIdAndName(Long userId, String quizName) {
-        UUID quizId = getQuizId(userId, quizName);
-
-        return null;
+    public QuizOutboundDto getQuizByUserQuizId(Long userId, UUID quizId) {
+        UserQuiz userQuiz = userQuizService.getByUserQuizId(userId, quizId);
+        return quizMapper.convertToQuizOutboundDto(userQuiz);
     }
 
-    public void delete(Long userId, String quizName) {
-        UUID quizId = getQuizId(userId, quizName);
+    public QuizOutboundDto createQuizOnBackend(QuizCreateDto quizCreateDto) {
+        String backendEndpoint = "http://backend:8080/users/" + quizCreateDto.userId() + "/quizzes";
+
+        // Create the request body for FastAPI
+        Map<String, Object> body = Map.of(
+                "quiz_name", quizCreateDto.name(),
+                "api_keys", quizCreateDto.apiKeys(),
+                "youtube_url", quizCreateDto.videoUrl()
+        );
+
+        // Make the POST request
+        try {
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, new HttpHeaders());
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    backendEndpoint,
+                    HttpMethod.POST,
+                    request,
+                    String.class
+            );
+
+            return quizMapper.convertToQuizOutboundDto(response.getBody());
+
+            // TOOD: improve backend error handling
+        } catch (Exception e) {
+            logger.error("Backend API call failed: {}", e.getMessage());
+            if (e.getMessage()
+                    .contains("Internal Server Error")) {
+                throw new BadBackendResponseException("Invalid API keys provided.", QuizService.class);
+            }
+
+            throw new BadBackendResponseException(e.getMessage(), QuizService.class);
+        }
     }
 
-    private UUID getQuizId(Long userId, String quizName) {
-        UsersQuizzes quizData = usersQuizzesRepository.findByUserIdAndQuizName(userId, quizName)
-                .orElseThrow(() -> new EntityNotFoundException(quizName, UsersQuizzes.class));
-
-        return null;
+    public QuizOutboundDto updateQuiz(QuizUpdateDto quizUpdateDto) {
+        UserQuiz updatedUserQuiz = userQuizService.updateUserQuiz(quizUpdateDto);
+        return quizMapper.convertToQuizOutboundDto(updatedUserQuiz);
 
     }
 
-    public Page<QuizOutboundDto> getAllByUserId(Long userId, Pageable pageable) {
-        return null;
-
+    public void deleteQuiz(Long userId, UUID quizId) {
+        userQuizService.deleteByUserQuizId(userId, quizId);
     }
 
-    public Page<QuizOutboundDto> getAll(Pageable pageable) {
-        return null;
-
-    }
-
-    public QuizOutboundDto create(Long userId, QuizCreateDto quizDto) {
-        return null;
-
-    }
-
-    public QuizOutboundDto update(Long userId, QuizUpdateDto quizDto) {
-        return null;
-
-    }
 }
