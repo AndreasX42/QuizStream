@@ -6,6 +6,7 @@ import re
 
 
 class QuizCreateRequestDto(BaseModel):
+    user_id: int = Field(min=0, description="User id")
     quiz_name: str = Field(min_length=3, description="Name of quiz")
     api_keys: dict[str, str] = Field(description="Dictionary of API keys.")
     youtube_url: HttpUrl

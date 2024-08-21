@@ -8,13 +8,13 @@ import uuid
 import asyncio
 import itertools
 from json import JSONDecodeError
-from fastapi import HTTPException, status
 
 from backend.commons.prompts import QA_GENERATION_PROMPT
 from backend.commons.db import create_collection
 
 
 async def agenerate_quiz(
+    user_id: int,
     quiz_name: str,
     youtube_url: str,
     api_keys: dict[str, str],

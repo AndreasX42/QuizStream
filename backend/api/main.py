@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from backend.api.routers import quiz_router, user_router
+from backend.api.routers import quiz_router
 from backend.commons.db import Base, engine
 
 app = FastAPI(
@@ -12,6 +12,5 @@ app = FastAPI(
 )
 
 app.include_router(quiz_router.router)
-app.include_router(user_router.router)
 
 Base.metadata.create_all(bind=engine)

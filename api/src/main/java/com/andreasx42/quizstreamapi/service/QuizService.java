@@ -25,12 +25,13 @@ import java.util.UUID;
 @AllArgsConstructor
 public class QuizService {
 
-    private final UserQuizService userQuizService;
-    private final QuizMapper quizMapper;
+    private final String BACKEND_CREATE_QUIZ_ENDPOINT = "http://backend:8080/quizzes/new";
 
     private static final Logger logger = LoggerFactory.getLogger(QuizService.class);
-
     private final RestTemplate restTemplate;
+
+    private final UserQuizService userQuizService;
+    private final QuizMapper quizMapper;
 
 
     public Page<QuizOutboundDto> getAllUserQuizzes(Long userId, Pageable pageable) {
@@ -44,10 +45,10 @@ public class QuizService {
     }
 
     public QuizOutboundDto createQuizOnBackend(QuizCreateDto quizCreateDto) {
-        String backendEndpoint = "http://backend:8080/users/" + quizCreateDto.userId() + "/quizzes";
 
         // Create the request body for FastAPI
         Map<String, Object> body = Map.of(
+                "user_id", quizCreateDto.userId(),
                 "quiz_name", quizCreateDto.name(),
                 "api_keys", quizCreateDto.apiKeys(),
                 "youtube_url", quizCreateDto.videoUrl()
@@ -58,7 +59,7 @@ public class QuizService {
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, new HttpHeaders());
 
             ResponseEntity<String> response = restTemplate.exchange(
-                    backendEndpoint,
+                    BACKEND_CREATE_QUIZ_ENDPOINT,
                     HttpMethod.POST,
                     request,
                     String.class
