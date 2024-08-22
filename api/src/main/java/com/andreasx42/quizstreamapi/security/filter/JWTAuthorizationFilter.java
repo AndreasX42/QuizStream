@@ -64,8 +64,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
                         .toString()));
 
         org.springframework.security.core.userdetails.User userDetails = new CustomUserDetails(user.getId(),
-                user.getUsername(), user.getPassword(),
-                authority);
+                user.getUsername(), user.getPassword(), user.getEmail(), authority);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
                 authority);

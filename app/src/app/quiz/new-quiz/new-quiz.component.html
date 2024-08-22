@@ -5,16 +5,16 @@
         <mat-label>Quiz Name</mat-label>
         <input
           matInput
-          formControlName="name"
-          formControlName="name"
-          (blur)="updateNameErrorMessage()"
+          formControlName="quizName"
+          formControlName="quizName"
+          (blur)="updateQuizNameErrorMessage()"
         />
 
         <!-- Display check if input valid, else the error message -->
-        @if(nameErrorMessage() === '') {
+        @if(quizNameErrorMessage() === '') {
         <mat-icon matSuffix matSuffix>check_circle</mat-icon>
         } @else {
-        <mat-error>{{ nameErrorMessage() }}</mat-error>
+        <mat-error>{{ quizNameErrorMessage() }}</mat-error>
         }
       </mat-form-field>
     </div>
@@ -40,7 +40,7 @@
         <mat-label>Quiz Type</mat-label>
         <mat-select formControlName="type"
           ><mat-option *ngFor="let type of quizTypesList" [value]="type">{{
-            type
+            getEnumDisplayName(type)
           }}</mat-option>
         </mat-select>
       </mat-form-field>
@@ -51,7 +51,7 @@
           ><mat-option
             *ngFor="let difficulty of quizDifficultiesList"
             [value]="difficulty"
-            >{{ difficulty }}
+            >{{ getEnumDisplayName(difficulty) }}
           </mat-option>
         </mat-select>
       </mat-form-field>

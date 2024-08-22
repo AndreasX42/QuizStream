@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 
 @Entity
 @Table(name = "user_quiz")
@@ -14,6 +16,14 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserQuiz {
+
+    public enum Type {
+        MULTIPLE_CHOICE
+    }
+
+    public enum Difficulty {
+        EASY, MEDIUM, HARD
+    }
 
     @EmbeddedId
     private UserQuizId id;
@@ -33,5 +43,17 @@ public class UserQuiz {
 
     @Column(name = "num_correct", nullable = false, columnDefinition = "int default 0")
     private int numCorrect = 0;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, updatable = false)
+    private UserQuiz.Type type = Type.MULTIPLE_CHOICE;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, updatable = false)
+    private UserQuiz.Difficulty difficulty = Difficulty.EASY;
+
+    @Column(name = "date_created", nullable = false, updatable = false)
+    private LocalDateTime dateCreated;
+
 
 }

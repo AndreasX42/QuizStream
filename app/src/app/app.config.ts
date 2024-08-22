@@ -12,6 +12,7 @@ import {
   withInterceptorsFromDi,
 } from '@angular/common/http';
 import { AuthInterceptor } from './shared/interceptors/auth.interceptor';
+import { AppInitService } from './services/app.init.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,6 +28,13 @@ export const appConfig: ApplicationConfig = {
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
+      multi: true,
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (appInitService: AppInitService) => () =>
+        appInitService.initApp(),
+      deps: [AppInitService],
       multi: true,
     },
   ],

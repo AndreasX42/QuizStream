@@ -37,8 +37,7 @@ public class CustomAuthenticationManager implements AuthenticationManager {
                         .toString()));
 
         org.springframework.security.core.userdetails.User userDetails = new CustomUserDetails(user.getId(),
-                user.getUsername(), user.getPassword(),
-                authority);
+                user.getUsername(), user.getPassword(), user.getEmail(), authority);
 
         return new UsernamePasswordAuthenticationToken(
                 userDetails,

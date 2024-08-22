@@ -1,5 +1,66 @@
-<div class="quiz-list">
-  @for(quiz of quizzes(); track quiz.id) {
-  <app-quiz [quiz]="quiz" />
-  }
+<div class="sort-container">
+  <label for="sort" class="sort-label">Sort by:</label>
+  <mat-select
+    id="sort"
+    class="sort-select"
+    [(value)]="sortBy"
+    (selectionChange)="onSortChange($event.value)"
+  >
+    <mat-option value="dateCreated,desc">Newest first</mat-option>
+    <mat-option value="dateCreated,asc">Oldest first</mat-option>
+  </mat-select>
+
+  <label for="pageSize" class="page-size-label">Page size:</label>
+  <mat-select
+    id="pageSize"
+    class="page-size-select"
+    [(value)]="pageSize"
+    (selectionChange)="onPageSizeChange($event.value)"
+  >
+    <mat-option value="3">3</mat-option>
+    <mat-option value="5">5</mat-option>
+    <mat-option value="10">10</mat-option>
+  </mat-select>
+</div>
+
+<div class="quiz-list-container">
+  <!-- Quiz List -->
+  <div class="quiz-list">
+    @for(quiz of quizzes(); track quiz.quizId) {
+    <app-quiz [quiz]="quiz" (quizDeleted)="onDeleteQuiz()" />
+    }
+  </div>
+
+  <!-- Pagination Controls -->
+  <div class="pagination-container">
+    <button
+      mat-flat-button
+      class="pagination-button"
+      (click)="onPageChange(currentPage() - 1)"
+      [disabled]="currentPage() === 0"
+    >
+      Previous
+    </button>
+
+    <div class="page-numbers">
+      <button
+        mat-raised-button
+        *ngFor="let page of pagesArray()"
+        class="pagination-number"
+        [class.active]="page === currentPage()"
+        (click)="onPageChange(page)"
+      >
+        {{ page + 1 }}
+      </button>
+    </div>
+
+    <button
+      mat-flat-button
+      class="pagination-button"
+      (click)="onPageChange(currentPage() + 1)"
+      [disabled]="currentPage() >= totalPages() - 1"
+    >
+      Next
+    </button>
+  </div>
 </div>

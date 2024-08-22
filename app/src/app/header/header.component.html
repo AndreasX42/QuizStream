@@ -6,6 +6,7 @@
 
     <span class="spacer"></span>
 
+    @if(isLoggedIn()) {
     <a
       mat-button
       [routerLink]="['/quizzes']"
@@ -22,6 +23,7 @@
     <a mat-button [routerLink]="['/keys']" routerLinkActive="selected">
       API Keys
     </a>
+    }
 
     <a
       mat-button

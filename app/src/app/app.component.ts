@@ -1,4 +1,4 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { HeaderComponent } from './header/header.component';
 import { QuizListComponent } from './quiz/quiz-list/quiz-list.component';
 import { StartPageComponent } from './start/start.page.component';

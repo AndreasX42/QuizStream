@@ -30,8 +30,8 @@ public class QuizMapper {
             JsonNode cmetadataNode = objectMapper.readTree(collection.getCmetadata());
 
             // Extract values from JSON
-            LocalDate dateCreated = LocalDate.parse(cmetadataNode.get("date_created")
-                    .asText()
+            LocalDate dateCreated = LocalDate.parse(userQuiz.getDateCreated()
+                    .toString()
                     .replace("Z", ""), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
             VideoMetadataDto videoMetadataDto = getVideoMetadataDto(cmetadataNode);
@@ -46,6 +46,8 @@ public class QuizMapper {
                     dateCreated,
                     userQuiz.getNumTries(),
                     userQuiz.getNumCorrect(),
+                    userQuiz.getType(),
+                    userQuiz.getDifficulty(),
                     videoMetadataDto
             );
         } catch (Exception e) {
@@ -66,16 +68,19 @@ public class QuizMapper {
                     .asText());
             String name = root.get("quiz_name")
                     .asText();
+            String type = root.get("type")
+                    .asText();
+            String difficulty = root.get("difficulty")
+                    .asText();
             LocalDate dateCreated = LocalDate.parse(root.get("date_created")
-                    .asText()
-                    .replace("Z", ""), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                    .asText(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
             int numTries = 0;
             int numCorrect = 0;
 
             VideoMetadataDto videoMetadataDto = getVideoMetadataDto(root);
-            
-            return new QuizOutboundDto(userId, quizId, name, dateCreated, numTries, numCorrect, videoMetadataDto);
+            return new QuizOutboundDto(userId, quizId, name, dateCreated, numTries, numCorrect,
+                    UserQuiz.Type.valueOf(type), UserQuiz.Difficulty.valueOf(difficulty), videoMetadataDto);
 
         } catch (Exception e) {
             logger.error("Failed to convert Json into Dto: {}", e.getMessage());

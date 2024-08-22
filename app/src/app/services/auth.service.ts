@@ -6,40 +6,29 @@ import { catchError, tap } from 'rxjs/operators';
 import { Configs } from '../shared/api.configs';
 import { User } from '../models/user.model';
 import { MessageService } from './message.service';
+import { LoginResponse } from '../models/login.response.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private _isLoggedIn = signal(false);
-  private _userName = signal<string | undefined>(undefined);
-  private _userToken = signal<string | undefined>(undefined);
+  _isLoggedIn = signal(false);
+  _user = signal<User | undefined>(undefined);
+  _userToken = signal<string | undefined>(undefined);
 
   private httpClient = inject(HttpClient);
   private router = inject(Router);
   private messageService = inject(MessageService);
 
   localStorageTokenKey = 'jwt-token';
-  localStorageUsernameKey = 'qs-username';
+  localStorageUserKey = 'qs-user';
 
   isLoggedIn = this._isLoggedIn.asReadonly();
   userToken = this._userToken.asReadonly();
-  userName = this._userName.asReadonly();
-
-  _user = signal<User | undefined>(undefined);
   user = this._user.asReadonly();
 
   getJwtToken() {
     return localStorage.getItem(this.localStorageTokenKey);
-  }
-
-  constructor() {
-    const token = localStorage.getItem(this.localStorageTokenKey);
-
-    if (token) {
-      this._isLoggedIn.set(true);
-      this._userToken.set(token);
-    }
   }
 
   login(username: string, password: string): Observable<any> {
@@ -51,20 +40,32 @@ export class AuthService {
           password: password,
         },
         {
-          observe: 'response',
+          observe: 'body',
         }
       )
       .pipe(
-        tap((response: HttpResponse<any>) => {
-          const authHeader = response.headers.get('Authorization');
-          if (authHeader && authHeader.startsWith('Bearer ')) {
-            const token = authHeader.split(' ')[1];
+        tap((body: LoginResponse) => {
+          if (body && body.jwtToken) {
+            const token: string = body.jwtToken;
+            const userId: number = body.userId;
+            const userName: string = body.userName;
+            const email: string = body.email;
+
+            // Set authentication state
             this._isLoggedIn.set(true);
             this._userToken.set(token);
+            this._user.set({ id: userId, username: username, email: email });
+
+            // Store the token and user data in localStorage
             localStorage.setItem(this.localStorageTokenKey, token);
-            localStorage.setItem(this.localStorageUsernameKey, username);
+            localStorage.setItem(
+              this.localStorageUserKey,
+              JSON.stringify(this.user())
+            );
           } else {
-            throw new Error('Login failed: JWT token not found.');
+            throw new Error(
+              'Login failed: JWT token not found in the response.'
+            );
           }
         }),
         catchError((error) => {
@@ -130,7 +131,7 @@ export class AuthService {
 
   getUserByUserName(username: string): Observable<any> {
     return this.httpClient
-      .get<any>(`${Configs.BASE_URL}${Configs.GET_BY_USERNAME}${username}`, {
+      .get<any>(`${Configs.BASE_URL}${Configs.GET_BY_USERNAME}/${username}`, {
         observe: 'response',
       })
       .pipe(
@@ -164,10 +165,9 @@ export class AuthService {
 
     this._isLoggedIn.set(false);
     this._userToken.set(undefined);
-    this._userName.set(undefined);
     this._user.set(undefined);
     localStorage.removeItem(this.localStorageTokenKey);
-    localStorage.removeItem(this.localStorageUsernameKey);
+    localStorage.removeItem(this.localStorageUserKey);
 
     this.router.navigate(['/login'], { replaceUrl: true });
   }

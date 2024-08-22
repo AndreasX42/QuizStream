@@ -4,12 +4,16 @@ from uuid import uuid4, UUID
 from typing import Any
 import re
 
+from backend.api.models import QuizType, QuizDifficulty
+
 
 class QuizCreateRequestDto(BaseModel):
     user_id: int = Field(min=0, description="User id")
     quiz_name: str = Field(min_length=3, description="Name of quiz")
     api_keys: dict[str, str] = Field(description="Dictionary of API keys.")
     youtube_url: HttpUrl
+    type: QuizType = Field(description="Type of quiz")
+    difficulty: QuizDifficulty = Field(description="Difficulty of quiz")
 
     @field_validator("youtube_url")
     @classmethod
@@ -39,4 +43,6 @@ class QuizOutboundDto(BaseModel):
         ),
         description="Date when quiz was created",
     )
+    type: QuizType = Field(description="Type of quiz")
+    difficulty: QuizDifficulty = Field(description="Difficulty of quiz")
     video_metadata: dict[str, Any] = Field(description="Additional video information.")

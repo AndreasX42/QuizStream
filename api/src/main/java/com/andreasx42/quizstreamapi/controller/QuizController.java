@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -32,6 +34,8 @@ import java.util.UUID;
 public class QuizController {
 
     private final QuizService quizService;
+    private static final Logger logger = LoggerFactory.getLogger(QuizService.class);
+
 
     // GET quiz by quiz id
     @GetMapping(value = "{quizId}/users/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -69,7 +73,7 @@ public class QuizController {
             @ApiResponse(responseCode = "400", description = "Bad request: unsuccessful submission", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
     })
     public ResponseEntity<QuizOutboundDto> createQuiz(@RequestBody QuizCreateDto quizCreateDto) {
-
+        
         QuizOutboundDto createdQuiz = quizService.createQuizOnBackend(quizCreateDto);
 
         return new ResponseEntity<>(createdQuiz, HttpStatus.CREATED);

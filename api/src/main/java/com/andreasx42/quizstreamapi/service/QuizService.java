@@ -45,13 +45,17 @@ public class QuizService {
     }
 
     public QuizOutboundDto createQuizOnBackend(QuizCreateDto quizCreateDto) {
-
+        
         // Create the request body for FastAPI
         Map<String, Object> body = Map.of(
                 "user_id", quizCreateDto.userId(),
-                "quiz_name", quizCreateDto.name(),
+                "quiz_name", quizCreateDto.quizName(),
                 "api_keys", quizCreateDto.apiKeys(),
-                "youtube_url", quizCreateDto.videoUrl()
+                "youtube_url", quizCreateDto.videoUrl(),
+                "type", quizCreateDto.type()
+                        .toString(),
+                "difficulty", quizCreateDto.difficulty()
+                        .toString()
         );
 
         // Make the POST request

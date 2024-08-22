@@ -10,7 +10,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { QuizDifficulty, QuizType } from '../../models/quiz.model';
+import {
+  QuizDifficulty,
+  QuizType,
+  getEnumDisplayName,
+} from '../../models/quiz.model';
 import { QuizService } from '../../services/quiz.service';
 import { CommonModule } from '@angular/common';
 import { CanDeactivateFn, Router } from '@angular/router';
@@ -37,8 +41,9 @@ export class NewQuizComponent {
   private router = inject(Router);
   private quizService = inject(QuizService);
   private messageService = inject(MessageService);
+  getEnumDisplayName = getEnumDisplayName;
 
-  nameErrorMessage = signal<string | undefined>(undefined);
+  quizNameErrorMessage = signal<string | undefined>(undefined);
   linkErrorMessage = signal<string | undefined>(undefined);
 
   quizTypesList = Object.values(QuizType).filter(
@@ -53,7 +58,7 @@ export class NewQuizComponent {
     /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|v\/|.+\?v=)?(\w{11})(\S+)?$/;
 
   form = new FormGroup({
-    name: new FormControl('', {
+    quizName: new FormControl('', {
       validators: [Validators.required, Validators.minLength(3)],
     }),
     videoLink: new FormControl('', {
@@ -70,9 +75,9 @@ export class NewQuizComponent {
     }),
   });
 
-  updateNameErrorMessage = ErrorManagerFactory.getFormErrorManager(
-    this.form.controls.name,
-    this.nameErrorMessage.set,
+  updateQuizNameErrorMessage = ErrorManagerFactory.getFormErrorManager(
+    this.form.controls.quizName,
+    this.quizNameErrorMessage.set,
     {
       required: ErrorManagerFactory.MSG_IS_REQUIRED,
       minlength: ErrorManagerFactory.MSG_AT_LEAST_3_CHARS,
@@ -90,16 +95,17 @@ export class NewQuizComponent {
 
   onSubmit() {
     if (this.form.invalid) {
-      this.updateNameErrorMessage();
+      this.updateQuizNameErrorMessage();
       this.updateLinkErrorMessage();
       return;
     }
 
-    const name = this.form.value.name!;
-    const videoLink = this.form.value.videoLink!;
+    const quizName = this.form.value.quizName!;
+    const videoUrl = this.form.value.videoLink!;
     const type = this.form.value.type!;
     const difficulty = this.form.value.difficulty!;
-    this.quizService.addQuiz({ name, videoLink, type, difficulty });
+
+    this.quizService.addQuiz({ quizName, videoUrl, type, difficulty });
 
     this.messageService.showSuccess('Quiz was created successfully!');
 

@@ -1,59 +1,98 @@
-import { inject, Injectable, OnInit, signal } from '@angular/core';
-import { Quiz, QuizDifficulty, QuizType } from './../models/quiz.model';
-import { Util } from '../shared/util';
+import { DestroyRef, inject, Injectable, OnInit, signal } from '@angular/core';
+import {
+  Quiz,
+  QuizCreateRequestDto,
+  QuizDifficulty,
+  QuizType,
+} from './../models/quiz.model';
 import { AuthService } from './auth.service';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Page } from './page.model';
+import { Configs } from '../shared/api.configs';
+import { KeyService } from './key.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class QuizService {
-  private initQuizList: Quiz[] = [
-    {
-      id: '1',
-      userId: 1,
-      name: 'My YouTube Video 1',
-      videoLink: 'www.yt.com',
-      dateCreated: '10/12/2023',
-      difficulty: QuizDifficulty.EASY,
-      type: QuizType.MULTIPLE_CHOICE,
-    },
-    {
-      id: '2',
-      userId: 1,
-      name: 'My YouTube Video 2',
-      videoLink: 'www.yt.com',
-      dateCreated: '12/12/2023',
-      difficulty: QuizDifficulty.MEDIUM,
-      type: QuizType.MULTIPLE_CHOICE,
-    },
-  ];
-
+  private keyService = inject(KeyService);
   private authService = inject(AuthService);
-  private quizzes = signal<Quiz[]>(this.initQuizList);
+  private httpClient = inject(HttpClient);
+  private destroyRef = inject(DestroyRef);
+  private quizzes = signal<Quiz[]>([]);
 
   getQuizzes() {
     return this.quizzes.asReadonly();
   }
 
+  getAllQuizzes(
+    userId: number,
+    page: number,
+    size: string,
+    sort: string
+  ): Observable<Page<Quiz>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size)
+      .set('sort', sort);
+
+    return this.httpClient.get<Page<Quiz>>(
+      `${Configs.BASE_URL}${Configs.GET_ALL_QUIZZES_BY_USER_ID}/${userId}`,
+      {
+        params,
+      }
+    );
+  }
+
   addQuiz(quizData: {
-    name: string;
-    videoLink: string;
+    quizName: string;
+    videoUrl: string;
     type: QuizType;
     difficulty: QuizDifficulty;
   }) {
-    const newQuiz: Quiz = {
+    // Convert keys map to an object
+    const apiKeyObject = this.keyService.keys().reduce((obj, current) => {
+      const currentProviderName = current.provider.toUpperCase() + '_API_KEY';
+      obj[currentProviderName] = current.key;
+      return obj;
+    }, {} as { [key: string]: string });
+
+    const createQuizDto: QuizCreateRequestDto = {
       ...quizData,
-      id: Util.getNextIncrement(this.quizzes()),
       userId: this.authService.user()!.id,
-      dateCreated: Date.now().toString(),
+      apiKeys: apiKeyObject,
     };
 
-    this.quizzes.update((oldQuizzes) => [...oldQuizzes, newQuiz]);
+    const sub = this.createQuizRequest(createQuizDto).subscribe();
+
+    this.destroyRef.onDestroy(() => {
+      sub.unsubscribe();
+    });
   }
 
-  deleteQuiz(quizId: string) {
-    this.quizzes.update((oldQuizzes) =>
-      oldQuizzes.filter((quiz) => quiz.id !== quizId)
+  createQuizRequest(requestDto: QuizCreateRequestDto): Observable<any> {
+    return this.httpClient.post<any>(
+      `${Configs.BASE_URL}${Configs.QUIZZES_ENDPOINT}/new`,
+      {
+        userId: requestDto.userId,
+        quizName: requestDto.quizName,
+        videoUrl: requestDto.videoUrl,
+        apiKeys: requestDto.apiKeys,
+        type: requestDto.type,
+        difficulty: requestDto.difficulty,
+      },
+      {
+        observe: 'body',
+      }
+    );
+  }
+
+  deleteQuiz(quizId: string): Observable<void> {
+    return this.httpClient.delete<void>(
+      `${Configs.BASE_URL}${Configs.QUIZZES_ENDPOINT}/${quizId}${
+        Configs.USERS_ENDPOINT
+      }/${this.authService.user()!.id}`
     );
   }
 }

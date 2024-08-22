@@ -1,7 +1,9 @@
 <mat-card class="quiz-card" (click)="onToggleExpansion()">
   <mat-card-header>
     <div class="header-content">
-      <mat-card-title class="mat-card-title">{{ quiz().name }}</mat-card-title>
+      <mat-card-title class="mat-card-title">{{
+        quiz().quizName | titlecase
+      }}</mat-card-title>
       <span class="header-date">{{ quiz().dateCreated | date }}</span>
     </div>
   </mat-card-header>
@@ -9,17 +11,18 @@
   @if(isExpanded()) {
   <div>
     <mat-card-content class="mat-card-content">
-      <p>Type: {{ quiz().type | titlecase }}</p>
-      <p>Difficulty: {{ quiz().difficulty | titlecase }}</p>
+      <p>Type: {{ getEnumDisplayName(quiz().type) }}</p>
+      <p>Difficulty: {{ getEnumDisplayName(quiz().difficulty) }}</p>
       <p class="content-row">
-        <a [href]="quiz().videoLink" target="_blank"
-          >{{ quiz().videoLink | slice : 0 : 35 }}...</a
+        <a
+          [href]="'https://www.youtube.com/watch?v=' + quiz().metadata.videoUrl"
+          target="_blank"
+          >{{
+            "https://www.youtube.com/watch?v=" + quiz().metadata.videoUrl
+              | slice : 12 : 35
+          }}...</a
         >
-        <button
-          mat-raised-button
-          color="warn"
-          (click)="onDeleteQuiz(quiz().id)"
-        >
+        <button mat-raised-button color="warn" (click)="onDeleteQuiz(quiz())">
           Delete
         </button>
       </p>

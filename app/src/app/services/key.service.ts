@@ -1,54 +1,65 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { Key, KeyProvider } from './../models/key.model';
 import { Util } from '../shared/util';
+import { MessageService } from './message.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class KeyService {
-  private STORAGE_KEY = 'api-keys';
+  private messageService = inject(MessageService);
+  private localStorageApiKeys = 'api-keys';
 
-  private keys = signal([
+  private _keys = signal<Key[]>([
     {
       id: '1',
-      provider: 'OpenAI',
+      provider: KeyProvider.OpenAI,
       key: '123123123',
     },
     {
       id: '2',
-      provider: 'OpenAI',
+      provider: KeyProvider.OpenAI,
       key: '987987987',
     },
   ]);
 
-  constructor() {
-    const keys = sessionStorage.getItem(this.STORAGE_KEY);
+  keys = this._keys.asReadonly();
 
-    if (keys) {
-      this.keys.set(JSON.parse(keys));
+  constructor() {
+    const keysString = localStorage.getItem(this.localStorageApiKeys);
+
+    if (keysString) {
+      this._keys.set(JSON.parse(keysString));
     }
   }
 
   getKeys() {
-    return this.keys.asReadonly();
+    return this.keys;
   }
 
   addKey(keyData: { provider: KeyProvider; key: string }) {
+    if (this.keys().some((k) => k.provider === keyData.provider)) {
+      this.messageService.showError(
+        'There is already a key for this provider in the list.'
+      );
+      return;
+    }
+
     const newKey: Key = {
       ...keyData,
       id: Util.getNextIncrement(this.keys()),
     };
 
-    this.keys.update((oldKeys) => [...oldKeys, newKey]);
+    this._keys.update((oldKeys) => [...oldKeys, newKey]);
     this.savekeys();
   }
 
   deleteKey(keyId: string) {
-    this.keys.update((oldKeys) => oldKeys.filter((key) => key.id !== keyId));
+    this._keys.update((oldKeys) => oldKeys.filter((key) => key.id !== keyId));
     this.savekeys();
   }
 
   private savekeys() {
-    sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.keys()));
+    localStorage.setItem(this.localStorageApiKeys, JSON.stringify(this.keys()));
   }
 }

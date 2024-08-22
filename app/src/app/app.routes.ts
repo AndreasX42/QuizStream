@@ -3,10 +3,7 @@ import { CanMatchFn, RedirectCommand, Router, Routes } from '@angular/router';
 import { NotFoundComponent } from './shared/not-found/not-found.component';
 
 import { StartPageComponent } from './start/start.page.component';
-import {
-  QuizListComponent,
-  resolveQuizzes,
-} from './quiz/quiz-list/quiz-list.component';
+import { QuizListComponent } from './quiz/quiz-list/quiz-list.component';
 import {
   canLeaveEditPage,
   NewQuizComponent,

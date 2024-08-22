@@ -13,7 +13,6 @@ from backend.commons.db import (
     TABLE_DOCS,
 )
 
-import datetime as dt
 import uuid
 
 
@@ -28,7 +27,6 @@ def create_collection(
         embeddings=FakeEmbeddings(size=1),
         use_jsonb=True,
         collection_metadata={
-            "date_created": dt.datetime.now(dt.UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "video_metadata": video_metadata,
         },
         pre_delete_collection=False,

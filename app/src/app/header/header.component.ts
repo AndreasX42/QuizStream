@@ -16,12 +16,11 @@ import { AuthService } from '../services/auth.service';
     RouterLinkActive,
   ],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.scss',
+  styleUrl: './header.component.css',
 })
 export class HeaderComponent {
   private authService = inject(AuthService);
 
   title = input<string>();
   isLoggedIn = this.authService.isLoggedIn;
-  username = this.authService.userName;
 }

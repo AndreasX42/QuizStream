@@ -6,6 +6,8 @@ from backend.commons.db import get_collection_metadata
 from backend.api.models import UserToQuiz, LangchainPGCollection
 from fastapi import HTTPException, status
 
+import datetime as dt
+
 
 async def create_quiz(
     quiz_data: QuizCreateRequestDto, session: Session
@@ -14,17 +16,19 @@ async def create_quiz(
     # check quiz name is unique
     assert_quiz_name_not_exists(quiz_data.user_id, quiz_data.quiz_name, session)
 
-    quiz_data_dict = quiz_data.model_dump()
-
-    # transform link to string
-    quiz_data_dict["youtube_url"] = str(quiz_data_dict["youtube_url"])
-
-    collection_id, qa_ids = await agenerate_quiz(**quiz_data_dict)
+    collection_id, qa_ids = await agenerate_quiz(
+        quiz_name=quiz_data.quiz_name,
+        youtube_url=str(quiz_data.youtube_url),
+        api_keys=quiz_data.api_keys,
+    )
 
     # insert the mapping into the users_quizzes table
     user_to_quiz = UserToQuiz(
         user_id=quiz_data.user_id,
         quiz_id=collection_id,
+        type=quiz_data.type,
+        difficulty=quiz_data.difficulty,
+        date_created=dt.datetime.now(dt.UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
     )
 
     session.add(user_to_quiz)
@@ -36,6 +40,9 @@ async def create_quiz(
         user_id=quiz_data.user_id,
         quiz_id=collection_id,
         quiz_name=quiz_data.quiz_name,
+        date_created=str(user_to_quiz.date_created),
+        type=quiz_data.type,
+        difficulty=quiz_data.difficulty,
         **collection_metadata,
     )
 

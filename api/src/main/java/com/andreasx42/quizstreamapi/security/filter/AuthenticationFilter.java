@@ -1,8 +1,10 @@
 package com.andreasx42.quizstreamapi.security.filter;
 
+import com.andreasx42.quizstreamapi.dto.auth.LoginResponseDto;
 import com.andreasx42.quizstreamapi.entity.User;
 import com.andreasx42.quizstreamapi.security.config.JwtConfig;
 import com.andreasx42.quizstreamapi.security.config.SecurityConstants;
+import com.andreasx42.quizstreamapi.security.manager.CustomUserDetails;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +13,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -69,5 +72,18 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 .sign(Algorithm.HMAC512(jwtConfig.secret));
 
         response.addHeader(SecurityConstants.AUTHORIZATION, SecurityConstants.BEARER_PREFIX + token);
+
+        // Create a response object with token and user data
+        CustomUserDetails userDetails = (CustomUserDetails) authResult.getPrincipal();
+
+        LoginResponseDto loginResponse = new LoginResponseDto(
+                token,
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getEmail()
+        );
+
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        new ObjectMapper().writeValue(response.getOutputStream(), loginResponse);
     }
 }

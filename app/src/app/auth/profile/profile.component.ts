@@ -18,24 +18,11 @@ export class ProfileComponent implements OnInit {
   user = this.authService.user;
 
   ngOnInit(): void {
-    // Fetch user details from the AuthService
-    const storedUsername = localStorage.getItem(
-      this.authService.localStorageUsernameKey
-    );
-
-    if (storedUsername) {
-      const sub = this.authService
-        .getUserByUserName(storedUsername)
-        .subscribe();
-
-      this.destroyRef.onDestroy(() => {
-        sub.unsubscribe();
-      });
-    }
-
     // Initialize session expiry countdown
     this.initializeSessionTimer();
   }
+
+  constructor() {}
 
   logout(): void {
     this.authService.logout();
