@@ -25,6 +25,10 @@
     </a>
     }
 
+    <a mat-button [routerLink]="['/about']" routerLinkActive="selected">
+      About
+    </a>
+
     <a
       mat-button
       [routerLink]="isLoggedIn() ? ['/profile'] : ['/login']"

@@ -8,6 +8,7 @@
 **/__pycache__
 **/*.pyc
 **.py[cod]
+dist/
 *$py.class
 **/target
 **/node_modules

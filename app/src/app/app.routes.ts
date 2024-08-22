@@ -13,11 +13,16 @@ import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { ProfileComponent } from './auth/profile/profile.component';
 import { AuthGuard } from './shared/guards/auth.guard';
+import { AboutComponent } from './about/about.component';
 
 export const routes: Routes = [
   {
     path: '',
     component: StartPageComponent,
+  },
+  {
+    path: 'about',
+    component: AboutComponent,
   },
   {
     path: 'quizzes',

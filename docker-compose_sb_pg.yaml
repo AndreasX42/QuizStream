@@ -9,7 +9,7 @@
         - "9090:9090"
       volumes:
         - ./api:/api
-      #  - /api/target
+        - /api/target
       environment:
         - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/quizstream_db
         - SPRING_DATASOURCE_USERNAME=admin
