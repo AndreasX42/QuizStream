@@ -1,15 +1,13 @@
 FROM python:3.11
 
-# Port the app is running on
 EXPOSE 8080
 
-# Install dependencies
 WORKDIR /qs_backend
 
 COPY ./requirements.txt ./
+
 RUN pip install --no-cache-dir --upgrade -r ./requirements.txt
 
-# Copy all into image
 COPY ./ ./backend
 
 RUN chmod +x ./backend/wait-for-it.sh

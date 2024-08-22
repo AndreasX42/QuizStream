@@ -55,20 +55,22 @@ jobs:
             docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-backend:$TAG -t $DOCKER_USER/$IMAGE_NAME_BASE-backend:latest -f ./backend/Dockerfile.prod ./backend
             docker push $DOCKER_USER/$IMAGE_NAME_BASE-backend:$TAG
             docker push $DOCKER_USER/$IMAGE_NAME_BASE-backend:latest
-  push_postgres_image:
-    executor: python-docker-executor
-    steps:
-      - checkout
-      - set_env_vars
-      - docker_login
-      - setup_remote_docker:
-          docker_layer_caching: false
-      - run:
-          name: Push Postgres image
-          command: |
-            docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-postgres:$TAG -t $DOCKER_USER/$IMAGE_NAME_BASE-postgres:latest ./postgres
-            docker push $DOCKER_USER/$IMAGE_NAME_BASE-postgres:$TAG
-            docker push $DOCKER_USER/$IMAGE_NAME_BASE-postgres:latest
+
+  # not necessary to everytime push postgres image because it does not change
+  # push_postgres_image:
+  #   executor: python-docker-executor
+  #   steps:
+  #     - checkout
+  #     - set_env_vars
+  #     - docker_login
+  #     - setup_remote_docker:
+  #         docker_layer_caching: false
+  #     - run:
+  #         name: Push Postgres image
+  #         command: |
+  #           docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-postgres:$TAG -t $DOCKER_USER/$IMAGE_NAME_BASE-postgres:latest ./postgres
+  #           docker push $DOCKER_USER/$IMAGE_NAME_BASE-postgres:$TAG
+  #           docker push $DOCKER_USER/$IMAGE_NAME_BASE-postgres:latest
 
   # then we run tests on the new Docker images
   # run_integration_tests:
@@ -110,7 +112,7 @@ jobs:
           name: Deploy to GKE k8s cluster
           command: |
             kubectl apply -f ./k8s
-            kubectl set image deployments/app-deployment quizstream-app-frontend=$DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG
+            kubectl set image deployments/app-deployment quizstream-app=$DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG
             kubectl set image deployments/api-deployment quizstream-api=$DOCKER_USER/$IMAGE_NAME_BASE-api:$TAG
             kubectl set image deployments/backend-deployment quizstream-backend=$DOCKER_USER/$IMAGE_NAME_BASE-backend:$TAG
 
@@ -121,7 +123,7 @@ workflows:
       - push_app_image
       - push_api_image
       - push_backend_image
-      - push_postgres_image
+      # - push_postgres_image
       # - run_integration_tests:
       #     requires:
       #       - push_app_image
@@ -133,7 +135,7 @@ workflows:
             - push_app_image
             - push_api_image
             - push_backend_image
-            - push_postgres_image
+            # - push_postgres_image
 
 commands:
   set_env_vars:
