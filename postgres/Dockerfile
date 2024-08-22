@@ -1,17 +1,18 @@
 FROM postgres:16.4-alpine
 
-# Install required packages
-RUN apt-get update && apt-get install -y \
-    postgresql-server-dev-16 \
-    build-essential \
+RUN apk add --no-cache \
+    postgresql-dev \
+    build-base \
     git \
-    && rm -rf /var/lib/apt/lists/*
+    clang15 \
+    llvm15-dev
 
-# Clone and install pgvector
+ENV CC=clang-15
+ENV CXX=clang++-15
+
 RUN git clone https://github.com/pgvector/pgvector.git /tmp/pgvector \
     && cd /tmp/pgvector \
     && make && make install \
     && rm -rf /tmp/pgvector
 
-# Set the default command to run PostgreSQL
 CMD ["postgres"]
