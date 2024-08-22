@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: backend
+  template:
+    metadata:
+      labels:
+        component: backend
+    spec:
+      volumes:
+        - name: backend-storage
+          persistentVolumeClaim:
+            claimName: shared-persistent-volume-claim
+      containers:
+        - name: quizstream-backend
+          image: andreasx42/quizstream-backend:latest
+          env:
+            - name: POSTGRES_HOST
+              value: postgres-cluster-ip-service
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_DRIVER
+              value: psycopg
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgsecrets
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: pgsecrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: pgsecrets
+                  key: POSTGRES_DATABASE
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: backend-storage
+              mountPath: backend/tmp
+              subPath: tmp

@@ -90,29 +90,29 @@ jobs:
   #         destination: test-reports
 
   # if everything was successful we deploy the Docker images into the k8s cluster
-  # deploy_to_gke_k8s_cluster:
-  #   docker:
-  #     - image: google/cloud-sdk
-  #   steps:
-  #     - checkout
-  #     - set_env_vars
-  #     - setup_remote_docker:
-  #         docker_layer_caching: false
-  #     - run:
-  #         name: Setup Google Cloud SDK
-  #         command: |
-  #           echo "$GOOGLE_SERVICE_KEY" > ${HOME}/gcloud-service-key.json
-  #           gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
-  #           gcloud config set project "$GOOGLE_PROJECT_ID"
-  #           gcloud config set compute/zone "$GOOGLE_COMPUTE_ZONE"
-  #           gcloud container clusters get-credentials "$GKE_CLUSTER_NAME"
-  #     - run:
-  #         name: Deploy to GKE k8s cluster
-  #         command: |
-  #           kubectl apply -f ./k8s
-  #           kubectl set image deployments/app-deployment app-frontend=$DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG
-  #           kubectl set image deployments/backend-deployment ragflow-backend=$DOCKER_USER/$IMAGE_NAME_BASE-backend:$TAG
-  #           kubectl set image deployments/vectorstore-deployment chromadb-vectorstore=$DOCKER_USER/$IMAGE_NAME_BASE-vectorstore:$TAG
+  deploy_to_gke_k8s_cluster:
+    docker:
+      - image: google/cloud-sdk
+    steps:
+      - checkout
+      - set_env_vars
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - run:
+          name: Setup Google Cloud SDK
+          command: |
+            echo "$GOOGLE_SERVICE_KEY" > ${HOME}/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+            gcloud config set project "$GOOGLE_PROJECT_ID"
+            gcloud config set compute/zone "$GOOGLE_COMPUTE_ZONE"
+            gcloud container clusters get-credentials "$GKE_CLUSTER_NAME"
+      - run:
+          name: Deploy to GKE k8s cluster
+          command: |
+            kubectl apply -f ./k8s
+            kubectl set image deployments/app-deployment quizstream-app-frontend=$DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG
+            kubectl set image deployments/api-deployment quizstream-api=$DOCKER_USER/$IMAGE_NAME_BASE-api:$TAG
+            kubectl set image deployments/backend-deployment quizstream-backend=$DOCKER_USER/$IMAGE_NAME_BASE-backend:$TAG
 
 workflows:
   version: 2
@@ -128,9 +128,12 @@ workflows:
       #       - push_api_image
       #       - push_backend_image
       #       - push_postgres_image
-      # - deploy_to_gke_k8s_cluster:
-      #     requires:
-      #       - run_integration_tests
+      - deploy_to_gke_k8s_cluster:
+          requires:
+            - push_app_image
+            - push_api_image
+            - push_backend_image
+            - push_postgres_image
 
 commands:
   set_env_vars:

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: api
+  template:
+    metadata:
+      labels:
+        component: api
+    spec:
+      volumes:
+        - name: api-storage
+          persistentVolumeClaim:
+            claimName: shared-persistent-volume-claim
+      containers:
+        - name: quizstream-api
+          image: andreasx42/quizstream-api:latest
+          env:
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pgsecrets
+                  key: JWT_SECRET_KEY
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgsecrets
+                  key: POSTGRES_PASSWORD
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: pgsecrets
+                  key: POSTGRES_USER
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: pgsecrets
+                  key: SPRING_DATASOURCE_URL
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: api-storage
+              mountPath: api/tmp
+              subPath: tmp

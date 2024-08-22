@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: frontend
+  template:
+    metadata:
+      labels:
+        component: frontend
+    spec:
+      volumes:
+        - name: frontend-storage
+          persistentVolumeClaim:
+            claimName: shared-persistent-volume-claim
+      containers:
+        - name: quizstream-app
+          image: andreasx42/quizstream-app:latest
+          env:
+            - name: API_HOST
+              value: api-cluster-ip-service
+            - name: API_PORT
+              value: "9090"
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: frontend-storage
+              mountPath: app/tmp
+              subPath: tmp
