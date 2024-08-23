@@ -40,7 +40,7 @@ export class KeyService {
   addKey(keyData: { provider: KeyProvider; key: string }) {
     if (this.keys().some((k) => k.provider === keyData.provider)) {
       this.messageService.showError(
-        'There is already a key for this provider in the list.'
+        'An API key of this provider already exists.'
       );
       return;
     }
@@ -52,6 +52,8 @@ export class KeyService {
 
     this._keys.update((oldKeys) => [...oldKeys, newKey]);
     this.savekeys();
+
+    this.messageService.showSuccess('API key was added successfully!');
   }
 
   deleteKey(keyId: string) {

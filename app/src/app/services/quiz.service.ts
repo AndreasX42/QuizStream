@@ -11,6 +11,8 @@ import { Observable } from 'rxjs';
 import { Page } from './page.model';
 import { Configs } from '../shared/api.configs';
 import { KeyService } from './key.service';
+import { MessageService } from './message.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +22,11 @@ export class QuizService {
   private authService = inject(AuthService);
   private httpClient = inject(HttpClient);
   private destroyRef = inject(DestroyRef);
+  private messageService = inject(MessageService);
+  private router = inject(Router);
   private quizzes = signal<Quiz[]>([]);
+
+  isCreating = signal(false);
 
   getQuizzes() {
     return this.quizzes.asReadonly();
@@ -64,7 +70,37 @@ export class QuizService {
       apiKeys: apiKeyObject,
     };
 
-    const sub = this.createQuizRequest(createQuizDto).subscribe();
+    this.isCreating.set(true);
+    const sub = this.createQuizRequest(createQuizDto).subscribe({
+      next: () => {
+        this.isCreating.set(false);
+      },
+      error: (error) => {
+        this.isCreating.set(false);
+        const errorMessage = Array.isArray(error.error?.messages)
+          ? error.error.messages.join(' ')
+          : error.error?.message || '';
+
+        if (errorMessage?.includes('Invalid API keys provided.')) {
+          this.messageService.showError('The provided API Key is invalid.');
+        } else if (errorMessage?.includes('already exists for user')) {
+          this.messageService.showError(
+            'You already created a quiz with this name, choose a new one.'
+          );
+        } else {
+          this.messageService.showError(
+            'Something went wrong creating the quiz.'
+          );
+        }
+      },
+
+      complete: () => {
+        this.messageService.showSuccess('Quiz created successfully.');
+        this.router.navigate(['/quizzes'], {
+          replaceUrl: true,
+        });
+      },
+    });
 
     this.destroyRef.onDestroy(() => {
       sub.unsubscribe();

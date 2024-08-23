@@ -20,6 +20,14 @@ spec:
         - name: quizstream-api
           image: andreasx42/quizstream-api:latest
           env:
+            - name: APP_HOST
+              value: app-cluster-ip-service
+            - name: APP_PORT
+              value: "4040"
+            - name: BACKEND_HOST
+              value: backend-cluster-ip-service
+            - name: BACKEND_PORT
+              value: "8080"
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:

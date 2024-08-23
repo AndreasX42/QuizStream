@@ -22,4 +22,4 @@ RUN apk add --no-cache bash
 
 RUN chmod +x wait-for-it.sh
 
-ENTRYPOINT ["/bin/sh", "-c", "./wait-for-it.sh postgres:5432 --timeout=60 -- java -jar quizstream-api.jar --server.port=9090"]
+ENTRYPOINT ["/bin/sh", "-c", "./wait-for-it.sh postgres:5432 --timeout=60 -- java -jar quizstream-api.jar"]

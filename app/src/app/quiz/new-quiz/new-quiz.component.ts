@@ -21,6 +21,7 @@ import { CanDeactivateFn, Router } from '@angular/router';
 import { ErrorManagerFactory } from '../../shared/error.manager.factory';
 import { MatIcon } from '@angular/material/icon';
 import { MessageService } from '../../services/message.service';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-new-quiz',
@@ -32,6 +33,7 @@ import { MessageService } from '../../services/message.service';
     MatButtonModule,
     MatFormFieldModule,
     ReactiveFormsModule,
+    MatProgressSpinner,
     MatIcon,
   ],
   templateUrl: './new-quiz.component.html',
@@ -42,6 +44,8 @@ export class NewQuizComponent {
   private quizService = inject(QuizService);
   private messageService = inject(MessageService);
   getEnumDisplayName = getEnumDisplayName;
+
+  isCreating = this.quizService.isCreating.asReadonly();
 
   quizNameErrorMessage = signal<string | undefined>(undefined);
   linkErrorMessage = signal<string | undefined>(undefined);
@@ -106,12 +110,6 @@ export class NewQuizComponent {
     const difficulty = this.form.value.difficulty!;
 
     this.quizService.addQuiz({ quizName, videoUrl, type, difficulty });
-
-    this.messageService.showSuccess('Quiz was created successfully!');
-
-    this.router.navigate(['/quizzes'], {
-      replaceUrl: true,
-    });
   }
 }
 

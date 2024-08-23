@@ -1,8 +1,7 @@
 package com.andreasx42.quizstreamapi.security.filter;
 
 import com.andreasx42.quizstreamapi.entity.User;
-import com.andreasx42.quizstreamapi.security.config.JwtConfig;
-import com.andreasx42.quizstreamapi.security.config.SecurityConstants;
+import com.andreasx42.quizstreamapi.security.config.EnvConfigs;
 import com.andreasx42.quizstreamapi.security.manager.CustomUserDetails;
 import com.andreasx42.quizstreamapi.service.UserService;
 import com.auth0.jwt.JWT;
@@ -27,7 +26,7 @@ import java.util.Set;
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
     private UserService userService;
-    private JwtConfig jwtConfig;
+    private EnvConfigs envConfigs;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -36,14 +35,14 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
         String header = request.getHeader("Authorization");
 
-        if (header==null || !header.startsWith(SecurityConstants.BEARER_PREFIX)) {
+        if (header==null || !header.startsWith(envConfigs.BEARER_PREFIX)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = header.replace(SecurityConstants.BEARER_PREFIX, "");
+        String token = header.replace(envConfigs.BEARER_PREFIX, "");
 
-        DecodedJWT jwt = JWT.require(Algorithm.HMAC512(jwtConfig.secret))
+        DecodedJWT jwt = JWT.require(Algorithm.HMAC512(envConfigs.jwtSecret))
                 .build()
                 .verify(token);
 

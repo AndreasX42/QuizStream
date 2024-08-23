@@ -5,6 +5,7 @@ import com.andreasx42.quizstreamapi.dto.quiz.QuizOutboundDto;
 import com.andreasx42.quizstreamapi.dto.quiz.QuizUpdateDto;
 import com.andreasx42.quizstreamapi.entity.UserQuiz;
 import com.andreasx42.quizstreamapi.exception.BadBackendResponseException;
+import com.andreasx42.quizstreamapi.security.config.EnvConfigs;
 import com.andreasx42.quizstreamapi.util.mapper.QuizMapper;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -25,12 +26,11 @@ import java.util.UUID;
 @AllArgsConstructor
 public class QuizService {
 
-    private final String BACKEND_CREATE_QUIZ_ENDPOINT = "http://backend:8080/quizzes/new";
-
     private static final Logger logger = LoggerFactory.getLogger(QuizService.class);
     private final RestTemplate restTemplate;
 
     private final UserQuizService userQuizService;
+    private final EnvConfigs envConfigs;
     private final QuizMapper quizMapper;
 
 
@@ -45,7 +45,7 @@ public class QuizService {
     }
 
     public QuizOutboundDto createQuizOnBackend(QuizCreateDto quizCreateDto) {
-        
+
         // Create the request body for FastAPI
         Map<String, Object> body = Map.of(
                 "user_id", quizCreateDto.userId(),
@@ -63,7 +63,7 @@ public class QuizService {
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, new HttpHeaders());
 
             ResponseEntity<String> response = restTemplate.exchange(
-                    BACKEND_CREATE_QUIZ_ENDPOINT,
+                    envConfigs.backendCreateNewQuizEndpoint,
                     HttpMethod.POST,
                     request,
                     String.class

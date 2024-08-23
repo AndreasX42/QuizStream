@@ -21,13 +21,13 @@ public class SecurityConfig {
 
     private AuthenticationManager authenticationManager;
     private UserService userService;
-    private JwtConfig jwtConfig;
+    private EnvConfigs envConfigs;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        AuthenticationFilter authFilter = new AuthenticationFilter(authenticationManager, jwtConfig);
-        authFilter.setFilterProcessesUrl(SecurityConstants.AUTH_PATH);
+        AuthenticationFilter authFilter = new AuthenticationFilter(authenticationManager, envConfigs);
+        authFilter.setFilterProcessesUrl(envConfigs.AUTH_PATH);
 
         http
                 .headers(headers -> headers.frameOptions()
@@ -42,13 +42,13 @@ public class SecurityConfig {
                                 "/swagger-ui.html", "/swagger-resources/**",
                                 "/webjars/**")
                         .permitAll() // Allow access to Swagger UI and API documentation
-                        .requestMatchers(HttpMethod.POST, SecurityConstants.REGISTER_PATH)
+                        .requestMatchers(HttpMethod.POST, envConfigs.REGISTER_PATH)
                         .permitAll()
                         .anyRequest()
                         .authenticated())
                 .addFilterBefore(new ExceptionHandlerFilter(), AuthenticationFilter.class)
                 .addFilter(authFilter)
-                .addFilterAfter(new JWTAuthorizationFilter(userService, jwtConfig), AuthenticationFilter.class)
+                .addFilterAfter(new JWTAuthorizationFilter(userService, envConfigs), AuthenticationFilter.class)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

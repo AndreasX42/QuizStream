@@ -2,8 +2,7 @@ package com.andreasx42.quizstreamapi.security.filter;
 
 import com.andreasx42.quizstreamapi.dto.auth.LoginResponseDto;
 import com.andreasx42.quizstreamapi.entity.User;
-import com.andreasx42.quizstreamapi.security.config.JwtConfig;
-import com.andreasx42.quizstreamapi.security.config.SecurityConstants;
+import com.andreasx42.quizstreamapi.security.config.EnvConfigs;
 import com.andreasx42.quizstreamapi.security.manager.CustomUserDetails;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -27,7 +26,7 @@ import java.util.Date;
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private AuthenticationManager authenticationManager;
-    private JwtConfig jwtConfig;
+    private EnvConfigs envConfigs;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -67,11 +66,11 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
         String token = JWT.create()
                 .withSubject(authResult.getName())
-                .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConstants.TOKEN_EXPIRATION))
+                .withExpiresAt(new Date(System.currentTimeMillis() + envConfigs.TOKEN_EXPIRATION))
                 .withClaim("role", role)
-                .sign(Algorithm.HMAC512(jwtConfig.secret));
+                .sign(Algorithm.HMAC512(envConfigs.jwtSecret));
 
-        response.addHeader(SecurityConstants.AUTHORIZATION, SecurityConstants.BEARER_PREFIX + token);
+        response.addHeader(envConfigs.AUTHORIZATION, envConfigs.BEARER_PREFIX + token);
 
         // Create a response object with token and user data
         CustomUserDetails userDetails = (CustomUserDetails) authResult.getPrincipal();

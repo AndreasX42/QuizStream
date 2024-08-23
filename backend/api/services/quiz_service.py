@@ -52,7 +52,7 @@ async def create_quiz(
 def assert_quiz_name_not_exists(user_id: int, quiz_name: str, session: Session):
     """Check on uniqueness of quiz name"""
 
-    quizzes_same_name = (
+    quizzes_with_same_name = (
         session.execute(
             select(LangchainPGCollection.uuid).where(
                 LangchainPGCollection.name == quiz_name
@@ -62,18 +62,21 @@ def assert_quiz_name_not_exists(user_id: int, quiz_name: str, session: Session):
         .all()
     )
 
-    existing_quiz = (
+    if not quizzes_with_same_name:
+        return
+
+    matchWithUserQuizzes = (
         session.execute(
             select(UserToQuiz).where(
-                UserToQuiz.quiz_id.in_(quizzes_same_name),
                 UserToQuiz.user_id == user_id,
+                UserToQuiz.quiz_id.in_(quizzes_with_same_name),
             )
         )
         .scalars()
         .first()
     )
 
-    if existing_quiz:
+    if matchWithUserQuizzes:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Quiz name '{quiz_name}' already exists for user {user_id}.",

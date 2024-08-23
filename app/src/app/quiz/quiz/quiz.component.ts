@@ -1,4 +1,9 @@
-import { DatePipe, SlicePipe, TitleCasePipe } from '@angular/common';
+import {
+  CommonModule,
+  DatePipe,
+  SlicePipe,
+  TitleCasePipe,
+} from '@angular/common';
 import {
   Component,
   DestroyRef,
@@ -12,11 +17,20 @@ import { MatCardModule } from '@angular/material/card';
 import { getEnumDisplayName, Quiz } from '../../models/quiz.model';
 import { QuizService } from '../../services/quiz.service';
 import { MessageService } from '../../services/message.service';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-quiz',
   standalone: true,
-  imports: [MatCardModule, DatePipe, TitleCasePipe, MatButtonModule, SlicePipe],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    DatePipe,
+    TitleCasePipe,
+    MatButtonModule,
+    MatProgressSpinner,
+    SlicePipe,
+  ],
   templateUrl: './quiz.component.html',
   styleUrl: './quiz.component.css',
 })
@@ -29,6 +43,7 @@ export class QuizComponent {
   quiz = input.required<Quiz>();
   quizDeleted = output<void>();
   isExpanded = signal(false);
+  isDeleting = signal(false);
 
   onToggleExpansion() {
     this.isExpanded.update((wasExpanded) => !wasExpanded);
@@ -43,14 +58,18 @@ export class QuizComponent {
       return;
     }
 
+    this.isDeleting.set(true);
     const sub = this.quizService.deleteQuiz(quiz.quizId).subscribe({
       next: () => {
         this.quizDeleted.emit();
+        this.isDeleting.set(false);
       },
-      error: (err) =>
+      error: (err) => {
+        this.isDeleting.set(false);
         this.messageService.showError(
           'Error deleting quiz "' + quiz.quizName + '".'
-        ),
+        );
+      },
       complete: () =>
         this.messageService.showSuccess(
           'Quiz "' + quiz.quizName + '" deleted!'

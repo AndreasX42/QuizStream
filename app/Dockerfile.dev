@@ -4,10 +4,12 @@ EXPOSE 4200
 
 WORKDIR /app
 
-RUN npm install -g @angular/cli @angular/material
-
 COPY ./ ./
 
 RUN npm install
 
-CMD ["ng", "serve", "--host", "0.0.0.0", "--poll", "2000"]
+RUN npm install -g @angular/cli
+
+RUN ng analytics off
+
+ENTRYPOINT ["sh", "-c", "node replace-env.js && ng serve --host 0.0.0.0 --poll 2000"]

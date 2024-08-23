@@ -76,8 +76,6 @@ export class KeyComponent {
     const key = this.form.value.key!;
     this.keyService.addKey({ provider, key });
 
-    this.messageService.showSuccess('API key was added successfully!');
-
     this.router.navigate(['/keys'], {
       replaceUrl: true,
     });

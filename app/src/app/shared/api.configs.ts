@@ -1,5 +1,8 @@
+import { environment } from './environment/environment';
+
 export class Configs {
-  static BASE_URL: string = 'http://localhost:9090/api/v1';
+  static BASE_URL: string =
+    'http://' + environment.apiHost + ':' + environment.apiPort + '/api/v1';
   static QUIZZES_ENDPOINT: string = '/quizzes';
   static USERS_ENDPOINT: string = '/users';
   static LOGIN_URL: string = this.USERS_ENDPOINT + '/login';

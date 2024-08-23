@@ -19,6 +19,7 @@ import { QuizComponent } from '../quiz/quiz.component';
 import { Quiz } from '../../models/quiz.model';
 import { AuthService } from '../../services/auth.service';
 import { MatOption, MatSelect } from '@angular/material/select';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-quiz-list',
@@ -44,6 +45,7 @@ export class QuizListComponent {
   private quizService = inject(QuizService);
   private authService = inject(AuthService);
   private destroyRef = inject(DestroyRef);
+  private router = inject(Router);
 
   user = this.authService.user;
 
@@ -82,6 +84,10 @@ export class QuizListComponent {
         next: (page) => {
           this.totalPages.set(page.totalPages);
           this.quizzes.set(page.content);
+
+          if (this.quizzes().length === 0) {
+            this.router.navigate(['/getting-started']);
+          }
         },
         error: (err) => console.error('Error fetching quizzes', err),
       });

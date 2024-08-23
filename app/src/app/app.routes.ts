@@ -21,6 +21,10 @@ export const routes: Routes = [
     component: StartPageComponent,
   },
   {
+    path: 'getting-started',
+    component: StartPageComponent,
+  },
+  {
     path: 'about',
     component: AboutComponent,
   },
