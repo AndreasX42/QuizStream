@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const filePath = 'src/app/shared/environment/environment.ts';
+const filePath = './src/app/shared/environment/environment.ts';
 
 // Read the environment.ts file
 let content = fs.readFileSync(filePath, 'utf-8');
