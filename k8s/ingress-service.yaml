@@ -3,6 +3,11 @@ kind: Ingress
 metadata:
   name: ingress-service
   annotations:
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, OPTIONS, DELETE"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range"
+    nginx.ingress.kubernetes.io/cors-expose-headers: "Content-Length,Content-Range"
+
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/configuration-snippet: |
@@ -13,7 +18,7 @@ spec:
   rules:
     - http:
         paths:
-          - path: /api/?(.*)
+          - path: /api/v1/?(.*)
             pathType: ImplementationSpecific
             backend:
               service:

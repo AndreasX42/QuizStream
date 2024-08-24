@@ -18,6 +18,10 @@ services:
       - JWT_SECRET="bQeThWmZq4t7w!z$C&F)J@NcRfUjXn2r5u8x/A?D*G-KaPdSgVkYp3s6v9y$B&E)"
       - JAVA_OPTS=-Dspring.devtools.restart.enabled=true -Dspring.devtools.livereload.enabled=true
       - SPRING_PROFILES_ACTIVE=dev
+      - APP_HOST=localhost
+      - APP_PORT=4200
+      - BACKEND_HOST=backend
+      - BACKEND_PORT=8080
     depends_on:
       - postgres
   postgres:
