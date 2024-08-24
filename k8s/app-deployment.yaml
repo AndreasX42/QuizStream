@@ -21,9 +21,7 @@ spec:
           image: andreasx42/quizstream-app:latest
           env:
             - name: API_HOST
-              value: api-cluster-ip-service
-            - name: API_PORT
-              value: "9090"
+              value: "35.225.79.33"
           ports:
             - containerPort: 80
           volumeMounts:

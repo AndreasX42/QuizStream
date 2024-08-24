@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class EnvConfigs {
 
-    public String appAddress;
     public String backendAddress;
     public String backendCreateNewQuizEndpoint;
 
@@ -20,19 +19,12 @@ public class EnvConfigs {
 
     @PostConstruct
     public void init() {
-        appAddress = String.format("http://%s", appHost);
         backendAddress = String.format("http://%s:%s", backendHost, backendPort);
         backendCreateNewQuizEndpoint = backendAddress + "/quizzes/new";
     }
 
     @Value("${jwt.secret}")
     public String jwtSecret;
-
-    @Value("${app.host}")
-    private String appHost;
-
-    @Value("${app.port}")
-    private String appPort;
 
     @Value("${backend.host}")
     private String backendHost;

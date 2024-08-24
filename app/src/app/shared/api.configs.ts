@@ -1,8 +1,7 @@
 import { environment } from './environment/environment';
 
 export class Configs {
-  static BASE_URL: string =
-    'http://' + environment.apiHost + ':' + environment.apiPort;
+  static BASE_URL: string = 'http://' + environment.apiHost + '/api/v1';
   static QUIZZES_ENDPOINT: string = '/quizzes';
   static USERS_ENDPOINT: string = '/users';
   static LOGIN_URL: string = this.USERS_ENDPOINT + '/login';
