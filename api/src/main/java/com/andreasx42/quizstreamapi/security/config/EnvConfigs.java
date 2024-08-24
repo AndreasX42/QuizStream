@@ -20,7 +20,7 @@ public class EnvConfigs {
 
     @PostConstruct
     public void init() {
-        appAddress = String.format("http://%s:%s", appHost, appPort);
+        appAddress = String.format("http://%s", appHost);
         backendAddress = String.format("http://%s:%s", backendHost, backendPort);
         backendCreateNewQuizEndpoint = backendAddress + "/quizzes/new";
     }
