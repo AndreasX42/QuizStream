@@ -25,6 +25,11 @@ public class UserQuiz {
         EASY, MEDIUM, HARD
     }
 
+    public enum Language {
+        EN, ES, DE
+    }
+
+
     @EmbeddedId
     private UserQuizId id;
 
@@ -43,6 +48,10 @@ public class UserQuiz {
 
     @Column(name = "num_correct", nullable = false, columnDefinition = "int default 0")
     private int numCorrect = 0;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, updatable = false)
+    private UserQuiz.Language language = Language.EN;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, updatable = false)

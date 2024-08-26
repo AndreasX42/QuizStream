@@ -46,12 +46,15 @@ public class QuizService {
 
     public QuizOutboundDto createQuizOnBackend(QuizCreateDto quizCreateDto) {
 
+        logger.error(quizCreateDto.toString());
+
         // Create the request body for FastAPI
         Map<String, Object> body = Map.of(
                 "user_id", quizCreateDto.userId(),
                 "quiz_name", quizCreateDto.quizName(),
                 "api_keys", quizCreateDto.apiKeys(),
                 "youtube_url", quizCreateDto.videoUrl(),
+                "language", quizCreateDto.language(),
                 "type", quizCreateDto.type()
                         .toString(),
                 "difficulty", quizCreateDto.difficulty()
@@ -71,14 +74,8 @@ public class QuizService {
 
             return quizMapper.convertToQuizOutboundDto(response.getBody());
 
-            // TOOD: improve backend error handling
         } catch (Exception e) {
             logger.error("Backend API call failed: {}", e.getMessage());
-            if (e.getMessage()
-                    .contains("Internal Server Error")) {
-                throw new BadBackendResponseException("Invalid API keys provided.", QuizService.class);
-            }
-
             throw new BadBackendResponseException(e.getMessage(), QuizService.class);
         }
     }

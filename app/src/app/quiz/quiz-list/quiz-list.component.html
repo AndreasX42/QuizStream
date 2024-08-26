@@ -1,4 +1,10 @@
 <div class="sort-container">
+  @if(isLoadingQuizzes()) {
+  <div class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Loading quizzes...</p>
+  </div>
+  } @else {
   <label for="sort" class="sort-label">Sort by:</label>
   <mat-select
     id="sort"
@@ -21,6 +27,7 @@
     <mat-option value="5">5</mat-option>
     <mat-option value="10">10</mat-option>
   </mat-select>
+  }
 </div>
 
 <div class="quiz-list-container">

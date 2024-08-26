@@ -31,6 +31,12 @@ class QuizDifficulty(str, PythonEnum):
     HARD = "HARD"
 
 
+class Language(str, PythonEnum):
+    EN = "EN"
+    ES = "ES"
+    DE = "DE"
+
+
 class Role(str, PythonEnum):
     USER = "USER"
     ADMIN = "ADMIN"
@@ -90,6 +96,7 @@ class UserToQuiz(Base):
     quiz_id = Column(UUID, ForeignKey("langchain_pg_collection.uuid"), primary_key=True)
     num_tries = Column(Integer, default=0)
     num_correct = Column(Integer, default=0)
+    language = Column(Enum(Language), default=Language.EN)
     type = Column(Enum(QuizType), default=QuizType.MULTIPLE_CHOICE)
     difficulty = Column(Enum(QuizDifficulty), default=QuizDifficulty.EASY)
     date_created = Column(DateTime, default=dt.datetime.now(dt.UTC))

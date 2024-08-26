@@ -12,6 +12,8 @@ import { Quiz } from '../../models/quiz.model';
 import { AuthService } from '../../services/auth.service';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { Router } from '@angular/router';
+import { MessageService } from '../../services/message.service';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-quiz-list',
@@ -29,6 +31,7 @@ import { Router } from '@angular/router';
     QuizComponent,
     MatButtonModule,
     CommonModule,
+    MatProgressSpinner,
   ],
   templateUrl: './quiz-list.component.html',
   styleUrl: './quiz-list.component.css',
@@ -38,9 +41,11 @@ export class QuizListComponent {
   private authService = inject(AuthService);
   private destroyRef = inject(DestroyRef);
   private router = inject(Router);
+  private messageService = inject(MessageService);
 
   user = this.authService.user;
 
+  isLoadingQuizzes = signal(false);
   expandedQuizId = signal('');
 
   pageSize = signal<string>('3');
@@ -55,9 +60,14 @@ export class QuizListComponent {
   quizzes = signal<Quiz[]>([]);
 
   constructor() {
-    const ref = effect(() => {
-      this.loadQuizzes();
-    });
+    const ref = effect(
+      () => {
+        this.loadQuizzes();
+      },
+      {
+        allowSignalWrites: true,
+      }
+    );
 
     this.destroyRef.onDestroy(() => {
       ref.destroy();
@@ -65,6 +75,7 @@ export class QuizListComponent {
   }
 
   loadQuizzes(): void {
+    this.isLoadingQuizzes.set(true);
     const sub = this.quizService
       .getAllQuizzes(
         this.user()!.id,
@@ -76,12 +87,16 @@ export class QuizListComponent {
         next: (page) => {
           this.totalPages.set(page.totalPages);
           this.quizzes.set(page.content);
+          this.isLoadingQuizzes.set(false);
 
           if (this.quizzes().length === 0) {
             this.router.navigate(['/getting-started']);
           }
         },
-        error: (err) => console.error('Error fetching quizzes', err),
+        error: (err) => {
+          this.isLoadingQuizzes.set(false);
+          this.messageService.showError('Error loading quizzes.');
+        },
       });
 
     this.destroyRef.onDestroy(() => {

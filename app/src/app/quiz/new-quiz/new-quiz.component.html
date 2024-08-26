@@ -56,6 +56,15 @@
           </mat-option>
         </mat-select>
       </mat-form-field>
+
+      <mat-form-field appearance="fill" class="mat-form-field-option">
+        <mat-label>Language</mat-label>
+        <mat-select formControlName="language"
+          ><mat-option *ngFor="let language of quizLanguages" [value]="language"
+            >{{ getEnumDisplayName(language) }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
     <div class="form-row">
       <button mat-raised-button [disabled]="isCreating()">

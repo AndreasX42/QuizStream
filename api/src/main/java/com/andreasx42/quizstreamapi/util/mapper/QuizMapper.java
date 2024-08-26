@@ -46,6 +46,7 @@ public class QuizMapper {
                     dateCreated,
                     userQuiz.getNumTries(),
                     userQuiz.getNumCorrect(),
+                    userQuiz.getLanguage(),
                     userQuiz.getType(),
                     userQuiz.getDifficulty(),
                     videoMetadataDto
@@ -68,6 +69,8 @@ public class QuizMapper {
                     .asText());
             String name = root.get("quiz_name")
                     .asText();
+            String language = root.get("language")
+                    .asText();
             String type = root.get("type")
                     .asText();
             String difficulty = root.get("difficulty")
@@ -79,7 +82,7 @@ public class QuizMapper {
             int numCorrect = 0;
 
             VideoMetadataDto videoMetadataDto = getVideoMetadataDto(root);
-            return new QuizOutboundDto(userId, quizId, name, dateCreated, numTries, numCorrect,
+            return new QuizOutboundDto(userId, quizId, name, dateCreated, numTries, numCorrect, UserQuiz.Language.valueOf(language),
                     UserQuiz.Type.valueOf(type), UserQuiz.Difficulty.valueOf(difficulty), videoMetadataDto);
 
         } catch (Exception e) {

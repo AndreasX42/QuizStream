@@ -94,3 +94,23 @@
   background-color: #005cbb;
   color: white;
 }
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  text-align: center;
+  font-size: 1.2em;
+}
+
+.loading-container mat-spinner {
+  margin-bottom: 15px;
+}
+
+@media (max-width: 600px) {
+  .loading-container {
+    height: 60vh;
+  }
+}

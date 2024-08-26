@@ -12,6 +12,9 @@ class QuizCreateRequestDto(BaseModel):
     quiz_name: str = Field(min_length=3, description="Name of quiz")
     api_keys: dict[str, str] = Field(description="Dictionary of API keys.")
     youtube_url: HttpUrl
+    language: str = Field(
+        min_length=2, description="Language in which the quiz should be generated."
+    )
     type: QuizType = Field(description="Type of quiz")
     difficulty: QuizDifficulty = Field(description="Difficulty of quiz")
 
@@ -37,6 +40,9 @@ class QuizOutboundDto(BaseModel):
     user_id: int = Field(min=0, description="User id")
     quiz_id: UUID = Field(default_factory=uuid4, description="Quiz id")
     quiz_name: str = Field(min_length=1, description="Name of quiz")
+    language: str = Field(
+        min_length=2, description="Language in which the quiz should be generated."
+    )
     date_created: str = Field(
         default_factory=lambda: datetime.now(timezone.utc).strftime(
             "%Y-%m-%dT%H:%M:%SZ"

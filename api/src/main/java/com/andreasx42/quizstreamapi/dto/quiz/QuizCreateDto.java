@@ -11,6 +11,7 @@ public record QuizCreateDto(
         @NotNull String quizName,
         @NotNull String videoUrl,
         @NotNull Map<String, String> apiKeys,
+        @NotNull UserQuiz.Language language,
         @NotNull UserQuiz.Type type,
         @NotNull UserQuiz.Difficulty difficulty) {
 

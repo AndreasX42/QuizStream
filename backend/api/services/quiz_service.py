@@ -19,6 +19,7 @@ async def create_quiz(
     collection_id, qa_ids = await agenerate_quiz(
         quiz_name=quiz_data.quiz_name,
         youtube_url=str(quiz_data.youtube_url),
+        translation_language=quiz_data.language.lower(),
         api_keys=quiz_data.api_keys,
     )
 
@@ -26,6 +27,7 @@ async def create_quiz(
     user_to_quiz = UserToQuiz(
         user_id=quiz_data.user_id,
         quiz_id=collection_id,
+        language=quiz_data.language,
         type=quiz_data.type,
         difficulty=quiz_data.difficulty,
         date_created=dt.datetime.now(dt.UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -41,6 +43,7 @@ async def create_quiz(
         quiz_id=collection_id,
         quiz_name=quiz_data.quiz_name,
         date_created=str(user_to_quiz.date_created),
+        language=quiz_data.language,
         type=quiz_data.type,
         difficulty=quiz_data.difficulty,
         **collection_metadata,

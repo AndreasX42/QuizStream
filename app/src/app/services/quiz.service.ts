@@ -3,6 +3,7 @@ import {
   Quiz,
   QuizCreateRequestDto,
   QuizDifficulty,
+  QuizLanguage,
   QuizType,
 } from './../models/quiz.model';
 import { AuthService } from './auth.service';
@@ -54,11 +55,13 @@ export class QuizService {
   addQuiz(quizData: {
     quizName: string;
     videoUrl: string;
+    language: QuizLanguage;
     type: QuizType;
     difficulty: QuizDifficulty;
   }) {
     // Convert keys map to an object
     const apiKeyObject = this.keyService.keys().reduce((obj, current) => {
+      // Prepare backend API call arguments
       const currentProviderName = current.provider.toUpperCase() + '_API_KEY';
       obj[currentProviderName] = current.key;
       return obj;
@@ -81,11 +84,17 @@ export class QuizService {
           ? error.error.messages.join(' ')
           : error.error?.message || '';
 
-        if (errorMessage?.includes('Invalid API keys provided.')) {
-          this.messageService.showError('The provided API Key is invalid.');
+        if (errorMessage?.includes('Invalid API key provided.')) {
+          this.messageService.showError('The provided API key is invalid.');
         } else if (errorMessage?.includes('already exists for user')) {
           this.messageService.showError(
             'You already created a quiz with this name, choose a new one.'
+          );
+        } else if (
+          errorMessage?.includes('Error fetching video transcript for ')
+        ) {
+          this.messageService.showError(
+            'Something went wrong fetching the video transcript, try another video.'
           );
         } else {
           this.messageService.showError(
@@ -115,6 +124,7 @@ export class QuizService {
         quizName: requestDto.quizName,
         videoUrl: requestDto.videoUrl,
         apiKeys: requestDto.apiKeys,
+        language: requestDto.language,
         type: requestDto.type,
         difficulty: requestDto.difficulty,
       },

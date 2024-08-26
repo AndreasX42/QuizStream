@@ -17,3 +17,8 @@ td.mat-cell {
 .mat-icon-button {
   margin-left: 16px;
 }
+
+.form-note {
+  margin-top: 15px;
+  text-align: left;
+}

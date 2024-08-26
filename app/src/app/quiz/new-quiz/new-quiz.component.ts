@@ -12,6 +12,7 @@ import {
 } from '@angular/forms';
 import {
   QuizDifficulty,
+  QuizLanguage,
   QuizType,
   getEnumDisplayName,
 } from '../../models/quiz.model';
@@ -50,6 +51,10 @@ export class NewQuizComponent {
   quizNameErrorMessage = signal<string | undefined>(undefined);
   linkErrorMessage = signal<string | undefined>(undefined);
 
+  quizLanguages = Object.values(QuizLanguage).filter(
+    (value) => typeof value === 'string'
+  );
+
   quizTypesList = Object.values(QuizType).filter(
     (value) => typeof value === 'string'
   );
@@ -70,6 +75,9 @@ export class NewQuizComponent {
         Validators.required,
         Validators.pattern(this.youtubeRegExPattern),
       ],
+    }),
+    language: new FormControl<QuizLanguage>(QuizLanguage.EN, {
+      validators: [Validators.required],
     }),
     type: new FormControl<QuizType>(QuizType.MULTIPLE_CHOICE, {
       validators: [Validators.required],
@@ -106,10 +114,17 @@ export class NewQuizComponent {
 
     const quizName = this.form.value.quizName!;
     const videoUrl = this.form.value.videoLink!;
+    const language = this.form.value.language!;
     const type = this.form.value.type!;
     const difficulty = this.form.value.difficulty!;
 
-    this.quizService.addQuiz({ quizName, videoUrl, type, difficulty });
+    this.quizService.addQuiz({
+      quizName,
+      videoUrl,
+      language,
+      type,
+      difficulty,
+    });
   }
 }
 
