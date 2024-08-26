@@ -42,10 +42,10 @@ export class SolveQuizComponent {
   currentQuestionIndex = 0;
   numberOfCorrectAnswers = 0;
   numberOfQuestions = 0;
-  currentQuestion: QuizQuestionDetails | null = null;
+  currentQuestion = signal<QuizQuestionDetails | undefined>(undefined);
   answerOptions: string[] = [];
   selectedAnswerIndex: number | null = null;
-  showResult = false;
+  showResult = signal(false);
 
   ngOnInit(): void {
     this.quizId = this.route.snapshot.paramMap.get('quizId');
@@ -54,37 +54,37 @@ export class SolveQuizComponent {
 
   loadQuestion(): void {
     if (this.currentQuestionIndex < this.numberOfQuestions) {
-      this.currentQuestion =
-        this.quizDetails!.questionAnswersList[this.currentQuestionIndex];
+      this.currentQuestion.set(
+        this.quizDetails!.questionAnswersList[this.currentQuestionIndex]
+      );
 
       this.answerOptions = this.shuffleAnswers([
-        this.currentQuestion.correctAnswer,
-        ...this.currentQuestion.wrongAnswers,
+        this.currentQuestion()!.correctAnswer,
+        ...this.currentQuestion()!.wrongAnswers,
       ]);
 
       this.selectedAnswerIndex = null;
-      this.showResult = false;
+      this.showResult.set(false);
     }
   }
 
   selectAnswer(answer: string, index: number): void {
-    if (this.currentQuestion!.correctAnswer == this.answerOptions[index]) {
+    if (this.currentQuestion()!.correctAnswer == this.answerOptions[index]) {
       this.numberOfCorrectAnswers++;
     }
 
     this.selectedAnswerIndex = index;
-    this.showResult = true;
+    this.showResult.set(true);
   }
 
   goToNextQuestion(): void {
-    if (this.currentQuestionIndex < this.numberOfQuestions) {
+    if (this.currentQuestionIndex >= this.numberOfQuestions - 1) {
+      this.currentQuestion.set(undefined);
+      this.isCompleted.set(true);
+      this.updateQuizData();
+    } else {
       this.currentQuestionIndex++;
       this.loadQuestion();
-    } else {
-      this.currentQuestion = null;
-      this.isCompleted.set(true);
-
-      this.updateQuizData();
     }
   }
 

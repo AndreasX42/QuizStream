@@ -21,3 +21,17 @@
   background-color: #f44336;
   color: white;
 }
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  text-align: center;
+  font-size: 1.2em;
+}
+
+.loading-container mat-spinner {
+  margin-bottom: 15px;
+}
