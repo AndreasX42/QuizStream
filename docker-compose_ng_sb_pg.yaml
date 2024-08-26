@@ -11,8 +11,7 @@
         - ./app:/app
         - /app/node_modules
       environment:
-        - API_HOST=api
-        - API_PORT=9090
+        - API_URL=http://localhost:9090
         - CHOKIDAR_USEPOLLING=true
     api:
       build:
@@ -28,7 +27,7 @@
         - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/quizstream_db
         - SPRING_DATASOURCE_USERNAME=admin
         - SPRING_DATASOURCE_PASSWORD=my_password
-        - SERVER_PORT=9090
+        - APP_HOST=http://localhost:4200
         - BACKEND_HOST=backend
         - BACKEND_PORT=8080
         - JWT_SECRET="bQeThWmZq4t7w!z$C&F)J@NcRfUjXn2r5u8x/A?D*G-KaPdSgVkYp3s6v9y$B&E)"

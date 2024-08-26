@@ -6,7 +6,7 @@ const filePath = './src/app/shared/environment/environment.ts';
 let content = fs.readFileSync(filePath, 'utf-8');
 
 // Replace placeholders with actual environment variable values
-content = content.replace('${API_HOST}', process.env.API_HOST || 'localhost');
+content = content.replace('${API_URL}', process.env.API_URL || 'localhost');
 
 // Write the updated content back to environment.ts
 fs.writeFileSync(filePath, content);

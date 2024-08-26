@@ -57,7 +57,10 @@
       </mat-form-field>
     </div>
     <div class="form-row">
-      <button mat-raised-button color="primary">Submit</button>
+      <button mat-raised-button color="primary" [disabled]="isLoggingIn()">
+        <span *ngIf="!isLoggingIn()">Submit</span>
+        <mat-spinner *ngIf="isLoggingIn()" diameter="20"></mat-spinner>
+      </button>
     </div>
     <a class="auth-hint" routerLink="/register">Register here</a>
   </form>

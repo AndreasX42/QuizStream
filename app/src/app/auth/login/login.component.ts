@@ -12,6 +12,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { Router, RouterLink } from '@angular/router';
 import { ErrorManagerFactory } from '../../shared/error.manager.factory';
 import { AuthService } from '../../services/auth.service';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
@@ -23,6 +25,8 @@ import { AuthService } from '../../services/auth.service';
     MatIcon,
     ReactiveFormsModule,
     RouterLink,
+    MatProgressSpinner,
+    CommonModule,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
@@ -34,6 +38,7 @@ export class LoginComponent {
 
   loggedIn = signal(false);
   hide = signal(true);
+  isLoggingIn = signal(false);
   usernameErrorMessage = signal<string | undefined>(undefined);
   pwdErrorMessage = signal<string | undefined>(undefined);
 
@@ -61,11 +66,16 @@ export class LoginComponent {
   }
 
   login(username: string, password: string) {
+    this.isLoggingIn.set(true);
     const sub = this.authService.login(username, password).subscribe({
       next: () => {
+        this.isLoggingIn.set(false);
         this.router.navigate(['/profile'], {
           replaceUrl: true,
         });
+      },
+      error: (err) => {
+        this.isLoggingIn.set(false);
       },
     });
 

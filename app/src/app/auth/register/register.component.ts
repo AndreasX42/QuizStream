@@ -10,10 +10,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 import { ErrorManagerFactory } from '../../shared/error.manager.factory';
 import { AuthService } from '../../services/auth.service';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 function equalValues(controlName1: string, controlName2: string) {
   return (control: AbstractControl) => {
@@ -44,15 +45,16 @@ function equalValues(controlName1: string, controlName2: string) {
     ReactiveFormsModule,
     MatIcon,
     RouterLink,
+    MatProgressSpinner,
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
 })
 export class RegisterComponent {
-  private router = inject(Router);
   private destroyRef = inject(DestroyRef);
   private authService = inject(AuthService);
 
+  isRegistering = signal(false);
   hide = signal(true);
   usernameErrorMessage = signal<string | undefined>(undefined);
   emailErrorMessage = signal<string | undefined>(undefined);
@@ -136,9 +138,15 @@ export class RegisterComponent {
   }
 
   register(username: string, email: string, password: string) {
-    const sub = this.authService
-      .register(username, email, password)
-      .subscribe();
+    this.isRegistering.set(true);
+    const sub = this.authService.register(username, email, password).subscribe({
+      complete: () => {
+        this.isRegistering.set(false);
+      },
+      error: (err) => {
+        this.isRegistering.set(false);
+      },
+    });
 
     this.destroyRef.onDestroy(() => {
       sub.unsubscribe();

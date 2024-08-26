@@ -112,7 +112,10 @@
       </mat-form-field>
     </div>
     <div class="form-row">
-      <button mat-raised-button>Submit</button>
+      <button mat-raised-button [disabled]="isRegistering()">
+        <span *ngIf="!isRegistering()">Submit</span>
+        <mat-spinner *ngIf="isRegistering()" diameter="20"></mat-spinner>
+      </button>
     </div>
     <a class="auth-hint" routerLink="/login">Login here</a>
   </form>

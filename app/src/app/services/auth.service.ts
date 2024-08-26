@@ -158,17 +158,20 @@ export class AuthService {
       );
   }
 
-  logout(): void {
-    if (this.isTokenExpired()) {
-      this.messageService.showError(MessageService.MSG_SESSION_EXPIRED_ERROR);
-    }
-
+  deleteAuthDetails() {
     this._isLoggedIn.set(false);
     this._userToken.set(undefined);
     this._user.set(undefined);
     localStorage.removeItem(this.localStorageTokenKey);
     localStorage.removeItem(this.localStorageUserKey);
+  }
 
+  logout(): void {
+    if (this.isTokenExpired()) {
+      this.messageService.showError(MessageService.MSG_SESSION_EXPIRED_ERROR);
+    }
+
+    this.deleteAuthDetails();
     this.router.navigate(['/login'], { replaceUrl: true });
   }
 

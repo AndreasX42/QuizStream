@@ -20,8 +20,8 @@ spec:
         - name: quizstream-app
           image: andreasx42/quizstream-app:latest
           env:
-            - name: API_HOST
-              value: "35.225.79.33"
+            - name: API_URL
+              value: http://35.225.79.33/api/v1
           ports:
             - containerPort: 80
           volumeMounts:

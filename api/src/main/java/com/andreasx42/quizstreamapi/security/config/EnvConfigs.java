@@ -26,6 +26,9 @@ public class EnvConfigs {
     @Value("${jwt.secret}")
     public String jwtSecret;
 
+    @Value("${app.host}")
+    public String appHost;
+
     @Value("${backend.host}")
     private String backendHost;
 

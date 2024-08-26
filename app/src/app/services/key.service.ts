@@ -10,19 +10,7 @@ export class KeyService {
   private messageService = inject(MessageService);
   private localStorageApiKeys = 'api-keys';
 
-  private _keys = signal<Key[]>([
-    {
-      id: '1',
-      provider: KeyProvider.OpenAI,
-      key: '123123123',
-    },
-    {
-      id: '2',
-      provider: KeyProvider.OpenAI,
-      key: '987987987',
-    },
-  ]);
-
+  private _keys = signal<Key[]>([]);
   keys = this._keys.asReadonly();
 
   constructor() {

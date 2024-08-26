@@ -16,7 +16,9 @@ export class AppInitService {
       this.authService.localStorageUserKey
     );
 
-    if (!token || !userString || this.authService.isTokenExpired()) {
+    if (!token || !userString) {
+      this.authService.deleteAuthDetails();
+    } else if (this.authService.isTokenExpired()) {
       this.authService.logout();
     } else {
       this.authService._isLoggedIn.set(true);
