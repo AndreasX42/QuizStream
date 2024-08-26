@@ -18,6 +18,7 @@ import { getEnumDisplayName, Quiz } from '../../models/quiz.model';
 import { QuizService } from '../../services/quiz.service';
 import { MessageService } from '../../services/message.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-quiz',
@@ -30,6 +31,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
     MatButtonModule,
     MatProgressSpinner,
     SlicePipe,
+    RouterModule,
   ],
   templateUrl: './quiz.component.html',
   styleUrl: './quiz.component.css',
@@ -38,6 +40,7 @@ export class QuizComponent {
   private destroyRef = inject(DestroyRef);
   private quizService = inject(QuizService);
   private messageService = inject(MessageService);
+
   getEnumDisplayName = getEnumDisplayName;
 
   quiz = input.required<Quiz>();

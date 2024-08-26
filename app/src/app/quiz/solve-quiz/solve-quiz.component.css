@@ -1,0 +1,23 @@
+.quiz-container {
+  max-width: 600px;
+  margin: 20px auto;
+  text-align: center;
+}
+
+.answer-container {
+  margin: 30px;
+}
+
+.answer-option {
+  margin-bottom: 15px;
+}
+
+.answer-option.correct button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.answer-option.incorrect button {
+  background-color: #f44336;
+  color: white;
+}

@@ -40,10 +40,15 @@ public class UserQuizService {
     public UserQuiz updateUserQuiz(QuizUpdateDto data) {
         UserQuiz userQuiz = getByUserQuizId(data.userId(), data.quizId());
 
-        userQuiz.setNumTries(data.numTries());
-        userQuiz.setNumCorrect(data.numCorrect());
-        userQuiz.getLangchainCollection()
-                .setName(data.name());
+        userQuiz.setNumCorrect(userQuiz.getNumCorrect() + data.numCorrect());
+
+        userQuiz.setNumTries(userQuiz.getNumTries() + 1);
+
+        if (data.name()!=null && !data.name()
+                .isBlank()) {
+            userQuiz.getLangchainCollection()
+                    .setName(data.name());
+        }
 
         return userQuizRepository.save(userQuiz);
     }

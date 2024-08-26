@@ -14,6 +14,7 @@ import { RegisterComponent } from './auth/register/register.component';
 import { ProfileComponent } from './auth/profile/profile.component';
 import { AuthGuard } from './shared/guards/auth.guard';
 import { AboutComponent } from './about/about.component';
+import { SolveQuizComponent } from './quiz/solve-quiz/solve-quiz.component';
 
 export const routes: Routes = [
   {
@@ -38,6 +39,12 @@ export const routes: Routes = [
     component: NewQuizComponent,
     canActivate: [AuthGuard],
     canDeactivate: [canLeaveEditPage],
+  },
+  {
+    path: 'quizzes/run/:quizId',
+    component: SolveQuizComponent,
+    canActivate: [AuthGuard],
+    // canDeactivate: [canLeaveEditPage],
   },
   {
     path: 'keys',

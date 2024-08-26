@@ -1,8 +1,10 @@
 package com.andreasx42.quizstreamapi.util.mapper;
 
 import com.andreasx42.quizstreamapi.dto.quiz.QuizOutboundDto;
+import com.andreasx42.quizstreamapi.dto.quiz.QuizQuestionDetailsDto;
 import com.andreasx42.quizstreamapi.dto.quiz.VideoMetadataDto;
 import com.andreasx42.quizstreamapi.entity.LangchainPGCollection;
+import com.andreasx42.quizstreamapi.entity.LangchainPGEmbedding;
 import com.andreasx42.quizstreamapi.entity.UserQuiz;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -51,6 +55,39 @@ public class QuizMapper {
                     userQuiz.getDifficulty(),
                     videoMetadataDto
             );
+        } catch (Exception e) {
+            logger.error("Failed to convert Json into Dto: {}", e.getMessage());
+            throw new RuntimeException("Failed to convert Json into Dto", e);
+        }
+    }
+
+    public QuizQuestionDetailsDto convertToQuizDetailsDto(LangchainPGEmbedding questionAndAnswer) {
+        try {
+
+            JsonNode cmetadataNode = objectMapper.readTree(questionAndAnswer.getCmetadata());
+
+            // Extract values from JSON
+            String context = cmetadataNode.get("context")
+                    .asText();
+
+            String correctAnswer = cmetadataNode.get("answer")
+                    .get("correct_answer")
+                    .asText();
+
+            JsonNode wrongAnswersNode = cmetadataNode.get("answer")
+                    .get("wrong_answers");
+            List<String> wrongAnswers = new ArrayList<>();
+            if (wrongAnswersNode.isArray()) {
+                for (JsonNode answer : wrongAnswersNode) {
+                    wrongAnswers.add(answer.asText());
+                }
+            }
+
+            return new QuizQuestionDetailsDto(
+                    questionAndAnswer.getDocument(), correctAnswer, wrongAnswers, context
+            );
+
+
         } catch (Exception e) {
             logger.error("Failed to convert Json into Dto: {}", e.getMessage());
             throw new RuntimeException("Failed to convert Json into Dto", e);

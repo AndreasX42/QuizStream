@@ -1,6 +1,7 @@
 package com.andreasx42.quizstreamapi.controller;
 
 import com.andreasx42.quizstreamapi.dto.quiz.QuizCreateDto;
+import com.andreasx42.quizstreamapi.dto.quiz.QuizDetailsOutboundDto;
 import com.andreasx42.quizstreamapi.dto.quiz.QuizOutboundDto;
 import com.andreasx42.quizstreamapi.dto.quiz.QuizUpdateDto;
 import com.andreasx42.quizstreamapi.exception.ErrorResponse;
@@ -73,7 +74,7 @@ public class QuizController {
             @ApiResponse(responseCode = "400", description = "Bad request: unsuccessful submission", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
     })
     public ResponseEntity<QuizOutboundDto> createQuiz(@RequestBody QuizCreateDto quizCreateDto) {
-        
+
         QuizOutboundDto createdQuiz = quizService.createQuizOnBackend(quizCreateDto);
 
         return new ResponseEntity<>(createdQuiz, HttpStatus.CREATED);
@@ -107,5 +108,20 @@ public class QuizController {
         quizService.deleteQuiz(userId, quizId);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    // GET quiz details by user and quiz id
+    @GetMapping(value = "{quizId}/users/{userId}/details", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("#userId == principal.id or hasAuthority('ADMIN')")
+    @Operation(summary = "Returns the quiz details based on provided user and quiz id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "404", description = "Quiz details don't exist", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Successful retrieval of quiz details", content = @Content(schema = @Schema(implementation = QuizDetailsOutboundDto.class))),
+    })
+    public ResponseEntity<QuizDetailsOutboundDto> getQuizDetailsByUserQuizId(@PathVariable Long userId, @PathVariable UUID quizId) {
+
+        QuizDetailsOutboundDto quizDetails = quizService.getQuizDetailsByUserQuizId(userId, quizId);
+
+        return new ResponseEntity<>(quizDetails, HttpStatus.OK);
     }
 }

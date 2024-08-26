@@ -2,9 +2,11 @@ import { DestroyRef, inject, Injectable, OnInit, signal } from '@angular/core';
 import {
   Quiz,
   QuizCreateRequestDto,
+  QuizDetails,
   QuizDifficulty,
   QuizLanguage,
   QuizType,
+  QuizUpdateRequestDto,
 } from './../models/quiz.model';
 import { AuthService } from './auth.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -134,11 +136,34 @@ export class QuizService {
     );
   }
 
+  updateQuiz(requestDto: QuizUpdateRequestDto): Observable<any> {
+    return this.httpClient.put<any>(
+      `${Configs.BASE_URL}${Configs.QUIZZES_ENDPOINT}/update`,
+      {
+        userId: requestDto.userId,
+        quizId: requestDto.quizId,
+        numCorrect: requestDto.numCorrect,
+        quizName: '',
+      },
+      {
+        observe: 'body',
+      }
+    );
+  }
+
   deleteQuiz(quizId: string): Observable<void> {
     return this.httpClient.delete<void>(
       `${Configs.BASE_URL}${Configs.QUIZZES_ENDPOINT}/${quizId}${
         Configs.USERS_ENDPOINT
       }/${this.authService.user()!.id}`
+    );
+  }
+
+  getQuizDetails(quizId: string): Observable<any> {
+    return this.httpClient.get<QuizDetails>(
+      `${Configs.BASE_URL}${Configs.QUIZZES_ENDPOINT}/${quizId}${
+        Configs.USERS_ENDPOINT
+      }/${this.authService.user()!.id}${Configs.QUIZ_DETAILS_ENDPOINT}`
     );
   }
 }

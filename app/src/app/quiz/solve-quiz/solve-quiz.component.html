@@ -1,0 +1,59 @@
+@if(isLoadingQuiz()) {
+<div class="loading-container">
+  <mat-spinner></mat-spinner>
+  <p>Loading quizzes...</p>
+</div>
+} @else if(currentQuestion) {
+<mat-progress-bar
+  mode="determinate"
+  value="{{ (currentQuestionIndex / numberOfQuestions) * 100 }}"
+></mat-progress-bar>
+
+<div class="quiz-container">
+  <h4>{{ currentQuestion!.question }}</h4>
+
+  <div class="answer-container">
+    @for(answer of answerOptions; track $index) {
+    <div
+      class="answer-option"
+      [ngClass]="{
+        correct: showResult && answer === currentQuestion.correctAnswer,
+        incorrect:
+          showResult &&
+          selectedAnswerIndex === $index &&
+          answer !== currentQuestion.correctAnswer
+      }"
+    >
+      <button
+        mat-raised-button
+        (click)="selectAnswer(answer, $index)"
+        [disabled]="showResult"
+      >
+        {{ answer }}
+      </button>
+    </div>
+    }
+  </div>
+
+  @if(showResult) {
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="goToNextQuestion()"
+    *ngIf="showResult"
+  >
+    Next Question
+  </button>
+  }
+</div>
+} @else if(isCompleted()) {
+<div class="quiz-container">
+  <p>
+    Congratulations, you solved
+    {{ numberOfCorrectAnswers }} out of {{ numberOfQuestions }} questions
+    correctly!
+  </p>
+
+  <a mat-raised-button [routerLink]="['/quizzes']"> Go Back To List </a>
+</div>
+}

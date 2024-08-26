@@ -1,8 +1,7 @@
 package com.andreasx42.quizstreamapi.service;
 
-import com.andreasx42.quizstreamapi.dto.quiz.QuizCreateDto;
-import com.andreasx42.quizstreamapi.dto.quiz.QuizOutboundDto;
-import com.andreasx42.quizstreamapi.dto.quiz.QuizUpdateDto;
+import com.andreasx42.quizstreamapi.dto.quiz.*;
+import com.andreasx42.quizstreamapi.entity.LangchainPGEmbedding;
 import com.andreasx42.quizstreamapi.entity.UserQuiz;
 import com.andreasx42.quizstreamapi.exception.BadBackendResponseException;
 import com.andreasx42.quizstreamapi.security.config.EnvConfigs;
@@ -19,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -42,6 +42,19 @@ public class QuizService {
     public QuizOutboundDto getQuizByUserQuizId(Long userId, UUID quizId) {
         UserQuiz userQuiz = userQuizService.getByUserQuizId(userId, quizId);
         return quizMapper.convertToQuizOutboundDto(userQuiz);
+    }
+
+    public QuizDetailsOutboundDto getQuizDetailsByUserQuizId(Long userId, UUID quizId) {
+        UserQuiz userQuiz = userQuizService.getByUserQuizId(userId, quizId);
+        List<LangchainPGEmbedding> questionAndAnswersList = userQuiz.getLangchainCollection()
+                .getEmbeddings();
+
+        List<QuizQuestionDetailsDto> details = questionAndAnswersList.stream()
+                .map(quizMapper::convertToQuizDetailsDto)
+                .toList();
+
+        return new QuizDetailsOutboundDto(userId, quizId, details);
+
     }
 
     public QuizOutboundDto createQuizOnBackend(QuizCreateDto quizCreateDto) {

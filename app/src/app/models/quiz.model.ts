@@ -21,6 +21,26 @@ export interface QuizCreateRequestDto {
   difficulty: QuizDifficulty;
 }
 
+export interface QuizUpdateRequestDto {
+  userId: number;
+  quizId: string;
+  quizName: string;
+  numCorrect: number;
+}
+
+export interface QuizDetails {
+  userId: number;
+  quizId: string;
+  questionAnswersList: QuizQuestionDetails[];
+}
+
+export interface QuizQuestionDetails {
+  question: string;
+  correctAnswer: string;
+  wrongAnswers: string[];
+  context: string;
+}
+
 export interface VideoMetadata {
   title: string;
   videoUrl: string;
