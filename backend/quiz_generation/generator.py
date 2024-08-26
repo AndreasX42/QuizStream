@@ -58,7 +58,7 @@ async def agenerate_quiz(
 
 async def asummarize_video(video_metadata: dict[str, str], api_keys: dict[str, str]):
 
-    prompt_template = """Write a concise summary of the following text and in the same language:
+    prompt_template = """Write a concise summary of about 3 to 4 sentences of the following text and in the same language:
         "{text}"
     CONCISE SUMMARY:"""
 

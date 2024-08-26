@@ -49,6 +49,9 @@ public class UserQuiz {
     @Column(name = "num_correct", nullable = false, columnDefinition = "int default 0")
     private int numCorrect = 0;
 
+    @Column(name = "num_questions", nullable = false, columnDefinition = "int default 0")
+    private int numQuestions = 0;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, updatable = false)
     private UserQuiz.Language language = Language.EN;

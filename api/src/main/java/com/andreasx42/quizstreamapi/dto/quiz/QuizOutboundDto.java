@@ -14,6 +14,7 @@ public record QuizOutboundDto(
         @NotNull LocalDate dateCreated,
         @NotNull Integer numTries,
         @NotNull Integer numCorrect,
+        @NotNull Integer numQuestions,
         @NotNull UserQuiz.Language language,
         @NotNull UserQuiz.Type type,
         @NotNull UserQuiz.Difficulty difficulty,

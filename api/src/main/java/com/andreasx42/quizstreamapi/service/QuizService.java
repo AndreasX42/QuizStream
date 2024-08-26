@@ -57,7 +57,7 @@ public class QuizService {
 
     }
 
-    public QuizOutboundDto createQuizOnBackend(QuizCreateDto quizCreateDto) {
+    public QuizCreateResultDto createQuizOnBackend(QuizCreateDto quizCreateDto) {
 
         logger.error(quizCreateDto.toString());
 

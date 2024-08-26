@@ -96,6 +96,7 @@ class UserToQuiz(Base):
     quiz_id = Column(UUID, ForeignKey("langchain_pg_collection.uuid"), primary_key=True)
     num_tries = Column(Integer, default=0)
     num_correct = Column(Integer, default=0)
+    num_questions = Column(Integer, default=0)
     language = Column(Enum(Language), default=Language.EN)
     type = Column(Enum(QuizType), default=QuizType.MULTIPLE_CHOICE)
     difficulty = Column(Enum(QuizDifficulty), default=QuizDifficulty.EASY)

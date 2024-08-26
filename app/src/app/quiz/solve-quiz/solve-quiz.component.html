@@ -1,6 +1,6 @@
 <mat-progress-bar
   mode="determinate"
-  value="{{ ((currentQuestionIndex + 1) / numberOfQuestions) * 100 }}"
+  value="{{ (currentQuestionIndex() / numberOfQuestions) * 100 }}"
 ></mat-progress-bar>
 
 @if(isLoadingQuiz()) {
@@ -12,7 +12,7 @@
 <div class="quiz-container">
   <p>
     Congratulations, you solved
-    {{ numberOfCorrectAnswers }} out of {{ numberOfQuestions }} questions
+    {{ numberOfCorrectAnswers() }} out of {{ numberOfQuestions }} questions
     correctly!
   </p>
 

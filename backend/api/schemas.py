@@ -36,6 +36,12 @@ class QuizCreateRequestDto(BaseModel):
         return value
 
 
+class QuizCreateResultDto(BaseModel):
+    user_id: int = Field(min=0, description="User id")
+    quiz_id: UUID = Field(default_factory=uuid4, description="Quiz id")
+    quiz_name: str = Field(min_length=1, description="Name of quiz")
+
+
 class QuizOutboundDto(BaseModel):
     user_id: int = Field(min=0, description="User id")
     quiz_id: UUID = Field(default_factory=uuid4, description="Quiz id")

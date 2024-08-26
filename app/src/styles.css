@@ -8,7 +8,7 @@
 
 form {
   margin: 2rem auto;
-  max-width: 50rem;
+  max-width: 35rem;
   min-width: 25rem;
   padding: 2rem;
   border-radius: 4px;
@@ -35,7 +35,12 @@ form {
 }
 
 .form-container .mat-form-field-option {
-  width: 50%;
+  width: 40%;
+  padding: 0px;
+}
+
+.form-container .mat-form-field-option-small {
+  width: 25%;
   padding: 0px;
 }
 

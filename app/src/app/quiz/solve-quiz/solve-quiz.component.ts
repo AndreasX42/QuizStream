@@ -39,9 +39,9 @@ export class SolveQuizComponent {
   quizDetails: QuizDetails | null = null;
   quizId: string | null = null;
 
-  currentQuestionIndex = 0;
-  numberOfCorrectAnswers = 0;
   numberOfQuestions = 0;
+  currentQuestionIndex = signal(0);
+  numberOfCorrectAnswers = signal(0);
   currentQuestion = signal<QuizQuestionDetails | undefined>(undefined);
   answerOptions: string[] = [];
   selectedAnswerIndex: number | null = null;
@@ -53,9 +53,9 @@ export class SolveQuizComponent {
   }
 
   loadQuestion(): void {
-    if (this.currentQuestionIndex < this.numberOfQuestions) {
+    if (this.currentQuestionIndex() < this.numberOfQuestions) {
       this.currentQuestion.set(
-        this.quizDetails!.questionAnswersList[this.currentQuestionIndex]
+        this.quizDetails!.questionAnswersList[this.currentQuestionIndex()]
       );
 
       this.answerOptions = this.shuffleAnswers([
@@ -70,7 +70,7 @@ export class SolveQuizComponent {
 
   selectAnswer(answer: string, index: number): void {
     if (this.currentQuestion()!.correctAnswer == this.answerOptions[index]) {
-      this.numberOfCorrectAnswers++;
+      this.numberOfCorrectAnswers.set(this.numberOfCorrectAnswers() + 1);
     }
 
     this.selectedAnswerIndex = index;
@@ -78,12 +78,14 @@ export class SolveQuizComponent {
   }
 
   goToNextQuestion(): void {
-    if (this.currentQuestionIndex >= this.numberOfQuestions - 1) {
+    // always increment to keep progress bar updated
+    this.currentQuestionIndex.set(this.currentQuestionIndex() + 1);
+
+    if (this.currentQuestionIndex() >= this.numberOfQuestions) {
       this.currentQuestion.set(undefined);
       this.isCompleted.set(true);
       this.updateQuizData();
     } else {
-      this.currentQuestionIndex++;
       this.loadQuestion();
     }
   }
@@ -92,7 +94,7 @@ export class SolveQuizComponent {
     const updateQuizDto: QuizUpdateRequestDto = {
       userId: this.authService.user()!.id,
       quizId: this.quizId!,
-      numCorrect: this.numberOfCorrectAnswers,
+      numCorrect: this.numberOfCorrectAnswers(),
       quizName: '',
     };
 

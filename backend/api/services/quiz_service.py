@@ -1,8 +1,7 @@
-from backend.api.schemas import QuizCreateRequestDto, QuizOutboundDto
+from backend.api.schemas import QuizCreateRequestDto, QuizCreateResultDto
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from backend.quiz_generation import agenerate_quiz
-from backend.commons.db import get_collection_metadata
 from backend.api.models import UserToQuiz, LangchainPGCollection
 from fastapi import HTTPException, status
 
@@ -11,7 +10,7 @@ import datetime as dt
 
 async def create_quiz(
     quiz_data: QuizCreateRequestDto, session: Session
-) -> QuizOutboundDto:
+) -> QuizCreateResultDto:
 
     # check quiz name is unique
     assert_quiz_name_not_exists(quiz_data.user_id, quiz_data.quiz_name, session)
@@ -27,6 +26,7 @@ async def create_quiz(
     user_to_quiz = UserToQuiz(
         user_id=quiz_data.user_id,
         quiz_id=collection_id,
+        num_questions=len(qa_ids),
         language=quiz_data.language,
         type=quiz_data.type,
         difficulty=quiz_data.difficulty,
@@ -37,16 +37,8 @@ async def create_quiz(
     session.commit()
 
     # prepare result dto
-    collection_metadata = get_collection_metadata(collection_id)
-    quizResultDto = QuizOutboundDto(
-        user_id=quiz_data.user_id,
-        quiz_id=collection_id,
-        quiz_name=quiz_data.quiz_name,
-        date_created=str(user_to_quiz.date_created),
-        language=quiz_data.language,
-        type=quiz_data.type,
-        difficulty=quiz_data.difficulty,
-        **collection_metadata,
+    quizResultDto = QuizCreateResultDto(
+        user_id=quiz_data.user_id, quiz_id=collection_id, quiz_name=quiz_data.quiz_name
     )
 
     return quizResultDto

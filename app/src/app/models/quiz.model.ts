@@ -5,6 +5,7 @@ export interface Quiz {
   dateCreated: string;
   numTries: number;
   numCorrect: number;
+  numQuestions: number;
   metadata: VideoMetadata;
   language: QuizLanguage;
   type: QuizType;

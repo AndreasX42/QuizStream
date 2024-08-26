@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from starlette import status
 
 from backend.api.services import quiz_service
-from backend.api.schemas import QuizOutboundDto, QuizCreateRequestDto
+from backend.api.schemas import QuizCreateRequestDto, QuizCreateResultDto
 from backend.commons.db import get_db
 
 router = APIRouter(
@@ -14,7 +14,7 @@ router = APIRouter(
 
 @router.post(
     "/new",
-    response_model=QuizOutboundDto,
+    response_model=QuizCreateResultDto,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_quiz(

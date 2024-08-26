@@ -1,5 +1,6 @@
 package com.andreasx42.quizstreamapi.util.mapper;
 
+import com.andreasx42.quizstreamapi.dto.quiz.QuizCreateResultDto;
 import com.andreasx42.quizstreamapi.dto.quiz.QuizOutboundDto;
 import com.andreasx42.quizstreamapi.dto.quiz.QuizQuestionDetailsDto;
 import com.andreasx42.quizstreamapi.dto.quiz.VideoMetadataDto;
@@ -50,6 +51,7 @@ public class QuizMapper {
                     dateCreated,
                     userQuiz.getNumTries(),
                     userQuiz.getNumCorrect(),
+                    userQuiz.getNumQuestions(),
                     userQuiz.getLanguage(),
                     userQuiz.getType(),
                     userQuiz.getDifficulty(),
@@ -94,7 +96,7 @@ public class QuizMapper {
         }
     }
 
-    public QuizOutboundDto convertToQuizOutboundDto(String jsonResponse) {
+    public QuizCreateResultDto convertToQuizOutboundDto(String jsonResponse) {
         try {
             // Parse JSON response
             JsonNode root = objectMapper.readTree(jsonResponse);
@@ -106,21 +108,8 @@ public class QuizMapper {
                     .asText());
             String name = root.get("quiz_name")
                     .asText();
-            String language = root.get("language")
-                    .asText();
-            String type = root.get("type")
-                    .asText();
-            String difficulty = root.get("difficulty")
-                    .asText();
-            LocalDate dateCreated = LocalDate.parse(root.get("date_created")
-                    .asText(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-            int numTries = 0;
-            int numCorrect = 0;
-
-            VideoMetadataDto videoMetadataDto = getVideoMetadataDto(root);
-            return new QuizOutboundDto(userId, quizId, name, dateCreated, numTries, numCorrect, UserQuiz.Language.valueOf(language),
-                    UserQuiz.Type.valueOf(type), UserQuiz.Difficulty.valueOf(difficulty), videoMetadataDto);
+            return new QuizCreateResultDto(userId, quizId, name);
 
         } catch (Exception e) {
             logger.error("Failed to convert Json into Dto: {}", e.getMessage());

@@ -44,6 +44,7 @@
           <p>Language: {{ getEnumDisplayName(quiz().language) }}</p>
           <p>Type: {{ getEnumDisplayName(quiz().type) }}</p>
           <p>Difficulty: {{ getEnumDisplayName(quiz().difficulty) }}</p>
+          <p>Questions: {{ quiz().numQuestions }}</p>
           <p>Attempts: {{ quiz().numTries }}</p>
           <p>Correct Answers: {{ quiz().numCorrect }}</p>
         </div>
