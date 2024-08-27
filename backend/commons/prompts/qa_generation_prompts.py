@@ -11,7 +11,7 @@ Each question and its associated answers should be:
 1. **Clear and concise**: Ensure that both the question and the answers are easy to understand, well-formulated, and free from ambiguity.
 2. **Engaging and challenging**: The incorrect answers should be plausible enough to make the quiz engaging, requiring thoughtful consideration by the user.
 3. **Relatively short**: Answers should be brief, typically no more than a sentence.
-4. **Appropriately aligned with the specified difficulty level**: Ensure the generated questions match the intended difficulty. For **easy quizzes**, the questions should focus on basic, easily recognizable information with straightforward answers. For **medium quizzes**, questions should involve more complex topics requiring a deeper understanding or application of the subject. For **hard quizzes**, craft questions that require critical thinking, analysis, or interpretation of nuanced information. The incorrect options should be particularly convincing, making the quiz genuinely challenging at this level.
+4. **Appropriately aligned with the specified difficulty level**: Ensure the generated questions match the intended difficulty. For **easy** quizzes, the questions should focus on basic, easily recognizable information with straightforward answers. For **medium** quizzes, questions should involve more complex topics requiring a deeper understanding or application of the subject. For **hard** quizzes, craft questions that require critical thinking, analysis, or interpretation of nuanced information. The incorrect options should be particularly convincing, making the quiz genuinely challenging at this level.
 
 When generating these question-answer pairs, follow this format:
 
@@ -36,17 +36,25 @@ Here is an example of how to extract question/answers from a given text:
 You still have to parse the question and answers into a valid JSON as provided above!
 
 """
-templ2 = """The quiz questions should be of difficulty '{difficulty}'. Please come up with question/answers pair in JSON format from the following given text:
+templ2 = """Please come up with question/answers pair in JSON format from the following given text with the conditions that:
+
+1. The quiz questions should be of difficulty **{difficulty}**.
+2. The quiz questions should be in the same language as the text, in this case in **{{language}}**.
+3. The following text is only a transcript of a YouTube video, refer to it as 'video' not as 'text'.
+4. Please extract AT LEAST ONE adquate quiz question from the text, remember to provide it in the mentioned JSON format!
+
+Here is the text:
 ----------------
 {text}"""
 
 
-def get_qa_prompt(difficulty: str):
+def get_qa_prompt(difficulty: str, language: str):
     return ChatPromptTemplate.from_messages(
         [
             SystemMessagePromptTemplate.from_template(templ1),
             HumanMessagePromptTemplate.from_template(
-                templ2, partial_variables={"difficulty": difficulty}
+                templ2,
+                partial_variables={"difficulty": difficulty, "language": language},
             ),
         ]
     )

@@ -42,13 +42,15 @@ async def agenerate_quiz(
         )
 
     # split transcript into chunks
-    chunks, video_metadata = chunk_transcript(transcript)
+    chunks, video_metadata = chunk_transcript(transcript, difficulty)
 
     # create summary of video
     await asummarize_video(video_metadata, api_keys)
 
     # generate question-answer set
-    qa_pairs = await agenerate_qa_from_transcript(chunks, difficulty, api_keys)
+    qa_pairs = await agenerate_qa_from_transcript(
+        chunks, difficulty, translation_language, api_keys
+    )
 
     # upsert into vector database
     # TODO: Are embeddings necessary in the future?
@@ -59,7 +61,7 @@ async def agenerate_quiz(
 
 async def asummarize_video(video_metadata: dict[str, str], api_keys: dict[str, str]):
 
-    prompt_template = """Write a concise summary of about 3 to 4 sentences of the following text and in the same language:
+    prompt_template = """Write a very concise summary of about 3 to 4 sentences of the following text and in the same language:
         "{text}"
     CONCISE SUMMARY:"""
 
@@ -84,7 +86,10 @@ async def asummarize_video(video_metadata: dict[str, str], api_keys: dict[str, s
 
 
 async def agenerate_qa_from_transcript(
-    chunks: list[Document], difficulty: str, api_keys: dict[str, str]
+    chunks: list[Document],
+    difficulty: str,
+    translation_language: str,
+    api_keys: dict[str, str],
 ) -> list[dict[str, str]]:
 
     try:
@@ -100,7 +105,8 @@ async def agenerate_qa_from_transcript(
         )
 
     qa_generator_chain = QAGenerationChain.from_llm(
-        llm=llm, prompt=get_qa_prompt(difficulty=difficulty)
+        llm=llm,
+        prompt=get_qa_prompt(difficulty=difficulty, language=translation_language),
     )
 
     tasks = [get_qa_from_chunk(chunk, qa_generator_chain) for chunk in chunks]
@@ -146,12 +152,21 @@ async def get_qa_from_chunk(
         return []
 
 
-def chunk_transcript(transcript: Document) -> list[Document]:
+def chunk_transcript(transcript: Document, difficulty: str) -> list[Document]:
+
+    # number of chunks should depend on difficulty set by user, such that the LLM has more context to generate harder quiz questions and less context to generate easier ones.
+    if difficulty == "EASY":
+        num_chunks = 12
+    elif difficulty == "MEDIUM":
+        num_chunks = 9
+    else:
+        num_chunks = 7
+
+    chunk_size = len(transcript.page_content) // num_chunks
 
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=len(transcript.page_content)
-        // 7,  # TODO: target should be 7 questions
-        chunk_overlap=100,
+        chunk_size=chunk_size,
+        chunk_overlap=200,
         length_function=len,
         add_start_index=True,
     )

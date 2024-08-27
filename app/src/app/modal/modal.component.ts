@@ -12,6 +12,8 @@ export class ModalComponent implements AfterViewInit {
     viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
 
   ngAfterViewInit(): void {
-    this.dialogEl().nativeElement.showModal();
+    if (this.dialogEl()) {
+      this.dialogEl().nativeElement.showModal();
+    }
   }
 }
