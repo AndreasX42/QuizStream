@@ -13,7 +13,7 @@ import asyncio
 import itertools
 from json import JSONDecodeError
 
-from backend.commons.prompts import QA_GENERATION_PROMPT
+from backend.commons.prompts import get_qa_prompt
 from backend.commons.db import create_collection
 
 
@@ -21,6 +21,7 @@ async def agenerate_quiz(
     quiz_name: str,
     youtube_url: str,
     translation_language: str,
+    difficulty: str,
     api_keys: dict[str, str],
 ):
 
@@ -47,7 +48,7 @@ async def agenerate_quiz(
     await asummarize_video(video_metadata, api_keys)
 
     # generate question-answer set
-    qa_pairs = await agenerate_qa_from_transcript(chunks, api_keys)
+    qa_pairs = await agenerate_qa_from_transcript(chunks, difficulty, api_keys)
 
     # upsert into vector database
     # TODO: Are embeddings necessary in the future?
@@ -83,7 +84,7 @@ async def asummarize_video(video_metadata: dict[str, str], api_keys: dict[str, s
 
 
 async def agenerate_qa_from_transcript(
-    chunks: list[Document], api_keys: dict[str, str]
+    chunks: list[Document], difficulty: str, api_keys: dict[str, str]
 ) -> list[dict[str, str]]:
 
     try:
@@ -99,7 +100,7 @@ async def agenerate_qa_from_transcript(
         )
 
     qa_generator_chain = QAGenerationChain.from_llm(
-        llm=llm, prompt=QA_GENERATION_PROMPT
+        llm=llm, prompt=get_qa_prompt(difficulty=difficulty)
     )
 
     tasks = [get_qa_from_chunk(chunk, qa_generator_chain) for chunk in chunks]
