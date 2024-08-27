@@ -38,10 +38,15 @@ strong {
 }
 
 .build-info-container {
-  text-align: center;
-  color: #555;
-  margin-top: 10px;
-  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.build-info-container img {
+  vertical-align: middle;
 }
 
 .build-info-container a {
