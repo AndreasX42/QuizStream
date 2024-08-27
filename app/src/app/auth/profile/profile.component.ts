@@ -8,7 +8,7 @@ import { interval } from 'rxjs';
   standalone: true,
   imports: [MatButton],
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css'],
+  styleUrls: ['./profile.component.scss'],
 })
 export class ProfileComponent implements OnInit {
   private authService = inject(AuthService);

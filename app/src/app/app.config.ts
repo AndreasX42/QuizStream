@@ -13,6 +13,7 @@ import {
 } from '@angular/common/http';
 import { AuthInterceptor } from './shared/interceptors/auth.interceptor';
 import { AppInitService } from './services/app.init.service';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -36,6 +37,6 @@ export const appConfig: ApplicationConfig = {
         appInitService.initApp(),
       deps: [AppInitService],
       multi: true,
-    },
+    }, provideAnimationsAsync(),
   ],
 };

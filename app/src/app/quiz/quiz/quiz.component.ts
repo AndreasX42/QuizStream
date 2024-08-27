@@ -34,7 +34,7 @@ import { Router, RouterModule } from '@angular/router';
     RouterModule,
   ],
   templateUrl: './quiz.component.html',
-  styleUrl: './quiz.component.css',
+  styleUrl: './quiz.component.scss',
 })
 export class QuizComponent {
   private destroyRef = inject(DestroyRef);

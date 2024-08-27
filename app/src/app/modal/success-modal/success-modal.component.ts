@@ -21,7 +21,7 @@ import { MessageService } from '../../services/message.service';
     MatButtonModule,
   ],
   templateUrl: './success-modal.component.html',
-  styleUrl: './success-modal.component.css',
+  styleUrl: './success-modal.component.scss',
 })
 export class SuccessModalComponent {
   title = input<string>();

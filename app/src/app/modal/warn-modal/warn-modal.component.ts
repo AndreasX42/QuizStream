@@ -21,7 +21,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatButtonModule,
   ],
   templateUrl: './warn-modal.component.html',
-  styleUrl: './warn-modal.component.css',
+  styleUrl: './warn-modal.component.scss',
 })
 export class WarnModalComponent {
   title = input<string>();

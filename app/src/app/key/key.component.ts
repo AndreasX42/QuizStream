@@ -34,7 +34,7 @@ import { MessageService } from '../services/message.service';
     SlicePipe,
   ],
   templateUrl: './key.component.html',
-  styleUrl: './key.component.css',
+  styleUrl: './key.component.scss',
 })
 export class KeyComponent {
   private router = inject(Router);

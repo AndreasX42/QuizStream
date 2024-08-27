@@ -16,7 +16,7 @@ import { AuthService } from '../services/auth.service';
     RouterLinkActive,
   ],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.css',
+  styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
   private authService = inject(AuthService);

@@ -7,6 +7,6 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [MatButtonModule, RouterLink],
   templateUrl: './start.page.component.html',
-  styleUrl: './start.page.component.css',
+  styleUrl: './start.page.component.scss',
 })
 export class StartPageComponent {}

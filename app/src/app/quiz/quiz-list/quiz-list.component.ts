@@ -34,7 +34,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
     MatProgressSpinner,
   ],
   templateUrl: './quiz-list.component.html',
-  styleUrl: './quiz-list.component.css',
+  styleUrl: './quiz-list.component.scss',
 })
 export class QuizListComponent {
   private quizService = inject(QuizService);

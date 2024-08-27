@@ -27,7 +27,7 @@ import { MatCard, MatCardModule } from '@angular/material/card';
     MatCardModule,
   ],
   templateUrl: './solve-quiz.component.html',
-  styleUrl: './solve-quiz.component.css',
+  styleUrl: './solve-quiz.component.scss',
 })
 export class SolveQuizComponent {
   private quizService = inject(QuizService);

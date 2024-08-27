@@ -29,7 +29,7 @@ import { CommonModule } from '@angular/common';
     CommonModule,
   ],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css',
+  styleUrl: './login.component.scss',
 })
 export class LoginComponent {
   private router = inject(Router);

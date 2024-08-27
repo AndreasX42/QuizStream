@@ -48,7 +48,7 @@ function equalValues(controlName1: string, controlName2: string) {
     MatProgressSpinner,
   ],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.css',
+  styleUrl: './register.component.scss',
 })
 export class RegisterComponent {
   private destroyRef = inject(DestroyRef);

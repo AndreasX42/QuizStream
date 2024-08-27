@@ -38,7 +38,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
     MatIcon,
   ],
   templateUrl: './new-quiz.component.html',
-  styleUrl: './new-quiz.component.css',
+  styleUrl: './new-quiz.component.scss',
 })
 export class NewQuizComponent {
   private router = inject(Router);

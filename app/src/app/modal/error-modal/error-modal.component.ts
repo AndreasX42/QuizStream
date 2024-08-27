@@ -22,7 +22,7 @@ import { MessageService } from '../../services/message.service';
     MatButtonModule,
   ],
   templateUrl: './error-modal.component.html',
-  styleUrl: './error-modal.component.css',
+  styleUrl: './error-modal.component.scss',
 })
 export class ErrorModalComponent {
   title = input<string>();

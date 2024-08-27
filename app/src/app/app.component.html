@@ -6,6 +6,12 @@
 <app-warn-modal title="Warning!" [message]="warning()" />
 }
 
+<div class="theme-toggle">
+  <button mat-button (click)="toggleTheme()">
+    Switch to {{ themeService.isDarkModeEnabled() ? "Light" : "Dark" }} Mode
+  </button>
+</div>
+
 <app-header title="{{ app_name }}" />
 
 <main>

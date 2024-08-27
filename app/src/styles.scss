@@ -1,0 +1,146 @@
+@use '@angular/material' as mat; // Use @use to import Angular Material
+
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+// Define the light theme
+$light-primary: mat.define-palette(mat.$indigo-palette);
+$light-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+$light-warn: mat.define-palette(mat.$red-palette);
+
+$light-theme: mat.define-light-theme((
+  color: (
+    primary: $light-primary,
+    accent: $light-accent,
+    warn: $light-warn,
+  ),
+  typography: mat.define-typography-config(),
+));
+
+
+// Apply the light theme by default
+@include mat.all-component-themes($light-theme);
+
+// Define the dark theme class
+.dark-theme {
+  @include mat.all-component-themes($dark-theme);
+}
+
+
+/* CSS for Forms */
+
+form {
+  margin: 2rem auto;
+  max-width: 35rem;
+  min-width: 25rem;
+  padding: 2rem;
+  border-radius: 4px;
+  background-color: #f7f7f7;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
+}
+
+.form-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.form-container .mat-form-field-text {
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+.form-container .form-row {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  gap: 20px;
+}
+
+.form-container .mat-form-field-option {
+  width: 40%;
+  padding: 0px;
+}
+
+.form-container .mat-form-field-option-small {
+  width: 25%;
+  padding: 0px;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .form-field,
+  mat-form-field-text {
+    width: 100%;
+  }
+}
+
+/* CSS for messages on main page */
+
+.main-page-container {
+  margin-top: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  text-align: center;
+  flex-direction: column;
+}
+
+.main-msg h4 {
+  font-size: 2rem;
+  margin: 10px 0;
+  color: #ff6b6b;
+}
+
+.main-msg h3 {
+  font-size: 2rem;
+  margin: 10px 0;
+}
+
+.main-msg p {
+  font-size: 1.2rem;
+  margin: 15px 0;
+}
+
+/* Dark Theme */
+.dark-theme {
+  --primary-color: #bb86fc;
+  --accent-color: #03dac6;
+  --warn-color: #cf6679;
+  --background-color: #121212;
+  --text-color: #ffffff;
+}
+
+/* Apply the theme colors */
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.mat-toolbar {
+  background-color: var(--primary-color) !important;
+  color: var(--text-color) !important;
+}
+
+.mat-button {
+  background-color: var(--primary-color) !important;
+  color: var(--text-color) !important;
+}
+
+.mat-card {
+  background-color: var(--background-color) !important;
+  color: var(--text-color) !important;
+}
+
+/* Other Material components can be styled similarly */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
