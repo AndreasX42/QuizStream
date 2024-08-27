@@ -13,6 +13,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { AuthService } from '../../services/auth.service';
+import { MatCard, MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-solve-quiz',
@@ -23,6 +24,7 @@ import { AuthService } from '../../services/auth.service';
     MatButtonModule,
     RouterLink,
     MatProgressBar,
+    MatCardModule,
   ],
   templateUrl: './solve-quiz.component.html',
   styleUrl: './solve-quiz.component.css',

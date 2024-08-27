@@ -1,15 +1,28 @@
 .quiz-container {
-  max-width: 600px;
   margin: 20px auto;
+  max-width: 45rem;
+  min-width: 25rem;
+  padding: 2rem;
   text-align: center;
 }
 
-.answer-container {
-  margin: 30px;
+.answer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  margin: 40px;
+  max-width: 750px;
 }
 
 .answer-option {
-  margin-bottom: 15px;
+  text-align: center;
+}
+
+.answer-grid button {
+  padding: 30px 10px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .answer-option.correct button {
@@ -34,4 +47,8 @@
 
 .loading-container mat-spinner {
   margin-bottom: 15px;
+}
+
+.context {
+  margin-top: 50px;
 }

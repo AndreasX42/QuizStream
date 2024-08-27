@@ -22,7 +22,7 @@
 <div class="quiz-container">
   <h4>{{ currentQuestion()!.question }}</h4>
 
-  <div class="answer-container">
+  <div class="answer-grid">
     @for(answer of answerOptions; track $index) {
     <div
       class="answer-option"
@@ -49,6 +49,11 @@
   <button mat-raised-button color="primary" (click)="goToNextQuestion()">
     Next Question
   </button>
+
+  <mat-card class="context" appearance="outlined">
+    <mat-card-header><i>Section of video transcript</i></mat-card-header>
+    <mat-card-content>...{{ currentQuestion()!.context }}...</mat-card-content>
+  </mat-card>
   }
 </div>
 }
