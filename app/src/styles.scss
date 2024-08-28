@@ -14,13 +14,15 @@ html, body, app-root, app-header, .app-frame {
 html.lightMode {
   --form-background: #f7f7f7;
   --font-color: #333;
+  @include mat.core-theme(custom_themes.$light-theme);
   @include mat.all-component-themes(custom_themes.$light-theme);
 }
 
 html.darkMode {
   --form-background: #424242;
   --font-color: #f7f7f7;
-  @include mat.all-component-themes(custom_themes.$dark-theme);
+  @include mat.core-color(custom_themes.$dark-theme);
+  @include mat.all-component-colors(custom_themes.$dark-theme)
 }
 
 a.ref-link {
