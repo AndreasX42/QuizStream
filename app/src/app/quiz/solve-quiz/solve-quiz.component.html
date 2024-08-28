@@ -1,4 +1,5 @@
 <mat-progress-bar
+  class="progress-bar"
   mode="determinate"
   value="{{ (currentQuestionIndex() / numberOfQuestions) * 100 }}"
 ></mat-progress-bar>
@@ -20,8 +21,9 @@
 </div>
 } @else if(currentQuestion()) {
 <div class="quiz-container">
-  <h4>{{ currentQuestion()!.question }}</h4>
-
+  <div class="question-container">
+    <h4>{{ currentQuestion()!.question }}</h4>
+  </div>
   <div class="answer-grid">
     @for(answer of answerOptions; track $index) {
     <div

@@ -1,11 +1,14 @@
 mat-toolbar {
-  background-color: #d7e3ff;
-  color: #005cbb;
+  background-color: #005cbb !important;
 }
 
 a[mat-button] {
-  color: #005cbb;
+  color: #ffffff;
   margin-right: 10px;
+}
+
+a[mat-button]:hover {
+  background-color: #00409c;
 }
 
 .spacer {
@@ -13,5 +16,5 @@ a[mat-button] {
 }
 
 .selected {
-  background-color: #c1d5f8;
+  background-color: #00409c;
 }

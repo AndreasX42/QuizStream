@@ -1,4 +1,4 @@
-import { DestroyRef, inject, Injectable, OnInit, signal } from '@angular/core';
+import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import {
   Quiz,
   QuizCreateRequestDto,

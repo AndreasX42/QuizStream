@@ -1,6 +1,5 @@
 import { Component, DestroyRef, inject, input, signal } from '@angular/core';
 import { QuizService } from '../../services/quiz.service';
-import { HttpClient } from '@angular/common/http';
 import {
   QuizDetails,
   QuizQuestionDetails,
@@ -13,7 +12,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { AuthService } from '../../services/auth.service';
-import { MatCard, MatCardModule } from '@angular/material/card';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-solve-quiz',

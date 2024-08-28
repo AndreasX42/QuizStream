@@ -1,33 +1,35 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ThemeService {
-  private isDarkMode = false;
+  private localStorageThemeKey = 'theme';
+  isDarkMode = signal(false);
 
   constructor() {
-    // Load the theme from localStorage if it exists
-    const savedTheme = localStorage.getItem('theme');
+    const savedTheme = localStorage.getItem(this.localStorageThemeKey);
     if (savedTheme === 'dark') {
       this.enableDarkMode();
+    } else {
+      this.disableDarkMode();
     }
   }
 
   enableDarkMode() {
-    document.body.classList.add('dark-theme');
-    localStorage.setItem('theme', 'dark');
-    this.isDarkMode = true;
+    document.documentElement.className = 'darkMode';
+    localStorage.setItem(this.localStorageThemeKey, 'dark');
+    this.isDarkMode.set(true);
   }
 
   disableDarkMode() {
-    document.body.classList.remove('dark-theme');
-    localStorage.setItem('theme', 'light');
-    this.isDarkMode = false;
+    document.documentElement.className = 'lightMode';
+    localStorage.setItem(this.localStorageThemeKey, 'light');
+    this.isDarkMode.set(false);
   }
 
   toggleTheme() {
-    if (this.isDarkMode) {
+    if (this.isDarkMode()) {
       this.disableDarkMode();
     } else {
       this.enableDarkMode();
@@ -35,6 +37,6 @@ export class ThemeService {
   }
 
   isDarkModeEnabled() {
-    return this.isDarkMode;
+    return this.isDarkMode();
   }
 }

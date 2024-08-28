@@ -1,3 +1,5 @@
+@import "../../styles.scss";
+
 dialog {
   min-width: 30rem;
   padding: 0;
@@ -5,7 +7,7 @@ dialog {
   border-radius: 4px;
   border-width: 0.5px;
   border-color: #a7a7a7;
-  background-color: #f7f7f7;
+  background-color: var(--form-background);
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
   animation: slide-down-fade-in 0.3s ease-out forwards;
 }

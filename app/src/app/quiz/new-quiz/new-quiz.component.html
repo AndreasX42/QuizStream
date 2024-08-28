@@ -67,7 +67,7 @@
       </mat-form-field>
     </div>
     <div class="form-row">
-      <button mat-raised-button [disabled]="isCreating()">
+      <button mat-raised-button color="primary" [disabled]="isCreating()">
         <span *ngIf="!isCreating()">Submit</span>
         <mat-spinner *ngIf="isCreating()" diameter="20"></mat-spinner>
       </button>

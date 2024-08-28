@@ -1,28 +1,32 @@
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { MatButton } from '@angular/material/button';
 import { interval } from 'rxjs';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [MatButton],
+  imports: [MatButton, MatSlideToggleModule],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
 })
 export class ProfileComponent implements OnInit {
   private authService = inject(AuthService);
-  private destroyRef = inject(DestroyRef);
+  private themeService = inject(ThemeService);
+  selectedDarkMode = this.themeService.isDarkMode;
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
+  }
 
   sessionTimeLeft = signal<string | undefined>(undefined);
   user = this.authService.user;
 
   ngOnInit(): void {
-    // Initialize session expiry countdown
     this.initializeSessionTimer();
   }
-
-  constructor() {}
 
   logout(): void {
     this.authService.logout();

@@ -1,17 +1,26 @@
 .quiz-container {
   margin: 20px auto;
   max-width: 45rem;
-  min-width: 25rem;
+  min-width: 30rem;
   padding: 2rem;
   text-align: center;
+}
+
+.question-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .answer-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 30px;
-  margin: 40px;
-  max-width: 750px;
+  margin: 50px;
 }
 
 .answer-option {
@@ -51,4 +60,22 @@
 
 .context {
   margin-top: 50px;
+}
+
+.progress-bar .mat-progress-bar {
+    height: 10px;
+  }
+
+.progress-bar  .mat-progress-bar-fill::after {
+    background-color: #37474f;
+}
+
+.progress-bar  .mat-progress-bar-buffer {
+    background-color: #90a4ae;
+}
+
+.progress-bar  .mat-progress-bar-background {
+    animation: none;
+    background-color: #eceff1;
+    fill: #eceff1;
 }
