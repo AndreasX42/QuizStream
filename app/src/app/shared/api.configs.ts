@@ -1,7 +1,7 @@
 import { environment } from './environment/environment';
 
 export class Configs {
-  static API_PROV: string = environment.apiProv;
+  static API_KEY: string = environment.apiKey;
   static BASE_URL: string = environment.apiUrl;
   static QUIZZES_ENDPOINT: string = '/quizzes';
   static USERS_ENDPOINT: string = '/users';

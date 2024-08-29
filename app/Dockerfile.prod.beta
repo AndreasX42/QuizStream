@@ -6,13 +6,9 @@ COPY package*.json ./
 
 RUN npm install --silent
 
-RUN npm install -g @angular/cli @angular/material
-
 COPY ./ ./
 
 RUN npm run build --prod
-
-RUN node replace-env.js
 
 FROM nginx:alpine
 

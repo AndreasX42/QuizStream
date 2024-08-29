@@ -19,14 +19,14 @@ spec:
       containers:
         - name: quizstream-app
           image: andreasx42/quizstream-app:latest
-          env:
-            - name: API_URL
-              value: http://35.225.79.33/api/v1
-            - name: API_PROV
-              valueFrom:
-                secretKeyRef:
-                  name: pgsecrets
-                  key: API_PROV
+          # env:
+          #   - name: API_URL
+          #     value: http://35.225.79.33/api/v1
+          #   - name: API_PROV
+          #     valueFrom:
+          #       secretKeyRef:
+          #         name: pgsecrets
+          #         key: API_PROV
           ports:
             - containerPort: 80
           volumeMounts:

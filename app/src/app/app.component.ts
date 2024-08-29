@@ -8,6 +8,7 @@ import { WarnModalComponent } from './modal/warn-modal/warn-modal.component';
 import { ThemeService } from './services/theme.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Configs } from './shared/api.configs';
 
 @Component({
   selector: 'app-root',
@@ -28,6 +29,7 @@ export class AppComponent {
   app_name = 'QuizStream';
 
   private themeService = inject(ThemeService);
+  apiProv = Configs.API_KEY;
 
   private messageService = inject(MessageService);
   error = this.messageService.error;

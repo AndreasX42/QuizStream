@@ -16,10 +16,9 @@ export class MessageService {
   static MSG_LOGIN_FIST_WARNING =
     'You have to log in, in order to use this service.';
 
-  private _error = signal('');
-  private _success = signal('');
-  private _warning = signal('');
-  private _status = signal<number | undefined>(undefined);
+  private _error = signal<string | undefined>(undefined);
+  private _success = signal<string | undefined>(undefined);
+  private _warning = signal<string | undefined>(undefined);
 
   error = this._error.asReadonly();
   success = this._success.asReadonly();
@@ -30,7 +29,7 @@ export class MessageService {
   }
 
   clearError() {
-    this._error.set('');
+    this._error.set(undefined);
   }
 
   showSuccess(message: string) {
@@ -38,7 +37,7 @@ export class MessageService {
   }
 
   clearSuccess() {
-    this._success.set('');
+    this._success.set(undefined);
   }
 
   showWarning(message: string) {
@@ -46,6 +45,6 @@ export class MessageService {
   }
 
   clearWarning() {
-    this._warning.set('');
+    this._warning.set(undefined);
   }
 }

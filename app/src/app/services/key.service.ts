@@ -15,7 +15,7 @@ export class KeyService {
   keys = this._keys.asReadonly();
 
   constructor() {
-    const keyDftName = 'sk-...' + Configs.API_PROV.slice(125);
+    const keyDftName = 'sk-...' + Configs.API_KEY.slice(125);
     const keysString = localStorage.getItem(this.localStorageApiKeys);
 
     if (keysString) {
@@ -24,12 +24,12 @@ export class KeyService {
 
     if (
       !keysString ||
-      (Configs.API_PROV !== '' &&
+      (Configs.API_KEY !== '' &&
         this._keys().length === 1 &&
         this._keys()[0].key === keyDftName)
     ) {
       this._keys.set([
-        { id: '0', provider: KeyProvider.OpenAI, key: Configs.API_PROV },
+        { id: '0', provider: KeyProvider.OpenAI, key: Configs.API_KEY },
       ]);
 
       localStorage.setItem(
