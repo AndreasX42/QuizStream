@@ -6,10 +6,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @AllArgsConstructor
 @SpringBootApplication
-public class SpringProjectApplication {
+public class QuizStreamApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(SpringProjectApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(QuizStreamApplication.class, args);
+    }
 
 }

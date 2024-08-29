@@ -76,8 +76,8 @@ public class UserService {
 
         // Check if email needs to be updated
         if (Objects.nonNull((userDto.email()))) {
-            boolean updatesEmail = !userDto.email()
-                    .equals(user.getEmail());
+            boolean updatesEmail = !user.getEmail()
+                    .equals(userDto.email());
             boolean newEmailIsUnique = userRepository.findByEmail(userDto.email())
                     .isEmpty();
 

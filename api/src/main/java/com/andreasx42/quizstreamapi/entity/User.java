@@ -5,6 +5,7 @@ import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ public class User {
 
     @Nonnull
     @NotBlank(message = "username cannot be blank")
+    @Size(min = 3, message = "username must be at least 3 characters")
     @Column(nullable = false, unique = true)
     private String username;
 
