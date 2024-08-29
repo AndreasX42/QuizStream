@@ -18,15 +18,20 @@ jobs:
       - run:
           name: Inject build info into frontend
           command: |
+            echo "PIPELINE_NUMBER: ${PIPELINE_NUMBER}"
+            echo "FORMATTED_DATE: ${FORMATTED_DATE}"
+            echo "TAG: ${TAG}"
+            echo "API_URL: ${API_URL}"
+
             sed -i "s/\$BUILD_NUMBER/${PIPELINE_NUMBER}/g" ./app/src/app/about/about.component.html
             sed -i "s/\$BUILD_DATE/${FORMATTED_DATE}/g" ./app/src/app/about/about.component.html
             sed -i "s/\$GIT_SHA/${TAG}/g" ./app/src/app/about/about.component.html
-            sed -i "s/\API_URL/$API_URL/g" ./app/src/app/shared/environment/environment.ts
-            sed -i "s/\API_KEY/$API_KEY/g" ./app/src/app/shared/environment/environment.ts
+            sed -i "s/\'API_URL'/$API_URL/g" ./app/src/app/shared/environment/environment.ts
+            sed -i "s/\'API_KEY'/$API_KEY/g" ./app/src/app/shared/environment/environment.ts
       - run:
           name: Push Angular app image
           command: |
-            docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG -t $DOCKER_USER/$IMAGE_NAME_BASE-app:latest -f ./app/Dockerfile.prod.todo ./app
+            docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG -t $DOCKER_USER/$IMAGE_NAME_BASE-app:latest -f ./app/Dockerfile.prod.beta ./app
             docker push $DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG
             docker push $DOCKER_USER/$IMAGE_NAME_BASE-app:latest
   push_api_image:
