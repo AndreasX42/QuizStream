@@ -16,18 +16,13 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: false
       - run:
-          name: Inject build info into frontend
+          name: Inject build info and variables into app
           command: |
-            echo "PIPELINE_NUMBER: ${PIPELINE_NUMBER}"
-            echo "FORMATTED_DATE: ${FORMATTED_DATE}"
-            echo "TAG: ${TAG}"
-            echo "API_URL: ${API_URL}"
-
-            sed -i "s/\$BUILD_NUMBER/${PIPELINE_NUMBER}/g" ./app/src/app/about/about.component.html
-            sed -i "s/\$BUILD_DATE/${FORMATTED_DATE}/g" ./app/src/app/about/about.component.html
-            sed -i "s/\$GIT_SHA/${TAG}/g" ./app/src/app/about/about.component.html
-            sed -i "s/\'API_URL'/$API_URL/g" ./app/src/app/shared/environment/environment.ts
-            sed -i "s/\'API_KEY'/$API_KEY/g" ./app/src/app/shared/environment/environment.ts
+            sed -i "s|\$BUILD_NUMBER|${PIPELINE_NUMBER}|g" ./app/src/app/about/about.component.html
+            sed -i "s|\$BUILD_DATE|${FORMATTED_DATE}|g" ./app/src/app/about/about.component.html
+            sed -i "s|\$GIT_SHA|${TAG}|g" ./app/src/app/about/about.component.html
+            sed -i "s|'API_URL'|'${API_URL}'|g" ./app/src/app/shared/environment/environment.ts
+            sed -i "s|'API_KEY'|'${API_KEY}'|g" ./app/src/app/shared/environment/environment.ts
       - run:
           name: Push Angular app image
           command: |
