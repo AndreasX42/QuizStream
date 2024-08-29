@@ -18,7 +18,7 @@ jobs:
       - run:
           name: Inject build info into frontend
           command: |
-            FORMATTED_DATE = $(date +"%-d, %B, %Y %H:%M")
+            FORMATTED_DATE=$(date +"%-d, %B, %Y %H:%M")
             sed -i "s/\$BUILD_NUMBER/${PIPELINE_NUMBER}/g" ./app/src/app/about/about.component.html
             sed -i "s/\$BUILD_DATE/${FORMATTED_DATE}/g" ./app/src/app/about/about.component.html
             sed -i "s/\$GIT_SHA/${TAG}/g" ./app/src/app/about/about.component.html
