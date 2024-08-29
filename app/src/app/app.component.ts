@@ -29,9 +29,8 @@ export class AppComponent {
   app_name = 'QuizStream';
 
   private themeService = inject(ThemeService);
-  apiProv = Configs.API_KEY;
-
   private messageService = inject(MessageService);
+
   error = this.messageService.error;
   success = this.messageService.success;
   warning = this.messageService.warning;
