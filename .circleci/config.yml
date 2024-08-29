@@ -18,12 +18,11 @@ jobs:
       - run:
           name: Inject build info into frontend
           command: |
-            FORMATTED_DATE=$(date +"%-d, %B, %Y %H:%M")
             sed -i "s/\$BUILD_NUMBER/${PIPELINE_NUMBER}/g" ./app/src/app/about/about.component.html
             sed -i "s/\$BUILD_DATE/${FORMATTED_DATE}/g" ./app/src/app/about/about.component.html
             sed -i "s/\$GIT_SHA/${TAG}/g" ./app/src/app/about/about.component.html
-            sed -i "s/\API_URL/${API_URL}/g" ./app/src/app/shared/environment/environment.ts
-            sed -i "s/\API_KEY/${API_KEY}/g" ./app/src/app/shared/environment/environment.ts
+            sed -i "s/\API_URL/$API_URL/g" ./app/src/app/shared/environment/environment.ts
+            sed -i "s/\API_KEY/$API_KEY/g" ./app/src/app/shared/environment/environment.ts
       - run:
           name: Push Angular app image
           command: |
@@ -149,6 +148,7 @@ commands:
             echo 'export TAG=${CIRCLE_SHA1:0:8}' >> $BASH_ENV
             echo 'export IMAGE_NAME_BASE=quizstream' >> $BASH_ENV
             echo 'export NOW=$(date --utc +"%Y-%m-%d %H:%M:%S")' >> $BASH_ENV
+            echo 'export FORMATTED_DATE=$(date --utc +"%-d, %B, %Y %H:%M")' >> $BASH_ENV
             echo 'export PIPELINE_NUMBER=<< pipeline.number >>' >> $BASH_ENV
   docker_login:
     steps:
