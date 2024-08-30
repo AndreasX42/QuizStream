@@ -18,5 +18,4 @@ WORKDIR /api
 
 COPY --from=build /tmp/target/*.jar ./quizstream-api.jar
 
-# Run the application
 CMD ["java", "-jar", "quizstream-api.jar"]

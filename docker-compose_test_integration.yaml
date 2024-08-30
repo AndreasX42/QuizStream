@@ -1,27 +1,23 @@
 version: "3"
 services:
-  api:
+  api-test:
     build:
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.prod
+      target: build
       context: ./api
-    container_name: api
+    container_name: api-test
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/quizstream_db_test
+      - SPRING_PROFILES_ACTIVE=integration-test
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=my_password
-      - SERVER_PORT=9090
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-test:5432/quizstream_db_test
       - JWT_SECRET="bQeThWmZq4t7w!z$C&F)J@NcRfUjXn2r5u8x/A?D*G-KaPdSgVkYp3s6v9y$B&E)"
+    command: mvn test
     depends_on:
-      - postgres
-  postgres:
-    build:
-      dockerfile: Dockerfile
-      context: ./postgres
-    container_name: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./postgres/data:/var/lib/postgresql/data
+      - postgres-test
+  postgres-test:
+    image: andreasx42/quizstream-postgres:latest
+    container_name: postgres-test
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=my_password

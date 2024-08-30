@@ -6,7 +6,26 @@ executors:
       - image: cimg/python:3.11
 
 jobs:
-  # first we build and push the new Docker images to Docker Hub
+  # first we run tests on Spring Boot api
+  run_integration_tests:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Clear Docker cache
+          command: docker system prune --all --force --volumes
+      - run:
+          name: Run Docker Compose to build, start and test
+          command: |
+            docker-compose -f docker-compose_test_integration.yaml up --build --abort-on-container-exit --exit-code-from api-test
+      - run:
+          name: Shut services down
+          command: docker-compose -f docker-compose.integration.test.yaml down
+      - store_artifacts:
+          path: /tests/test-reports
+          destination: test-reports
+
+  # then we build all Docker images and push them to docker hub
   push_app_image:
     executor: python-docker-executor
     steps:
@@ -58,42 +77,7 @@ jobs:
             docker push $DOCKER_USER/$IMAGE_NAME_BASE-backend:$TAG
             docker push $DOCKER_USER/$IMAGE_NAME_BASE-backend:latest
 
-  # not necessary to everytime push postgres image because it does not change
-  # push_postgres_image:
-  #   executor: python-docker-executor
-  #   steps:
-  #     - checkout
-  #     - set_env_vars
-  #     - docker_login
-  #     - setup_remote_docker:
-  #         docker_layer_caching: false
-  #     - run:
-  #         name: Push Postgres image
-  #         command: |
-  #           docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-postgres:$TAG -t $DOCKER_USER/$IMAGE_NAME_BASE-postgres:latest ./postgres
-  #           docker push $DOCKER_USER/$IMAGE_NAME_BASE-postgres:$TAG
-  #           docker push $DOCKER_USER/$IMAGE_NAME_BASE-postgres:latest
-
-  # then we run tests on the new Docker images
-  # run_integration_tests:
-  #   machine: true
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: Clear Docker cache
-  #         command: docker system prune --all --force --volumes
-  #     - run:
-  #         name: Run Docker Compose to build, start and test
-  #         command: |
-  #           docker-compose -f docker-compose.integration.test.yaml up --exit-code-from test-suite
-  #     - run:
-  #         name: Shut services down
-  #         command: docker-compose -f docker-compose.integration.test.yaml down
-  #     - store_artifacts:
-  #         path: /tests/test-reports
-  #         destination: test-reports
-
-  # if everything was successful we deploy the Docker images into the k8s cluster
+  # if everything was successful we deploy the Docker images to the k8s cluster
   deploy_to_gke_k8s_cluster:
     docker:
       - image: google/cloud-sdk
@@ -122,22 +106,22 @@ workflows:
   version: 2
   build-deploy:
     jobs:
+      - run_integration_tests
       - push_app_image
+          requires:
+           - run_integration_tests
       - push_api_image
+          requires:
+           - run_integration_tests
       - push_backend_image
-      # - push_postgres_image
-      # - run_integration_tests:
-      #     requires:
-      #       - push_app_image
-      #       - push_api_image
-      #       - push_backend_image
-      #       - push_postgres_image
+          requires:
+            - run_integration_tests
       - deploy_to_gke_k8s_cluster:
           requires:
+            - run_integration_tests
             - push_app_image
             - push_api_image
             - push_backend_image
-            # - push_postgres_image
 
 commands:
   set_env_vars:
@@ -147,7 +131,7 @@ commands:
           command: |
             echo 'export TAG=${CIRCLE_SHA1:0:8}' >> $BASH_ENV
             echo 'export IMAGE_NAME_BASE=quizstream' >> $BASH_ENV
-            echo 'export FORMATTED_DATE=$(date --utc +"%a, %-d %B, %H:%M")' >> $BASH_ENV
+            echo 'export FORMATTED_DATE=$(date --utc +"%a, %-d %b, %H:%M")' >> $BASH_ENV
             echo 'export PIPELINE_NUMBER=<< pipeline.number >>' >> $BASH_ENV
   docker_login:
     steps:
