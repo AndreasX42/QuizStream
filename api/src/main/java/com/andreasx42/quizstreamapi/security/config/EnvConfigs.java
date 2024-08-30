@@ -23,11 +23,19 @@ public class EnvConfigs {
         backendCreateNewQuizEndpoint = backendAddress + "/quizzes/new";
     }
 
+    public String getJwtSecret() {
+        return jwtSecret;
+    }
+
+    public String getAppHost() {
+        return appHost;
+    }
+
     @Value("${jwt.secret}")
-    public String jwtSecret;
+    private String jwtSecret;
 
     @Value("${app.host}")
-    public String appHost;
+    private String appHost;
 
     @Value("${backend.host}")
     private String backendHost;

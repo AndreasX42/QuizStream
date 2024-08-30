@@ -2,7 +2,8 @@ package com.andreasx42.quizstreamapi.controller;
 
 import com.andreasx42.quizstreamapi.dto.user.UserOutboundDto;
 import com.andreasx42.quizstreamapi.dto.user.UserRegisterDto;
-import com.andreasx42.quizstreamapi.dto.user.UserUpdateDto;
+import com.andreasx42.quizstreamapi.dto.user.UserUpdateRequestDto;
+import com.andreasx42.quizstreamapi.dto.user.UserUpdateResponseDto;
 import com.andreasx42.quizstreamapi.exception.ErrorResponse;
 import com.andreasx42.quizstreamapi.service.UserService;
 import com.andreasx42.quizstreamapi.util.mapper.UserMapper;
@@ -79,9 +80,9 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Unsuccessful submission", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))})
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("#id == principal.id or hasAuthority('ADMIN')")
-    public ResponseEntity<UserOutboundDto> updateUser(@Valid @RequestBody UserUpdateDto userDto, @PathVariable Long id) {
+    public ResponseEntity<UserUpdateResponseDto> updateUser(@Valid @RequestBody UserUpdateRequestDto userDto, @PathVariable Long id) {
 
-        UserOutboundDto userUpdatedDto = userService.update(id, userDto);
+        UserUpdateResponseDto userUpdatedDto = userService.update(id, userDto);
         return new ResponseEntity<>(userUpdatedDto, HttpStatus.OK);
     }
 

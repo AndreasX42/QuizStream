@@ -5,7 +5,7 @@ import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Email;
 
 @Schema(description = "Dto for update of user.")
-public record UserUpdateDto(
+public record UserUpdateRequestDto(
 
         @Nullable String username,
         @Nullable @Email String email,

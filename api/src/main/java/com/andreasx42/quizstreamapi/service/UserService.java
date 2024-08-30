@@ -2,17 +2,22 @@ package com.andreasx42.quizstreamapi.service;
 
 import com.andreasx42.quizstreamapi.dto.user.UserOutboundDto;
 import com.andreasx42.quizstreamapi.dto.user.UserRegisterDto;
-import com.andreasx42.quizstreamapi.dto.user.UserUpdateDto;
+import com.andreasx42.quizstreamapi.dto.user.UserUpdateRequestDto;
+import com.andreasx42.quizstreamapi.dto.user.UserUpdateResponseDto;
 import com.andreasx42.quizstreamapi.entity.User;
 import com.andreasx42.quizstreamapi.exception.DuplicateEntityException;
 import com.andreasx42.quizstreamapi.exception.EntityNotFoundException;
 import com.andreasx42.quizstreamapi.repository.UserRepository;
+import com.andreasx42.quizstreamapi.security.config.EnvConfigs;
 import com.andreasx42.quizstreamapi.util.mapper.UserMapper;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -22,11 +27,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserMapper userMapper;
+    private final EnvConfigs envConfigs;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, UserMapper userMapper, EnvConfigs envConfigs) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userMapper = userMapper;
+        this.envConfigs = envConfigs;
     }
 
     public User getByUserName(String username) {
@@ -70,38 +77,44 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public UserOutboundDto update(Long id, UserUpdateDto userDto) {
+    public UserUpdateResponseDto update(Long id, UserUpdateRequestDto userDto) {
 
         User user = getById(id);
+        String refreshedJwtToken = null;
 
         // Check if email needs to be updated
-        if (Objects.nonNull((userDto.email()))) {
-            boolean updatesEmail = !user.getEmail()
-                    .equals(userDto.email());
+        if (Objects.nonNull((userDto.email())) && !user.getEmail()
+                .equals(userDto.email())) {
+
             boolean newEmailIsUnique = userRepository.findByEmail(userDto.email())
                     .isEmpty();
 
-            if (updatesEmail && newEmailIsUnique) {
+            if (newEmailIsUnique) {
                 user.setEmail(userDto.email());
-            }
-
-            if (updatesEmail && !newEmailIsUnique) {
+            } else {
                 throw new DuplicateEntityException("email", userDto.email(), User.class);
             }
         }
 
         // Check if username needs to be updated
-        if (Objects.nonNull((userDto.username()))) {
-            boolean updatesUsername = !userDto.username()
-                    .equals(user.getUsername());
+        if (Objects.nonNull((userDto.username())) && !userDto.username()
+                .equals(user.getUsername())) {
+
             boolean newUsernameIsUnique = userRepository.findByUsername(userDto.username())
                     .isEmpty();
 
-            if (updatesUsername && newUsernameIsUnique) {
+            if (newUsernameIsUnique) {
                 user.setUsername(userDto.username());
-            }
 
-            if (updatesUsername && !newUsernameIsUnique) {
+                refreshedJwtToken = JWT.create()
+                        .withSubject(userDto.username())
+                        .withExpiresAt(new Date(System.currentTimeMillis() + envConfigs.TOKEN_EXPIRATION))
+                        .withClaim("role", user.getRole()
+                                .toString())
+                        .sign(Algorithm.HMAC512(envConfigs.getJwtSecret()));
+
+
+            } else {
                 throw new DuplicateEntityException("username", userDto.username(), User.class);
             }
         }
@@ -110,7 +123,9 @@ public class UserService {
             user.setPassword(bCryptPasswordEncoder.encode(userDto.password()));
         }
 
-        return userMapper.mapFromEntityOutbound(userRepository.save(user));
+        User updatedUser = userRepository.save(user);
+
+        return new UserUpdateResponseDto(updatedUser.getId(), updatedUser.getUsername(), updatedUser.getEmail(), refreshedJwtToken);
     }
 
 }

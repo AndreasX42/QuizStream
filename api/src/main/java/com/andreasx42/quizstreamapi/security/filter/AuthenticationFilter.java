@@ -61,14 +61,14 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String role = authResult.getAuthorities()
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("INVALID ROLE"))
+                .orElseThrow(() -> new RuntimeException("Invalid Role"))
                 .toString();
 
         String token = JWT.create()
                 .withSubject(authResult.getName())
                 .withExpiresAt(new Date(System.currentTimeMillis() + envConfigs.TOKEN_EXPIRATION))
                 .withClaim("role", role)
-                .sign(Algorithm.HMAC512(envConfigs.jwtSecret));
+                .sign(Algorithm.HMAC512(envConfigs.getJwtSecret()));
 
         response.addHeader(envConfigs.AUTHORIZATION, envConfigs.BEARER_PREFIX + token);
 

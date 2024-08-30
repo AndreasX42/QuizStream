@@ -1,10 +1,11 @@
 package com.andreasx42.quizstreamapi.service;
 
 import com.andreasx42.quizstreamapi.dto.user.UserRegisterDto;
-import com.andreasx42.quizstreamapi.dto.user.UserUpdateDto;
+import com.andreasx42.quizstreamapi.dto.user.UserUpdateRequestDto;
 import com.andreasx42.quizstreamapi.entity.User;
 import com.andreasx42.quizstreamapi.exception.DuplicateEntityException;
 import com.andreasx42.quizstreamapi.repository.UserRepository;
+import com.andreasx42.quizstreamapi.security.config.EnvConfigs;
 import com.andreasx42.quizstreamapi.util.mapper.UserMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,17 +31,27 @@ public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private EnvConfigs envConfigs;
+
     @Spy
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Spy
     private UserMapper userMapper;
 
+
     @InjectMocks
     private UserService userService;
 
+    private Long existingUserId;
+    private User existingUser;
+
     @BeforeEach
     public void setUp() {
+        this.existingUserId = 1L;
+        this.existingUser = new User("testUser", "test@user.com", "password");
+
 
     }
 
@@ -72,9 +83,7 @@ public class UserServiceTest {
     @Test
     public void testUpdateUser_whenExistingEmailProvided_shouldThrowDuplicateEntityException() {
 
-        Long existingUserId = 1L;
-        User existingUser = new User("testUser", "test@user.com", "password");
-        UserUpdateDto updateExistingUserDto = new UserUpdateDto(null, "newMail@user.com", null);
+        UserUpdateRequestDto updateExistingUserDto = new UserUpdateRequestDto(null, "newMail@user.com", null);
         User otherUserWithSameNewEmail = new User("otherUser", "newMail@user.com", "otherPassword");
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(existingUser));
@@ -87,9 +96,7 @@ public class UserServiceTest {
     @Test
     public void testUpdateUser_whenExistingUsernameProvided_shouldThrowDuplicateEntityException() {
 
-        Long existingUserId = 1L;
-        User existingUser = new User("testUser", "test@user.com", "password");
-        UserUpdateDto updateExistingUserDto = new UserUpdateDto("newTestUserName", null, null);
+        UserUpdateRequestDto updateExistingUserDto = new UserUpdateRequestDto("newTestUserName", null, null);
         User otherUserWithSameNewUsername = new User("newTestUserName", "newTestUserName@user.com", "otherPassword");
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(existingUser));
@@ -102,14 +109,13 @@ public class UserServiceTest {
     @Test
     public void testUpdateUser_whenValidUpdateDataProvided_shouldSaveUpdatedEntity() {
 
-        Long existingUserId = 1L;
-        User existingUser = new User("testUser", "test@user.com", "password");
-        UserUpdateDto updateExistingUserDto = new UserUpdateDto("newTestUserName", "newTestUserMail@user.com", "newPassword");
+        UserUpdateRequestDto updateExistingUserDto = new UserUpdateRequestDto("newTestUserName", "newTestUserMail@user.com", "newPassword");
 
         when(userRepository.findById(existingUserId)).thenReturn(Optional.of(existingUser));
         when(userRepository.findByEmail(updateExistingUserDto.email())).thenReturn(Optional.empty());
         when(userRepository.findByUsername(updateExistingUserDto.username())).thenReturn(Optional.empty());
         when(userRepository.save(existingUser)).thenReturn(existingUser);
+        when(envConfigs.getJwtSecret()).thenReturn("JWT_TOKEN");
 
         userService.update(existingUserId, updateExistingUserDto);
 

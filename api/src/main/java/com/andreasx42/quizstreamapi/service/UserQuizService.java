@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -44,7 +45,7 @@ public class UserQuizService {
 
         userQuiz.setNumTries(userQuiz.getNumTries() + 1);
 
-        if (data.name()!=null && !data.name()
+        if (Objects.nonNull(data.name()) && !data.name()
                 .isBlank()) {
             userQuiz.getLangchainCollection()
                     .setName(data.name());

@@ -42,7 +42,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
         String token = header.replace(envConfigs.BEARER_PREFIX, "");
 
-        DecodedJWT jwt = JWT.require(Algorithm.HMAC512(envConfigs.jwtSecret))
+        DecodedJWT jwt = JWT.require(Algorithm.HMAC512(envConfigs.getJwtSecret()))
                 .build()
                 .verify(token);
 
