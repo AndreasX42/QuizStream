@@ -107,13 +107,13 @@ workflows:
   build-deploy:
     jobs:
       - run_integration_tests
-      - push_app_image
+      - push_app_image:
           requires:
-           - run_integration_tests
-      - push_api_image
+            - run_integration_tests
+      - push_api_image:
           requires:
-           - run_integration_tests
-      - push_backend_image
+            - run_integration_tests
+      - push_backend_image:
           requires:
             - run_integration_tests
       - deploy_to_gke_k8s_cluster:
