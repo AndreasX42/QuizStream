@@ -22,7 +22,9 @@ html.darkMode {
   --form-background: #424242;
   --font-color: #f7f7f7;
   @include mat.core-color(custom_themes.$dark-theme);
-  @include mat.all-component-colors(custom_themes.$dark-theme)
+  @include mat.all-component-colors(custom_themes.$dark-theme);
+  @include mat.core-typography(custom_themes.$dark-theme);
+  @include mat.button-typography(custom_themes.$dark-theme)
 }
 
 a.ref-link {
