@@ -13,7 +13,7 @@ services:
       - /app/node_modules
     environment:
       - API_URL=http://localhost:9090
-      - API_KEY='xyz'
+      # - API_KEY='xyz'
       - CHOKIDAR_USEPOLLING=true
   api:
     build:

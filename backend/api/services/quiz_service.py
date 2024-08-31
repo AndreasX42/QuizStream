@@ -18,8 +18,8 @@ async def create_quiz(
     collection_id, qa_ids = await agenerate_quiz(
         quiz_name=quiz_data.quiz_name,
         youtube_url=str(quiz_data.youtube_url),
-        translation_language=quiz_data.language.lower(),
-        difficulty=str(quiz_data.difficulty),
+        language=quiz_data.language.lower(),
+        difficulty=quiz_data.difficulty,
         api_keys=quiz_data.api_keys,
     )
 

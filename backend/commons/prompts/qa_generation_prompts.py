@@ -5,7 +5,7 @@ from langchain_core.prompts.chat import (
     SystemMessagePromptTemplate,
 )
 
-templ1 = """You are a highly intelligent and insightful assistant designed to generate high-quality multiple-choice quiz questions. Your task is to read the provided text, identify key information, and create a corresponding question with four possible answers—one correct answer and three plausible but incorrect alternatives.
+system_temp = """You are a highly intelligent and insightful assistant designed to generate high-quality multiple-choice quiz questions. Your task is to read the provided text, identify key information, and create a corresponding question with four possible answers—one correct answer and three plausible but incorrect alternatives.
 
 Each question and its associated answers should be:
 1. **Clear and concise**: Ensure that both the question and the answers are easy to understand, well-formulated, and free from ambiguity.
@@ -36,25 +36,31 @@ Here is an example of how to extract question/answers from a given text:
 You still have to parse the question and answers into a valid JSON as provided above!
 
 """
-templ2 = """Please come up with question/answers pair in JSON format from the following given text with the conditions that:
+human_temp = """Please come up with question/answers pair in JSON format from the following given text with the conditions that:
 
-1. The quiz questions should be of difficulty **{difficulty}**.
-2. The quiz questions should be in the same language as the text, in this case in **{{language}}**.
-3. The following text is only a transcript of a YouTube video, refer to it as 'video' not as 'text'.
-4. Please extract AT LEAST ONE adquate quiz question from the text, remember to provide it in the mentioned JSON format!
+1. The quiz questions should be of difficulty '{difficulty}', please extract a quiz question of this difficulty.
+2. The quiz questions should be in the same language as the text, in this case in '{language}'.
+3. The following text is only a transcript of a YouTube video, refer to it as ' the video' not as 'the text'.
+4. Please extract at least one adquate quiz question from the text, remember to provide it in the mentioned JSON format!
+
+This is your attempt number {num_attempt} in generating a quiz question of this text. If you already tried more than once it means you failed to properly retrieve a quiz question in the necessary JSON format. If that is the case, please vehemently try to parse the quiz question in the given JSON format!
 
 Here is the text:
 ----------------
 {text}"""
 
 
-def get_qa_prompt(difficulty: str, language: str):
+def get_qa_generation_prompt(difficulty: str, language: str, num_attempt: int):
     return ChatPromptTemplate.from_messages(
         [
-            SystemMessagePromptTemplate.from_template(templ1),
+            SystemMessagePromptTemplate.from_template(system_temp),
             HumanMessagePromptTemplate.from_template(
-                templ2,
-                partial_variables={"difficulty": difficulty, "language": language},
+                human_temp,
+                partial_variables={
+                    "difficulty": difficulty,
+                    "language": language,
+                    "num_attempt": num_attempt,
+                },
             ),
         ]
     )

@@ -1,10 +1,11 @@
-from langchain_postgres import PGVector
+import logging
+from typing import Optional, Union, Any
+
 from langchain_postgres.vectorstores import PGVector
 from langchain_core.embeddings import FakeEmbeddings
 from langchain.docstore.document import Document
 
 from sqlalchemy import MetaData, Table, select, update
-from typing import Optional
 
 from backend.commons.db import (
     SessionLocal,
@@ -13,13 +14,26 @@ from backend.commons.db import (
     TABLE_DOCS,
 )
 
-import uuid
+logger = logging.getLogger(__name__)
 
 
 def create_collection(
     collection_name: str, documents: list[Document], video_metadata: dict[str, str]
-) -> [uuid, [str]]:
-    """Creates a new collection with the provided name, documents and video metadata"""
+) -> Union[str, list[str]]:
+    """Creates a new collection with the provided name and metadata and upserts the given documents
+
+    Args:
+        collection_name (str): Name of collection
+        documents (list[Document]): List of documents to upsert
+        video_metadata (dict[str, str]): Collection metadata
+
+    Returns:
+        Union[str, list[str]]: Id of created collection and ids of upserted documents
+    """
+
+    logger.debug(
+        "Creating new collection %s and upserting provided documents.", collection_name
+    )
 
     collection = PGVector(
         collection_name=collection_name,
@@ -42,11 +56,16 @@ def create_collection(
 
 
 def delete_collection(name: str) -> None:
-    """Deletes collection with this name"""
+    """Deletes collection with the given name
+
+    Args:
+        name (str): Name of collection
+    """
+
     col = PGVector(
         collection_name=name,
         connection=CONNECTION_STRING,
-        embeddings=FakeEmbeddings(size=1),  # TODO: are embeddings needed?
+        embeddings=FakeEmbeddings(size=1),
     )
 
     col.delete_collection()
@@ -54,7 +73,14 @@ def delete_collection(name: str) -> None:
 
 # TODO: Is there a better way to fetch the collection id after creating a new collection?
 def get_collection_id_by_name(collection_name: str) -> str:
-    """Fetch the collection id for the given name"""
+    """Gets the id of the collection with this name
+
+    Args:
+        collection_name (str): Name of collection
+
+    Returns:
+        str: Id of collection
+    """
 
     with SessionLocal() as session:
         table = Table(TABLE_COLLECTION, MetaData(), autoload_with=session.bind)
@@ -65,7 +91,14 @@ def get_collection_id_by_name(collection_name: str) -> str:
 
 
 def get_collection_metadata(collection_id: str) -> Optional[dict]:
-    """Fetch the collection metadata for the given id"""
+    """Gets the metadata of the collection with this id
+
+    Args:
+        collection_id (str): Id of collection
+
+    Returns:
+        Optional[dict]: The collection metadata
+    """
 
     with SessionLocal() as session:
         table = Table(TABLE_COLLECTION, MetaData(), autoload_with=session.bind)
@@ -78,7 +111,15 @@ def get_collection_metadata(collection_id: str) -> Optional[dict]:
 def update_collection_metadata(
     collection_id: str, new_metadata: dict
 ) -> Optional[dict]:
-    """Updates the metadata of the collection"""
+    """Updates the metadata of the collection with this id with the provided new metadata
+
+    Args:
+        collection_id (str): Id of collection
+        new_metadata (dict): New metadata
+
+    Returns:
+        Optional[dict]: Updated collection metadata
+    """
 
     with SessionLocal() as session:
         table = Table(TABLE_COLLECTION, MetaData(), autoload_with=session.bind)
@@ -95,7 +136,11 @@ def update_collection_metadata(
 
 
 def list_collections() -> list[str]:
-    """Returns list of all collections in vector store"""
+    """Fetches list of names of all collections
+
+    Returns:
+        list[str]: List of all collection names
+    """
 
     with SessionLocal() as session:
         table = Table(TABLE_COLLECTION, MetaData(), autoload_with=session.bind)
@@ -105,8 +150,15 @@ def list_collections() -> list[str]:
     return results
 
 
-def get_by_ids(ids: list[str]) -> list[str]:
-    """Returns all documents with provided ids"""
+def get_by_ids(ids: list[str]) -> list[Any]:
+    """Fetches all document embeddings with ids in the provided list
+
+    Args:
+        ids (list[str]): List of ids of the documents
+
+    Returns:
+        list[Any]: List of embedded documents
+    """
 
     with SessionLocal() as session:
         table = Table(TABLE_DOCS, MetaData(), autoload_with=session.bind)
@@ -116,8 +168,15 @@ def get_by_ids(ids: list[str]) -> list[str]:
     return results
 
 
-def get_all_by_collection_id(collection_id: str):
-    """Returns all documents of collection"""
+def get_all_by_collection_id(collection_id: str) -> list[Any]:
+    """Fetches all document embeddings of corresponding collection with this id
+
+    Args:
+        collection_id (str): The collection id
+
+    Returns:
+        list[Any]: List of embedded documents
+    """
 
     with SessionLocal() as session:
         table = Table(TABLE_DOCS, MetaData(), autoload_with=session.bind)
