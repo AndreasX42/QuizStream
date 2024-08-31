@@ -11,8 +11,6 @@ jobs:
     machine: true
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
       - run:
           name: Clear Docker cache
           command: docker system prune --all --force --volumes
@@ -35,7 +33,7 @@ jobs:
       - set_env_vars
       - docker_login
       - setup_remote_docker:
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Inject build info and variables into app
           command: |
@@ -57,7 +55,7 @@ jobs:
       - set_env_vars
       - docker_login
       - setup_remote_docker:
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Push Spring Boot api image
           command: |
@@ -71,7 +69,7 @@ jobs:
       - set_env_vars
       - docker_login
       - setup_remote_docker:
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Push Python backend image
           command: |
@@ -87,7 +85,7 @@ jobs:
       - checkout
       - set_env_vars
       - setup_remote_docker:
-          docker_layer_caching: true
+          docker_layer_caching: false
       - run:
           name: Setup Google Cloud SDK
           command: |
