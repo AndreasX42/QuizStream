@@ -3,10 +3,11 @@ kind: Ingress
 metadata:
   name: ingress-service
   annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, OPTIONS"
     nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       proxy_set_header X-Script-Name /pgadmin;
       add_header Access-Control-Allow-Origin $http_origin;
@@ -15,8 +16,38 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - quizstream.app
+        - www.quizstream.app
+      secretName: quizstream-app
   rules:
-    - http:
+    - host: quizstream.app
+      http:
+        paths:
+          - path: /pgadmin/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: pgadmin-cluster-ip-service
+                port:
+                  number: 5050
+          - path: /api/v1/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: api-cluster-ip-service
+                port:
+                  number: 9090
+          - path: /?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: app-cluster-ip-service
+                port:
+                  number: 4040
+    - host: www.quizstream.app
+      http:
         paths:
           - path: /pgadmin/?(.*)
             pathType: ImplementationSpecific
