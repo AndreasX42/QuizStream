@@ -25,7 +25,7 @@ spec:
           #   - name: API_PROV
           #     valueFrom:
           #       secretKeyRef:
-          #         name: pgsecrets
+          #         name: k8s-secrets
           #         key: API_PROV
           ports:
             - containerPort: 80

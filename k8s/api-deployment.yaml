@@ -29,22 +29,22 @@ spec:
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: pgsecrets
+                  name: k8s-secrets
                   key: JWT_SECRET_KEY
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: pgsecrets
+                  name: k8s-secrets
                   key: POSTGRES_PASSWORD
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: pgsecrets
+                  name: k8s-secrets
                   key: POSTGRES_USER
             - name: SPRING_DATASOURCE_URL
               valueFrom:
                 secretKeyRef:
-                  name: pgsecrets
+                  name: k8s-secrets
                   key: SPRING_DATASOURCE_URL
           ports:
             - containerPort: 9090

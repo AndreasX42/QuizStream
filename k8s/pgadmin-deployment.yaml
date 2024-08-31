@@ -21,10 +21,10 @@ spec:
             - name: PGADMIN_DEFAULT_EMAIL
               valueFrom:
                 secretKeyRef:
-                  name: pgsecrets
+                  name: k8s-secrets
                   key: PGADMIN_DEFAULT_EMAIL
             - name: PGADMIN_DEFAULT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: pgsecrets
+                  name: k8s-secrets
                   key: PGADMIN_DEFAULT_PASSWORD

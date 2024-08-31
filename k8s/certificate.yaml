@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+
+kind: Certificate
+metadata:
+  name: quizstream-app-tls
+spec:
+  secretName: quizstream-app
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: quizstream.app
+  dnsNames:
+    - quizstream.app
+    - www.quizstream.app

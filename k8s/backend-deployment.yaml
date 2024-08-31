@@ -29,17 +29,17 @@ spec:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: pgsecrets
+                  name: k8s-secrets
                   key: POSTGRES_PASSWORD
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: pgsecrets
+                  name: k8s-secrets
                   key: POSTGRES_USER
             - name: POSTGRES_DATABASE
               valueFrom:
                 secretKeyRef:
-                  name: pgsecrets
+                  name: k8s-secrets
                   key: POSTGRES_DATABASE
           ports:
             - containerPort: 8080

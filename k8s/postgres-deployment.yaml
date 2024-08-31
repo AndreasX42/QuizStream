@@ -29,15 +29,15 @@ spec:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: pgsecrets
+                  name: k8s-secrets
                   key: POSTGRES_PASSWORD
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: pgsecrets
+                  name: k8s-secrets
                   key: POSTGRES_USER
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
-                  name: pgsecrets
+                  name: k8s-secrets
                   key: POSTGRES_DATABASE
