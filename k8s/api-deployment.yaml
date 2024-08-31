@@ -21,7 +21,7 @@ spec:
           image: andreasx42/quizstream-api:latest
           env:
             - name: APP_HOST
-              value: http://http://35.225.79.33
+              value: https://quizstream.app
             - name: BACKEND_HOST
               value: backend-cluster-ip-service
             - name: BACKEND_PORT

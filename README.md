@@ -20,7 +20,7 @@
 - CircleCI pushes the Docker images after each successful build to
   - https://hub.docker.com/u/andreasx42
 - Google Kubernetes Engine cluster could be available on
-  - http://35.225.79.33/
+  - https://quizstream.app
 - Checkout repository
   - Start application with ‘docker-compose -f docker-compose_all.yaml up --build’
     - Application should be available on localhost:4200.
