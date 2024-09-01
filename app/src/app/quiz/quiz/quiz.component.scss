@@ -58,14 +58,6 @@
   gap: 10px;
 }
 
-.bounded-area {
-  flex: 1;
-  border: 1px solid #dcdcdc;
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 10px;
-}
-
 .bounded-area p {
   margin: 0;
 }
@@ -77,4 +69,21 @@
 
 mat-card-actions .action-button {
   margin-left: 10px;
+}
+
+.bounded-area {
+  flex: 1;
+}
+
+.summary-box {
+  border: 1px solid  #d4d4d4;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px 0;
+  position: relative;
+}
+
+.summary-box legend {
+  font-weight: bold;
+  padding: 0 10px;
 }

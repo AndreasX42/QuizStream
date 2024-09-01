@@ -20,35 +20,40 @@
     <mat-card-content class="mat-card-content">
       <div class="section stacked">
         <div class="bounded-area">
-          <p>
-            Summary:
-            {{
-              quiz().metadata.description === "Unknown"
-                ? "No summary available."
-                : quiz().metadata.description
-            }}
-          </p>
+          <fieldset class="summary-box">
+            <legend>Summary</legend>
+            <p>
+              {{
+                quiz().metadata.description === "Unknown"
+                  ? "No summary available."
+                  : quiz().metadata.description
+              }}
+            </p>
+          </fieldset>
         </div>
         <div class="bounded-area">
-          <p>Title: {{ quiz().metadata.title }}</p>
-          Video:
-          <a
-            class="ref-link"
-            [href]="
-              'https://www.youtube.com/watch?v=' + quiz().metadata.videoUrl
-            "
-            target="_blank"
-            >{{
-              "https://www.youtube.com/watch?v=" + quiz().metadata.videoUrl
-                | slice : 12 : 35
-            }}...</a
-          >
-          <p>Language: {{ getEnumDisplayName(quiz().language) }}</p>
-          <p>Type: {{ getEnumDisplayName(quiz().type) }}</p>
-          <p>Difficulty: {{ getEnumDisplayName(quiz().difficulty) }}</p>
-          <p>Questions: {{ quiz().numQuestions }}</p>
-          <p>Attempts: {{ quiz().numTries }}</p>
-          <p>Correct Answers: {{ quiz().numCorrect }}</p>
+          <fieldset class="summary-box">
+            <legend>Quiz Info</legend>
+            <p>Video Title: {{ quiz().metadata.title }}</p>
+            Video Link:
+            <a
+              class="ref-link"
+              [href]="
+                'https://www.youtube.com/watch?v=' + quiz().metadata.videoUrl
+              "
+              target="_blank"
+              >{{
+                "https://www.youtube.com/watch?v=" + quiz().metadata.videoUrl
+                  | slice : 12 : 35
+              }}...</a
+            >
+            <p>Language: {{ getEnumDisplayName(quiz().language) }}</p>
+            <p>Type: {{ getEnumDisplayName(quiz().type) }}</p>
+            <p>Difficulty: {{ getEnumDisplayName(quiz().difficulty) }}</p>
+            <p>Questions: {{ quiz().numQuestions }}</p>
+            <p>Attempts: {{ quiz().numTries }}</p>
+            <p>Correct Answers: {{ quiz().numCorrect }}</p>
+          </fieldset>
         </div>
       </div>
     </mat-card-content>

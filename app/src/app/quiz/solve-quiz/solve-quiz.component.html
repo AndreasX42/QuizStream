@@ -53,10 +53,11 @@
     Next Question
   </button>
 
-  <mat-card class="context" appearance="outlined">
-    <mat-card-header><i>Section of video transcript</i></mat-card-header>
-    <mat-card-content>...{{ currentQuestion()!.context }}...</mat-card-content>
-  </mat-card>
+  <fieldset class="summary-box">
+    <legend>Excerpt Of Video Transcript</legend>
+    <p>...{{ currentQuestion()!.context }}...</p>
+  </fieldset>
+
   }
 </div>
 }
