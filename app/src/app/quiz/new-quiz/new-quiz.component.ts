@@ -21,7 +21,6 @@ import { CommonModule } from '@angular/common';
 import { CanDeactivateFn, Router } from '@angular/router';
 import { ErrorManagerFactory } from '../../shared/error.manager.factory';
 import { MatIcon } from '@angular/material/icon';
-import { MessageService } from '../../services/message.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
@@ -43,7 +42,6 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 export class NewQuizComponent {
   private router = inject(Router);
   private quizService = inject(QuizService);
-  private messageService = inject(MessageService);
   getEnumDisplayName = getEnumDisplayName;
 
   isCreating = this.quizService.isCreating.asReadonly();

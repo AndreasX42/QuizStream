@@ -31,7 +31,7 @@ class QuizDifficulty(str, PythonEnum):
     HARD = "HARD"
 
 
-class Language(str, PythonEnum):
+class QuizLanguage(str, PythonEnum):
     EN = "EN"
     ES = "ES"
     DE = "DE"
@@ -97,7 +97,7 @@ class UserToQuiz(Base):
     num_tries = Column(Integer, default=0)
     num_correct = Column(Integer, default=0)
     num_questions = Column(Integer, default=0)
-    language = Column(Enum(Language), default=Language.EN)
+    language = Column(Enum(QuizLanguage), default=QuizLanguage.EN)
     type = Column(Enum(QuizType), default=QuizType.MULTIPLE_CHOICE)
     difficulty = Column(Enum(QuizDifficulty), default=QuizDifficulty.EASY)
     date_created = Column(DateTime, default=dt.datetime.now(dt.UTC))

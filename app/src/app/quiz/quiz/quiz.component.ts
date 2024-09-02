@@ -16,9 +16,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { getEnumDisplayName, Quiz } from '../../models/quiz.model';
 import { QuizService } from '../../services/quiz.service';
-import { MessageService } from '../../services/message.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
+import { MessageService } from '../../services/message.service';
 
 @Component({
   selector: 'app-quiz',
@@ -69,13 +69,13 @@ export class QuizComponent {
       },
       error: (err) => {
         this.isDeleting.set(false);
-        this.messageService.showError(
+        this.messageService.showErrorModal(
           'Error deleting quiz "' + quiz.quizName + '".'
         );
       },
       complete: () =>
-        this.messageService.showSuccess(
-          'Quiz "' + quiz.quizName + '" deleted!'
+        this.messageService.showSuccessModal(
+          'Quiz "' + quiz.quizName + '" deleted.'
         ),
     });
 

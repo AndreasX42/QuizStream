@@ -1,20 +1,20 @@
-import { Component, inject, input } from '@angular/core';
-import { ModalComponent } from '../modal.component';
+import { Component, Inject } from '@angular/core';
 
 import {
+  MAT_DIALOG_DATA,
   MatDialogActions,
   MatDialogContent,
   MatDialogModule,
+  MatDialogRef,
   MatDialogTitle,
 } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MessageService } from '../../services/message.service';
+import { SuccessModalComponent } from '../success-modal/success-modal.component';
 
 @Component({
   selector: 'app-error-modal',
   standalone: true,
   imports: [
-    ModalComponent,
     MatDialogTitle,
     MatDialogContent,
     MatDialogActions,
@@ -25,11 +25,12 @@ import { MessageService } from '../../services/message.service';
   styleUrl: './error-modal.component.scss',
 })
 export class ErrorModalComponent {
-  title = input<string>();
-  message = input<string>();
-  private messageService = inject(MessageService);
+  constructor(
+    public dialogRef: MatDialogRef<SuccessModalComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { title: string; message: string }
+  ) {}
 
   onClearError() {
-    this.messageService.clearError();
+    this.dialogRef.close();
   }
 }

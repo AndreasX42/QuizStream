@@ -1,12 +1,4 @@
 <div class="mat-typography app-frame mat-app-background" fxLayout="column">
-  @if (error()) {
-  <app-error-modal title="An error occurred!" [message]="error()" />
-  } @if (success()) {
-  <app-success-modal title="Action successful!" [message]="success()" />
-  } @if (warning()) {
-  <app-warn-modal title="Warning!" [message]="warning()" />
-  }
-
   <app-header title="{{ app_name }}" />
 
   <main>

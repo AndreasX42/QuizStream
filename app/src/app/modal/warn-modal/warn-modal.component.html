@@ -1,20 +1,18 @@
-<app-modal>
-  <div class="dialog-container">
-    <h2 class="dialog-title" mat-dialog-title>{{ title() }}</h2>
-    <p class="dialog-content" mat-dialog-content>{{ message() }}</p>
+<div class="dialog-container">
+  <h2 class="dialog-title" mat-dialog-title>{{ data.title }}</h2>
+  <p class="dialog-content" mat-dialog-content>{{ data.message }}</p>
 
-    <div class="confirmation-actions">
-      <mat-dialog-actions align="center">
-        <button
-          class="dialog-button"
-          mat-raised-button
-          color="primary"
-          mat-dialog-close
-          (click)="onClearWarning()"
-        >
-          Close
-        </button>
-      </mat-dialog-actions>
-    </div>
+  <div class="confirmation-actions">
+    <mat-dialog-actions align="center">
+      <button
+        class="dialog-button"
+        mat-raised-button
+        color="primary"
+        mat-dialog-close
+        (click)="onClearWarning()"
+      >
+        Close
+      </button>
+    </mat-dialog-actions>
   </div>
-</app-modal>
+</div>

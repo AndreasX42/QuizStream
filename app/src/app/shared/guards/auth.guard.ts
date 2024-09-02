@@ -7,17 +7,19 @@ import { MessageService } from '../../services/message.service';
   providedIn: 'root',
 })
 export class AuthGuard implements CanActivate {
-  private messageService = inject(MessageService);
   private authService = inject(AuthService);
   private router = inject(Router);
+
+  private messageService = inject(MessageService);
 
   canActivate(): boolean {
     if (this.authService.isLoggedIn()) {
       return true;
     } else {
       this.router.navigate(['/login']);
-      this.messageService.showWarning(MessageService.MSG_LOGIN_FIST_WARNING);
-
+      this.messageService.showWarningModal(
+        MessageService.MSG_WARNING_LOGIN_FIST
+      );
       return false;
     }
   }

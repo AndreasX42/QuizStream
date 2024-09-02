@@ -95,7 +95,9 @@ export class QuizListComponent {
         },
         error: (err) => {
           this.isLoadingQuizzes.set(false);
-          this.messageService.showError('Error loading quizzes.');
+          this.messageService.showErrorModal(
+            MessageService.MSG_ERROR_LOADING_QUIZ_LIST
+          );
         },
       });
 

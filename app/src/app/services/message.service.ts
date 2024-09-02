@@ -1,50 +1,64 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ErrorModalComponent } from '../modal/error-modal/error-modal.component';
+import { SuccessModalComponent } from '../modal/success-modal/success-modal.component';
+import { WarnModalComponent } from '../modal/warn-modal/warn-modal.component';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MessageService {
-  static MSG_UNKNOWN_ERROR = 'Something went wrong, please try again later.';
-  static MSG_REGISTER_SUCCESS = 'Registered successfully, you can log in now.';
-  static MSG_LOGIN_ERROR_USERNAME_OR_PASSWORD =
-    'Username or password incorrect.';
-  static MSG_LOAD_PROFILE_DATA_ERROR =
-    'Something went wrong loading profile data, please try again later.';
-  static MSG_SESSION_EXPIRED_ERROR =
-    'Your session has expired. Please log in again.';
+  // List of messages
+  // Success messages
+  static MSG_SUCCESS_REGISTER = 'Registered successfully, you can log in now.';
+  static MSG_SUCCESS_CREATED_QUIZ = 'Quiz created successfully.';
+  static MSG_SUCCESS_ADDED_API_KEY = 'API key was added successfully.';
 
-  static MSG_LOGIN_FIST_WARNING =
+  // Error messages
+  static MSG_ERROR_UNKOWN = 'Something went wrong, please try again later.';
+  static MSG_ERROR_LOGIN_USERNAME_OR_PASSWORD_INCORRECT =
+    'Username or password incorrect.';
+  static MSG_ERROR_LOAD_PROFILE_DATA =
+    'Something went wrong loading profile data, please try again later.';
+  static MSG_ERROR_SESSION_EXPIRED =
+    'Your session has expired. Please log in again.';
+  static MSG_ERROR_QUIZ_UPDATE_FAILED =
+    'Your quiz statistics could not be updated.';
+  static MSG_ERROR_LOADING_QUIZ_LIST =
+    'Unexpected error loading quizzes, try again later.';
+  static MSG_ERROR_LOADING_QUIZ =
+    'Something went wrong loading quiz details, try again later.';
+  static MSG_ERROR_API_KEY_PROVIDER_ALREADY_EXISTS =
+    'An API key of this provider already exists.';
+  static MSG_ERROR_API_KEY_INVALID = 'The provided API key is invalid.';
+  static MSG_ERROR_QUIZ_NAME_ALREADY_EXISTS =
+    'You already created a quiz with this name, choose another one.';
+  static MSG_ERROR_FETCHING_VIDEO_TRANSCRIPT =
+    'Something went wrong fetching the video transcript, try another video.';
+  static MSG_ERROR_CREATING_QUIZ = 'Something went wrong creating the quiz.';
+
+  // Warning messages
+  static MSG_WARNING_LOGIN_FIST =
     'You have to log in, in order to use this service.';
 
-  private _error = signal<string | undefined>(undefined);
-  private _success = signal<string | undefined>(undefined);
-  private _warning = signal<string | undefined>(undefined);
+  // Dialog handling with MatDialog
+  private dialog = inject(MatDialog);
 
-  error = this._error.asReadonly();
-  success = this._success.asReadonly();
-  warning = this._warning.asReadonly();
-
-  showError(message: string) {
-    this._error.set(message);
+  showErrorModal(message: string) {
+    this.dialog.open(ErrorModalComponent, {
+      data: { title: 'An error occurred!', message: message },
+    });
   }
 
-  clearError() {
-    this._error.set(undefined);
+  showSuccessModal(message: string) {
+    this.dialog.open(SuccessModalComponent, {
+      data: { title: 'Action successful!', message: message },
+    });
   }
 
-  showSuccess(message: string) {
-    this._success.set(message);
-  }
-
-  clearSuccess() {
-    this._success.set(undefined);
-  }
-
-  showWarning(message: string) {
-    this._warning.set(message);
-  }
-
-  clearWarning() {
-    this._warning.set(undefined);
+  showWarningModal(message: string) {
+    this.dialog.open(WarnModalComponent, {
+      data: { title: 'Warning!', message: message },
+    });
   }
 }

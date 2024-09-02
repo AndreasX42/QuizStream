@@ -69,15 +69,16 @@ export class AuthService {
           }
         }),
         catchError((error) => {
-          let errorMessage = MessageService.MSG_UNKNOWN_ERROR;
+          let errorMessage = MessageService.MSG_ERROR_UNKOWN;
           if (
             typeof error.error === 'string' &&
             error.error.includes('Incorrect')
           ) {
-            errorMessage = MessageService.MSG_LOGIN_ERROR_USERNAME_OR_PASSWORD;
+            errorMessage =
+              MessageService.MSG_ERROR_LOGIN_USERNAME_OR_PASSWORD_INCORRECT;
           }
 
-          this.messageService.showError(errorMessage);
+          this.messageService.showErrorModal(errorMessage);
           return throwError(() => new Error(errorMessage));
         })
       );
@@ -108,13 +109,13 @@ export class AuthService {
               replaceUrl: true,
             });
 
-            this.messageService.showSuccess(
-              MessageService.MSG_REGISTER_SUCCESS
+            this.messageService.showSuccessModal(
+              MessageService.MSG_SUCCESS_REGISTER
             );
           },
         }),
         catchError((error) => {
-          let errorMessage = MessageService.MSG_UNKNOWN_ERROR;
+          let errorMessage = MessageService.MSG_ERROR_UNKOWN;
           if (
             error.error &&
             error.error.messages &&
@@ -123,7 +124,7 @@ export class AuthService {
             errorMessage = error.error.messages.join('\n');
           }
 
-          this.messageService.showError(errorMessage);
+          this.messageService.showErrorModal(errorMessage);
           return throwError(() => new Error(errorMessage));
         })
       );
@@ -149,8 +150,8 @@ export class AuthService {
           },
         }),
         catchError((error) => {
-          this.messageService.showError(
-            MessageService.MSG_LOAD_PROFILE_DATA_ERROR
+          this.messageService.showErrorModal(
+            MessageService.MSG_ERROR_LOAD_PROFILE_DATA
           );
           this.router.navigate(['/']);
           return throwError(() => new Error(error.message));
@@ -168,7 +169,9 @@ export class AuthService {
 
   logout(): void {
     if (this.isTokenExpired()) {
-      this.messageService.showError(MessageService.MSG_SESSION_EXPIRED_ERROR);
+      this.messageService.showErrorModal(
+        MessageService.MSG_ERROR_SESSION_EXPIRED
+      );
     }
 
     this.deleteAuthDetails();

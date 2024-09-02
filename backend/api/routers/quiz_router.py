@@ -20,4 +20,5 @@ router = APIRouter(
 async def create_quiz(
     quiz_data: QuizCreateRequestDto, session: Session = Depends(get_db)
 ):
+
     return await quiz_service.create_quiz(quiz_data, session)

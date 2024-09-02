@@ -4,7 +4,7 @@ from uuid import uuid4, UUID
 from typing import Any
 import re
 
-from backend.api.models import QuizType, QuizDifficulty
+from backend.api.models import QuizType, QuizDifficulty, QuizLanguage
 
 
 class QuizCreateRequestDto(BaseModel):
@@ -12,11 +12,18 @@ class QuizCreateRequestDto(BaseModel):
     quiz_name: str = Field(min_length=3, description="Name of quiz")
     api_keys: dict[str, str] = Field(description="Dictionary of API keys.")
     youtube_url: HttpUrl
-    language: str = Field(
-        min_length=2, description="Language in which the quiz should be generated."
+    language: QuizLanguage = Field(
+        description="Language in which the quiz should be generated."
     )
     type: QuizType = Field(description="Type of quiz")
     difficulty: QuizDifficulty = Field(description="Difficulty of quiz")
+
+    @field_validator("quiz_name")
+    @classmethod
+    def lowercase_quiz_name(cls, v: str) -> str:
+        if isinstance(v, str):
+            return v.lower()
+        raise ValueError("Unexpected type for 'quiz name'.")
 
     @field_validator("youtube_url")
     @classmethod

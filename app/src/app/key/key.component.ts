@@ -17,7 +17,6 @@ import { KeyProvider } from './../models/key.model';
 import { CommonModule, SlicePipe } from '@angular/common';
 import { ErrorManagerFactory } from '../shared/error.manager.factory';
 import { Router } from '@angular/router';
-import { MessageService } from '../services/message.service';
 
 @Component({
   selector: 'app-key',
@@ -39,7 +38,6 @@ import { MessageService } from '../services/message.service';
 export class KeyComponent {
   private router = inject(Router);
   private keyService = inject(KeyService);
-  private messageService = inject(MessageService);
 
   keyErrorMessage = signal<string | undefined>(undefined);
 

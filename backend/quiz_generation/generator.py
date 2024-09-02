@@ -20,7 +20,7 @@ from backend.commons.prompts import (
     get_qa_relevancy_filter_prompt_input_dict,
 )
 from backend.commons.db import create_collection
-from backend.api.models import QuizDifficulty
+from backend.api.models import QuizDifficulty, QuizLanguage
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 async def agenerate_quiz(
     quiz_name: str,
     youtube_url: str,
-    language: str,
+    language: QuizLanguage,
     difficulty: QuizDifficulty,
     api_keys: dict[str, str],
 ) -> Union[str, list[str]]:
@@ -45,7 +45,7 @@ async def agenerate_quiz(
     Args:
         quiz_name (str): Quiz name
         youtube_url (str): YouTube video url
-        language (str): Language of quiz
+        language (QuizLanguage): Language of quiz
         difficulty (QuizDifficulty): Difficuly of quiz
         api_keys (dict[str, str]): API keys for LLM APIs
 
@@ -71,7 +71,7 @@ async def agenerate_quiz(
     qa_pairs = await afilter_most_relevant_questions(
         qa_pairs=qa_pairs,
         summary=video_metadata["description"],
-        difficulty=difficulty.name,
+        difficulty=difficulty,
         language=language,
         api_keys=api_keys,
     )
@@ -85,8 +85,8 @@ async def agenerate_quiz(
 async def afilter_most_relevant_questions(
     qa_pairs: list[Document],
     summary: str,
-    difficulty: str,
-    language: str,
+    difficulty: QuizDifficulty,
+    language: QuizLanguage,
     api_keys: dict[str, str],
 ) -> list[Document]:
     """Returns the top 10 most relevant questions
@@ -94,8 +94,8 @@ async def afilter_most_relevant_questions(
     Args:
         qa_pairs (list[Document]): List of all generated questions
         summary (str): YouTube video transcript summary
-        difficulty (str): Quiz difficulty
-        language (str): Quiz language
+        difficulty (QuizDifficulty): Quiz difficulty
+        language (QuizLanguage): Quiz language
         api_keys (dict[str, str]): API keys for LLM APIs
 
     Raises:
@@ -112,8 +112,8 @@ async def afilter_most_relevant_questions(
         get_qa_relevancy_filter_prompt_input_dict(
             quiz_question=qa_pairs[i],
             summary=summary,
-            difficulty=difficulty,
-            language=language,
+            difficulty=difficulty.name,
+            language=language.name,
         )
         for i in range(len(qa_pairs))
     ]
@@ -130,7 +130,7 @@ async def afilter_most_relevant_questions(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid API key provided. " + str(e),
-        ) from e
+        )
 
     # run llm chain on list of formatted prompts
     grades_list = await llm_chain.aapply(relevancy_filter_prompts)
@@ -151,7 +151,7 @@ async def afilter_most_relevant_questions(
     return qa_list_final
 
 
-async def aget_video_transcript(youtube_url: str, language: str) -> str:
+async def aget_video_transcript(youtube_url: str, language: QuizLanguage) -> str:
     """Retrieves transcript of given youtube video in given language
 
     Args:
@@ -167,13 +167,13 @@ async def aget_video_transcript(youtube_url: str, language: str) -> str:
     logger.debug(
         "Retrieving transcript for %s in language %s.",
         youtube_url,
-        language,
+        language.name,
     )
 
     loader = YoutubeLoader.from_youtube_url(
         youtube_url=youtube_url,
-        language=["en", "es", "de", "fr"],
-        translation=language,
+        language=["en", "es", "de", "fr", "pt"],
+        translation=language.name.lower(),
         add_video_info=True,
     )
 
@@ -216,7 +216,7 @@ async def asummarize_video(video_metadata: dict[str, str], api_keys: dict[str, s
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid API key provided. " + str(e),
-        ) from e
+        )
 
     doc_to_summarize = Document(page_content=video_metadata["transcript"])
 
@@ -226,7 +226,7 @@ async def asummarize_video(video_metadata: dict[str, str], api_keys: dict[str, s
 async def agenerate_quiz_from_transcript(
     chunks: list[Document],
     difficulty: QuizDifficulty,
-    language: str,
+    language: QuizLanguage,
     api_keys: dict[str, str],
     quiz_name: str,
 ) -> list[Document]:
@@ -235,7 +235,7 @@ async def agenerate_quiz_from_transcript(
     Args:
         chunks (list[Document]): Transcript chunks
         difficulty (QuizDifficulty): Quiz difficulty
-        language (str): Quiz language
+        language (QuizLanguage): Quiz language
         api_keys (dict[str, str]): API keys of LLM APIs
         quiz_name (str): Name of quiz
 
@@ -258,12 +258,12 @@ async def agenerate_quiz_from_transcript(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid API key provided. " + str(e),
-        ) from e
+        )
 
     qa_generator_chain = QAGenerationChain.from_llm(
         llm=llm,
         prompt=get_qa_generation_prompt(
-            difficulty=difficulty.name, language=language, num_attempt=1
+            difficulty=difficulty.name, language=language.name, num_attempt=1
         ),
     )
 

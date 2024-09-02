@@ -32,8 +32,8 @@ export class SolveQuizComponent {
   private quizService = inject(QuizService);
   private route = inject(ActivatedRoute);
   private destroyRef = inject(DestroyRef);
-  private messageService = inject(MessageService);
   private authService = inject(AuthService);
+  private messageService = inject(MessageService);
 
   isLoadingQuiz = signal(false);
   isCompleted = signal(false);
@@ -101,8 +101,8 @@ export class SolveQuizComponent {
 
     const sub = this.quizService.updateQuiz(updateQuizDto).subscribe({
       error: (err) => {
-        this.messageService.showWarning(
-          'Your quiz statistics could not be updated.'
+        this.messageService.showWarningModal(
+          MessageService.MSG_ERROR_QUIZ_UPDATE_FAILED
         );
       },
     });
@@ -122,8 +122,8 @@ export class SolveQuizComponent {
         this.isLoadingQuiz.set(false);
       },
       error: (err) => {
-        this.messageService.showError(
-          'Something went wrong starting the quiz.'
+        this.messageService.showErrorModal(
+          MessageService.MSG_ERROR_LOADING_QUIZ
         );
         this.isLoadingQuiz.set(false);
       },
