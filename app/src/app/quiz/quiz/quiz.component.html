@@ -33,9 +33,11 @@
         </div>
         <div class="bounded-area">
           <fieldset class="summary-box">
-            <legend>Quiz Info</legend>
-            <p>Video Title: {{ quiz().metadata.title }}</p>
-            Video Link:
+            <legend>Video Info</legend>
+            <p>Title: {{ quiz().metadata.title }}</p>
+            <p>Author: {{ quiz().metadata.author }}</p>
+            <p>Publish Date: {{ quiz().metadata.publishDate | date }}</p>
+            Link:
             <a
               class="ref-link"
               [href]="
@@ -47,12 +49,24 @@
                   | slice : 12 : 35
               }}...</a
             >
+          </fieldset>
+        </div>
+        <div class="bounded-area">
+          <fieldset class="summary-box">
+            <legend>Quiz Info</legend>
             <p>Language: {{ getEnumDisplayName(quiz().language) }}</p>
             <p>Type: {{ getEnumDisplayName(quiz().type) }}</p>
             <p>Difficulty: {{ getEnumDisplayName(quiz().difficulty) }}</p>
             <p>Questions: {{ quiz().numQuestions }}</p>
             <p>Attempts: {{ quiz().numTries }}</p>
             <p>Correct Answers: {{ quiz().numCorrect }}</p>
+            <p>
+              <strong>Success Rate: </strong
+              >{{
+                (100 * quiz().numCorrect) /
+                  (quiz().numQuestions * quiz().numTries) | number : "1.2-2"
+              }}%
+            </p>
           </fieldset>
         </div>
       </div>

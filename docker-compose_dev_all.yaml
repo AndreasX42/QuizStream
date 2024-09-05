@@ -13,7 +13,7 @@ services:
       - /app/node_modules
     environment:
       - API_URL=http://localhost:9090
-      # - API_KEY='xyz'
+      - API_KEY=xyz
       - CHOKIDAR_USEPOLLING=true
   api:
     build:
@@ -65,7 +65,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./postgres/data:/var/lib/postgresql/data
+      - ./postgres/data_dev:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=my_password

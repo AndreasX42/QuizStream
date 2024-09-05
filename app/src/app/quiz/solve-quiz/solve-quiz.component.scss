@@ -73,17 +73,14 @@
   margin-bottom: 15px;
 }
 
-.context {
-  margin-top: 50px;
-  text-align: left;
-}
-
 .summary-box {
   border: 1px solid  #d4d4d4;
   border-radius: 5px;
   margin-top: 50px;
   position: relative;
-  background-color: var(--form-background);;
+  background-color: var(--form-background);
+  text-align: left;
+  padding: 5px 10px 5px 10px;
 }
 
 .summary-box legend {

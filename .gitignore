@@ -16,7 +16,7 @@
 **/.venv
 **/.ipynb_checkpoints/
 **/__pycache__/
-postgres/data
+postgres/data_dev
 .env
 
 # Java

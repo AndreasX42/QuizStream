@@ -4,9 +4,12 @@ import com.andreasx42.quizstreamapi.dto.quiz.QuizCreateResultDto;
 import com.andreasx42.quizstreamapi.dto.quiz.QuizOutboundDto;
 import com.andreasx42.quizstreamapi.dto.quiz.QuizQuestionDetailsDto;
 import com.andreasx42.quizstreamapi.dto.quiz.VideoMetadataDto;
-import com.andreasx42.quizstreamapi.entity.LangchainPGCollection;
-import com.andreasx42.quizstreamapi.entity.LangchainPGEmbedding;
 import com.andreasx42.quizstreamapi.entity.UserQuiz;
+import com.andreasx42.quizstreamapi.entity.collection.CollectionMetadata;
+import com.andreasx42.quizstreamapi.entity.collection.LangchainPGCollection;
+import com.andreasx42.quizstreamapi.entity.collection.VideoMetadata;
+import com.andreasx42.quizstreamapi.entity.embedding.EmbeddingMetadata;
+import com.andreasx42.quizstreamapi.entity.embedding.LangchainPGEmbedding;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -16,8 +19,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -31,15 +32,14 @@ public class QuizMapper {
     public QuizOutboundDto convertToQuizOutboundDto(UserQuiz userQuiz) {
         try {
             LangchainPGCollection collection = userQuiz.getLangchainCollection();
-
-            JsonNode cmetadataNode = objectMapper.readTree(collection.getCmetadata());
+            CollectionMetadata collectionMetadata = collection.getCmetadata();
 
             // Extract values from JSON
             LocalDate dateCreated = LocalDate.parse(userQuiz.getDateCreated()
                     .toString()
                     .replace("Z", ""), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
-            VideoMetadataDto videoMetadataDto = getVideoMetadataDto(cmetadataNode);
+            VideoMetadataDto videoMetadataDto = getVideoMetadataDto(collectionMetadata);
 
             // Map to QuizOutboundDto
             return new QuizOutboundDto(
@@ -66,27 +66,15 @@ public class QuizMapper {
     public QuizQuestionDetailsDto convertToQuizDetailsDto(LangchainPGEmbedding questionAndAnswer) {
         try {
 
-            JsonNode cmetadataNode = objectMapper.readTree(questionAndAnswer.getCmetadata());
-
-            // Extract values from JSON
-            String context = cmetadataNode.get("context")
-                    .asText();
-
-            String correctAnswer = cmetadataNode.get("answer")
-                    .get("correct_answer")
-                    .asText();
-
-            JsonNode wrongAnswersNode = cmetadataNode.get("answer")
-                    .get("wrong_answers");
-            List<String> wrongAnswers = new ArrayList<>();
-            if (wrongAnswersNode.isArray()) {
-                for (JsonNode answer : wrongAnswersNode) {
-                    wrongAnswers.add(answer.asText());
-                }
-            }
+            EmbeddingMetadata embeddingMetadata = questionAndAnswer.getCmetadata();
 
             return new QuizQuestionDetailsDto(
-                    questionAndAnswer.getDocument(), correctAnswer, wrongAnswers, context
+                    questionAndAnswer.getDocument(),
+                    embeddingMetadata.answers()
+                            .correctAnswer(),
+                    embeddingMetadata.answers()
+                            .wrongAnswers(),
+                    embeddingMetadata.context()
             );
 
 
@@ -117,25 +105,20 @@ public class QuizMapper {
         }
     }
 
-    private VideoMetadataDto getVideoMetadataDto(JsonNode data) {
-        // Extract video metadata
-        JsonNode videoMetadataNode = data.get("video_metadata");
-        VideoMetadataDto metadata = new VideoMetadataDto(
-                videoMetadataNode.get("title")
-                        .asText(),
-                videoMetadataNode.get("source")
-                        .asText(),
-                videoMetadataNode.get("thumbnail_url")
-                        .asText(),
-                videoMetadataNode.get("description")
-                        .asText(),
-                videoMetadataNode.get("view_count")
-                        .asInt(),
-                LocalDate.parse(videoMetadataNode.get("publish_date")
-                        .asText(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
-                videoMetadataNode.get("author")
-                        .asText()
+    private VideoMetadataDto getVideoMetadataDto(CollectionMetadata collectionMetadata) {
+
+        VideoMetadata videoMetadata = collectionMetadata.videoMetadata();
+
+        VideoMetadataDto videoMetadataDto = new VideoMetadataDto(
+                videoMetadata.title(),
+                videoMetadata.source(),
+                videoMetadata.thumbnailUrl(),
+                videoMetadata.description(),
+                videoMetadata.viewCount(),
+                videoMetadata.publishDate(),
+                videoMetadata.author()
         );
-        return metadata;
+
+        return videoMetadataDto;
     }
 }

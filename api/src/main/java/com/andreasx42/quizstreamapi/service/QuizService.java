@@ -1,8 +1,8 @@
 package com.andreasx42.quizstreamapi.service;
 
 import com.andreasx42.quizstreamapi.dto.quiz.*;
-import com.andreasx42.quizstreamapi.entity.LangchainPGEmbedding;
 import com.andreasx42.quizstreamapi.entity.UserQuiz;
+import com.andreasx42.quizstreamapi.entity.embedding.LangchainPGEmbedding;
 import com.andreasx42.quizstreamapi.exception.BadBackendResponseException;
 import com.andreasx42.quizstreamapi.security.config.EnvConfigs;
 import com.andreasx42.quizstreamapi.util.mapper.QuizMapper;
@@ -46,6 +46,7 @@ public class QuizService {
 
     public QuizDetailsOutboundDto getQuizDetailsByUserQuizId(Long userId, UUID quizId) {
         UserQuiz userQuiz = userQuizService.getByUserQuizId(userId, quizId);
+
         List<LangchainPGEmbedding> questionAndAnswersList = userQuiz.getLangchainCollection()
                 .getEmbeddings();
 
@@ -59,7 +60,11 @@ public class QuizService {
 
     public QuizCreateResultDto createQuizOnBackend(QuizCreateDto quizCreateDto) {
 
-        logger.error(quizCreateDto.toString());
+        logger.error("Creating quiz '{}' for user with id '{}' in '{}', of difficulty '{}' and type '{}'",
+                quizCreateDto.quizName(), quizCreateDto.userId(), quizCreateDto.language()
+                        .name(), quizCreateDto.difficulty()
+                        .name(), quizCreateDto.type()
+                        .name());
 
         // Create the request body for FastAPI
         Map<String, Object> body = Map.of(

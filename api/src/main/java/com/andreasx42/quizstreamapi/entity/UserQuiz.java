@@ -1,5 +1,6 @@
 package com.andreasx42.quizstreamapi.entity;
 
+import com.andreasx42.quizstreamapi.entity.collection.LangchainPGCollection;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Commit
 @SpringBootTest()
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -71,7 +72,6 @@ public class UserControllerIntegrationTest {
         testUser.setPassword(userName + "_password");
     }
 
-    @Commit
     private void setUpAdminAccount() {
         String adminName = "System_Admin";
         String adminPassword = adminName + "_password";
@@ -87,7 +87,6 @@ public class UserControllerIntegrationTest {
 
     @Test
     @Order(1)
-    @Commit
     public void testRegisterUser_whenValidUserDetailsProvided_shouldCreateUserAndReturnUserInformation() throws Exception {
 
         UserRegisterDto registerUserDto = new UserRegisterDto(testUser.getUsername(), testUser.getPassword(), testUser.getEmail());
@@ -213,7 +212,6 @@ public class UserControllerIntegrationTest {
 
     @Test
     @Order(7)
-    @Commit
     public void testUpdateUser_whenProvidedValidNewUserDetails_shouldUpdateUserInDb() throws Exception {
 
         UserUpdateRequestDto newUserDataDto = new UserUpdateRequestDto("new_" + testUser.getUsername(), "new_" + testUser.getEmail(), "new_" + testUser.getPassword());
@@ -313,7 +311,6 @@ public class UserControllerIntegrationTest {
 
     @Test
     @Order(12)
-    @Commit
     public void testDeleteUser_whenValidUserIdProvided_shouldDeleteEntity() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/users/{id}", testUser.getId())

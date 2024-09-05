@@ -16,7 +16,6 @@ import {
 import { KeyProvider } from './../models/key.model';
 import { CommonModule, SlicePipe } from '@angular/common';
 import { ErrorManagerFactory } from '../shared/error.manager.factory';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-key',
@@ -36,7 +35,6 @@ import { Router } from '@angular/router';
   styleUrl: './key.component.scss',
 })
 export class KeyComponent {
-  private router = inject(Router);
   private keyService = inject(KeyService);
 
   keyErrorMessage = signal<string | undefined>(undefined);
@@ -60,7 +58,9 @@ export class KeyComponent {
   updateKeyErrorMessage = ErrorManagerFactory.getFormErrorManager(
     this.form.controls.key,
     this.keyErrorMessage.set,
-    { required: ErrorManagerFactory.MSG_IS_REQUIRED }
+    {
+      required: ErrorManagerFactory.MSG_IS_REQUIRED,
+    }
   );
 
   onSubmit() {
@@ -73,10 +73,6 @@ export class KeyComponent {
     const provider = this.form.value.provider!;
     const key = this.form.value.key!;
     this.keyService.addKey({ provider, key });
-
-    this.router.navigate(['/keys'], {
-      replaceUrl: true,
-    });
   }
 
   onDeleteKey(keyId: string) {

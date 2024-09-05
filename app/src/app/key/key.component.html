@@ -18,6 +18,7 @@
         <input
           matInput
           formControlName="key"
+          placeholder="sk-"
           (blur)="updateKeyErrorMessage()"
         />
         <!-- Display check if input valid, else the error message -->
@@ -37,7 +38,7 @@
           class="ref-link"
           href="https://platform.openai.com/api-keys"
           target="_blank"
-          >*Get an OpenAI key</a
+          >*Get an OpenAI Key</a
         >
       </small>
     </div>
@@ -48,22 +49,24 @@
   <table mat-table [dataSource]="keys()" class="mat-elevation-z8">
     <!-- Provider Column -->
     <ng-container matColumnDef="provider">
-      <th mat-header-cell *matHeaderCellDef>Provider</th>
-      <td mat-cell *matCellDef="let key">{{ key.provider }}</td>
+      <th mat-header-cell *matHeaderCellDef class="content-column">Provider</th>
+      <td mat-cell *matCellDef="let key" class="content-column">
+        {{ key.provider }}
+      </td>
     </ng-container>
 
     <!-- Key Column -->
     <ng-container matColumnDef="key">
-      <th mat-header-cell *matHeaderCellDef>API Key</th>
-      <td mat-cell *matCellDef="let key">
+      <th mat-header-cell *matHeaderCellDef class="content-column">API Key</th>
+      <td mat-cell *matCellDef="let key" class="content-column">
         {{ key.key | slice : 0 : 3 }}...{{ key.key | slice : 125 }}
       </td>
     </ng-container>
 
     <!-- Delete Column -->
     <ng-container matColumnDef="delete">
-      <th mat-header-cell *matHeaderCellDef>Actions</th>
-      <td mat-cell *matCellDef="let key">
+      <th mat-header-cell *matHeaderCellDef class="actions-column">Actions</th>
+      <td mat-cell *matCellDef="let key" class="actions-column">
         <button mat-icon-button color="warn" (click)="onDeleteKey(key.id)">
           <mat-icon>delete</mat-icon>
         </button>

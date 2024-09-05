@@ -1,5 +1,5 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ErrorModalComponent } from '../modal/error-modal/error-modal.component';
 import { SuccessModalComponent } from '../modal/success-modal/success-modal.component';
 import { WarnModalComponent } from '../modal/warn-modal/warn-modal.component';
@@ -44,20 +44,20 @@ export class MessageService {
   // Dialog handling with MatDialog
   private dialog = inject(MatDialog);
 
-  showErrorModal(message: string) {
-    this.dialog.open(ErrorModalComponent, {
+  showErrorModal(message: string): MatDialogRef<ErrorModalComponent, void> {
+    return this.dialog.open(ErrorModalComponent, {
       data: { title: 'An error occurred!', message: message },
     });
   }
 
-  showSuccessModal(message: string) {
-    this.dialog.open(SuccessModalComponent, {
+  showSuccessModal(message: string): MatDialogRef<SuccessModalComponent, void> {
+    return this.dialog.open(SuccessModalComponent, {
       data: { title: 'Action successful!', message: message },
     });
   }
 
-  showWarningModal(message: string) {
-    this.dialog.open(WarnModalComponent, {
+  showWarningModal(message: string): MatDialogRef<WarnModalComponent, void> {
+    return this.dialog.open(WarnModalComponent, {
       data: { title: 'Warning!', message: message },
     });
   }

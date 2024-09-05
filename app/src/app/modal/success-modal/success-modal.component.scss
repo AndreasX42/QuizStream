@@ -7,15 +7,19 @@
   color: #15a138;
   font-size: 1.8rem;
   font-weight: 600;
-  margin: 10px;
+  margin-top: 10px;
 }
 
 .dialog-content {
   color: var(--font-color);
   font-size: 1rem;
-  margin: 20px;
+  margin-top: 20px;
 }
 
 .dialog-button {
-  margin: 10px;
+  margin: 0px;
+}
+
+.confirmation-actions{
+  margin: 0px;
 }

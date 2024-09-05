@@ -126,14 +126,15 @@ async def afilter_most_relevant_questions(
             ),
             prompt=RELEVANCY_FILTER_PROMPT,
         )
+
+        # run llm chain on list of formatted prompts
+        grades_list = await llm_chain.aapply(relevancy_filter_prompts)
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid API key provided. " + str(e),
         )
-
-    # run llm chain on list of formatted prompts
-    grades_list = await llm_chain.aapply(relevancy_filter_prompts)
 
     # format grades and remove all with grade 0
     grades_list = [
@@ -205,6 +206,8 @@ async def asummarize_video(video_metadata: dict[str, str], api_keys: dict[str, s
 
     prompt = PromptTemplate.from_template(prompt_template)
 
+    doc_to_summarize = Document(page_content=video_metadata["transcript"])
+
     try:
         llm_chain = LLMChain(
             llm=ChatOpenAI(
@@ -212,15 +215,14 @@ async def asummarize_video(video_metadata: dict[str, str], api_keys: dict[str, s
             ),
             prompt=prompt,
         )
+
+        video_metadata["description"] = llm_chain.run(doc_to_summarize)
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid API key provided. " + str(e),
         )
-
-    doc_to_summarize = Document(page_content=video_metadata["transcript"])
-
-    video_metadata["description"] = llm_chain.run(doc_to_summarize)
 
 
 async def agenerate_quiz_from_transcript(
@@ -319,7 +321,7 @@ async def get_quiz_question_from_chunk(
                 qa_pair["metadata"] = dict(**chunk.metadata)
                 qa_pair["metadata"].update(
                     {
-                        "answer": qa_pair.pop("answer"),
+                        "answers": qa_pair.pop("answer"),
                         "id": str(uuid.uuid4()),
                         "context": chunk.page_content,
                     }

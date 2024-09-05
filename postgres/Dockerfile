@@ -15,4 +15,8 @@ RUN git clone https://github.com/pgvector/pgvector.git /tmp/pgvector \
     && make && make install \
     && rm -rf /tmp/pgvector
 
+COPY docker-entrypoint-initdb.d/* /docker-entrypoint-initdb.d/
+
+RUN chmod +x docker-entrypoint-initdb.d/*
+
 CMD ["postgres"]

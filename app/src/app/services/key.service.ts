@@ -1,14 +1,17 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { Key, KeyProvider } from './../models/key.model';
 import { Util } from '../shared/util';
 import { MessageService } from './message.service';
 import { Configs } from '../shared/api.configs';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class KeyService {
   private messageService = inject(MessageService);
+  private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
   private localStorageApiKeys = 'api-keys';
 
   private _keys = signal<Key[]>([]);
@@ -26,7 +29,8 @@ export class KeyService {
       !keysString ||
       (Configs.API_KEY !== '' &&
         this._keys().length === 1 &&
-        this._keys()[0].key === keyDftName)
+        this._keys()[0].key === keyDftName) ||
+      this._keys().length === 0
     ) {
       this._keys.set([
         { id: '0', provider: KeyProvider.OpenAI, key: Configs.API_KEY },
@@ -66,9 +70,23 @@ export class KeyService {
     this._keys.update((oldKeys) => [...oldKeys, newKey]);
     this.savekeys();
 
-    this.messageService.showSuccessModal(
+    const dialogRef = this.messageService.showSuccessModal(
       MessageService.MSG_SUCCESS_ADDED_API_KEY
     );
+
+    const sub = dialogRef.afterClosed().subscribe(() => {
+      this.router
+        .navigate(['/keys'], {
+          replaceUrl: true,
+        })
+        .then(() => {
+          window.location.reload();
+        });
+    });
+
+    this.destroyRef.onDestroy(() => {
+      sub.unsubscribe();
+    });
   }
 
   deleteKey(keyId: string) {

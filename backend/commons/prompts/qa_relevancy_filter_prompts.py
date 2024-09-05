@@ -43,9 +43,9 @@ def get_qa_relevancy_filter_prompt_input_dict(
 
     values = {
         "question": quiz_question.page_content,
-        "correct_answer": quiz_question.metadata["answer"]["correct_answer"],
+        "correct_answer": quiz_question.metadata["answers"]["correct_answer"],
         "incorrect_answers": " ### ".join(
-            quiz_question.metadata["answer"]["wrong_answers"]
+            quiz_question.metadata["answers"]["wrong_answers"]
         ),
         "context": quiz_question.metadata["context"],
         "summary": summary,

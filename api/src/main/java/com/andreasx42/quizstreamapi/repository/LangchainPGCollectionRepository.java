@@ -1,6 +1,6 @@
 package com.andreasx42.quizstreamapi.repository;
 
-import com.andreasx42.quizstreamapi.entity.LangchainPGCollection;
+import com.andreasx42.quizstreamapi.entity.collection.LangchainPGCollection;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

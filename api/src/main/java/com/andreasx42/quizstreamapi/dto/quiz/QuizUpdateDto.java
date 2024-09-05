@@ -8,5 +8,5 @@ public record QuizUpdateDto(
         @NotNull Long userId,
         @NotNull UUID quizId,
         @NotNull Integer numCorrect,
-        String name) {
+        String quizName) {
 }

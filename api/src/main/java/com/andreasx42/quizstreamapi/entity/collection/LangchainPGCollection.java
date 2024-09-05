@@ -1,9 +1,13 @@
-package com.andreasx42.quizstreamapi.entity;
+package com.andreasx42.quizstreamapi.entity.collection;
 
+import com.andreasx42.quizstreamapi.entity.UserQuiz;
+import com.andreasx42.quizstreamapi.entity.embedding.LangchainPGEmbedding;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +33,11 @@ public class LangchainPGCollection {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(columnDefinition = "json", updatable = false)
-    private String cmetadata;
+    @Type(JsonType.class)
+    @Column(columnDefinition = "json", updatable = false, insertable = false)
+    private CollectionMetadata cmetadata;
 
-    @OneToMany(mappedBy = "collection", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "collection", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<LangchainPGEmbedding> embeddings = new ArrayList<>();
 
     @OneToOne(mappedBy = "langchainCollection", cascade = CascadeType.ALL, orphanRemoval = true)

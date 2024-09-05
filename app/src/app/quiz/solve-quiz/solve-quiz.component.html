@@ -17,8 +17,9 @@
     {{ numberOfCorrectAnswers() }} out of {{ numberOfQuestions }} questions
     correctly!
   </p>
-
-  <a mat-raised-button [routerLink]="['/quizzes']"> Go Back To List </a>
+  <a mat-raised-button color="primary" routerLink="/quizzes">
+    Go Back To List
+  </a>
 </div>
 } @else if(currentQuestion()) {
 <div class="quiz-container">

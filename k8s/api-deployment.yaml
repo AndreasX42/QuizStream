@@ -46,6 +46,8 @@ spec:
                 secretKeyRef:
                   name: k8s-secrets
                   key: SPRING_DATASOURCE_URL
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
           ports:
             - containerPort: 9090
           volumeMounts:

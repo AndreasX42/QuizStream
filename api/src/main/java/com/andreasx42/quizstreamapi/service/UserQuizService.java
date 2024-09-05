@@ -38,6 +38,10 @@ public class UserQuizService {
         userQuizRepository.deleteById(new UserQuizId(userId, quizId));
     }
 
+    public void deleteByUserQuizEntity(UserQuiz userQuiz) {
+        userQuizRepository.delete(userQuiz);
+    }
+
     public UserQuiz updateUserQuiz(QuizUpdateDto data) {
         UserQuiz userQuiz = getByUserQuizId(data.userId(), data.quizId());
 
@@ -45,10 +49,10 @@ public class UserQuizService {
 
         userQuiz.setNumTries(userQuiz.getNumTries() + 1);
 
-        if (Objects.nonNull(data.name()) && !data.name()
+        if (Objects.nonNull(data.quizName()) && !data.quizName()
                 .isBlank()) {
             userQuiz.getLangchainCollection()
-                    .setName(data.name());
+                    .setName(data.quizName());
         }
 
         return userQuizRepository.save(userQuiz);
