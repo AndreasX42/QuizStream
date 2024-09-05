@@ -6,9 +6,8 @@ import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.Profiles;
 
-import java.util.Collections;
+import java.util.List;
 
 @Configuration
 public class OpenApiConfig {
@@ -21,17 +20,15 @@ public class OpenApiConfig {
 
     @Bean
     OpenAPI openApi() {
-        var openAPI = new OpenAPI()
+        return new OpenAPI()
                 .info(new Info()
                         .title("QuizStream API")
                         .description("API that manages the QuizStream app")
-                        .version("v0.1"));
-
-        if (environment.acceptsProfiles(Profiles.of("prod"))) {
-            openAPI.setServers(Collections.singletonList(new Server().url("/api/v1")));
-        }
-
-        return openAPI;
+                        .version("v0.1"))
+                .servers(List.of(
+                        new Server().url("/api/v1")
+                                .description("Production server")
+                ));
     }
 
 }
