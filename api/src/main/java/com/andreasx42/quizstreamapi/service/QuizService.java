@@ -60,7 +60,7 @@ public class QuizService {
 
     public QuizCreateResultDto createQuizOnBackend(QuizCreateDto quizCreateDto) {
 
-        logger.error("Creating quiz '{}' for user with id '{}' in '{}', of difficulty '{}' and type '{}'",
+        logger.info("Creating quiz '{}' for user with id '{}', '{}', '{}', '{}'.",
                 quizCreateDto.quizName(), quizCreateDto.userId(), quizCreateDto.language()
                         .name(), quizCreateDto.difficulty()
                         .name(), quizCreateDto.type()
@@ -90,7 +90,15 @@ public class QuizService {
                     String.class
             );
 
-            return quizMapper.convertToQuizOutboundDto(response.getBody());
+            QuizCreateResultDto quizDto = quizMapper.convertToQuizOutboundDto(response.getBody());
+
+            logger.info("Successfully created quiz '{}' for user with id '{}', '{}', '{}', '{}'.",
+                    quizCreateDto.quizName(), quizCreateDto.userId(), quizCreateDto.language()
+                            .name(), quizCreateDto.difficulty()
+                            .name(), quizCreateDto.type()
+                            .name());
+
+            return quizDto;
 
         } catch (Exception e) {
             logger.error("Backend API call failed: {}", e.getMessage());
