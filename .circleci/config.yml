@@ -11,12 +11,6 @@ jobs:
     machine: true
     steps:
       - checkout
-
-      - run:
-          name: Fetch YouTube Video Page
-          command: |
-            curl https://www.youtube.com/watch?v=IFx8eABfivg || { echo "YouTube is unavailable" && exit 1; }
-
       - run:
           name: Clear Docker cache
           command: docker system prune --all --force --volumes

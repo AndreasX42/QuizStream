@@ -183,7 +183,7 @@ async def aget_video_transcript(youtube_url: str, language: QuizLanguage) -> str
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Error fetching video transcript for {youtube_url}.",
+            detail=f"Error fetching video transcript for {youtube_url}. " + str(e),
         ) from e
 
 
