@@ -1,11 +1,13 @@
+import os
 import uuid
 import asyncio
 import logging
 import itertools
 from typing import Union
 from json import JSONDecodeError
-from fastapi import HTTPException, status
+from unittest.mock import patch
 
+from fastapi import HTTPException, status
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.docstore.document import Document
 from langchain.chains.llm import LLMChain
@@ -14,6 +16,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain_community.document_loaders import YoutubeLoader
 
+
 from backend.commons.prompts import get_qa_generation_prompt
 from backend.commons.prompts import (
     RELEVANCY_FILTER_PROMPT,
@@ -21,6 +24,7 @@ from backend.commons.prompts import (
 )
 from backend.commons.db import create_collection
 from backend.api.models import QuizDifficulty, QuizLanguage
+from backend.tests.mock_youtube_loader import MOCK_TRANSCRIPT
 
 logger = logging.getLogger(__name__)
 
@@ -52,10 +56,6 @@ async def agenerate_quiz(
     Returns:
         Union[str, list[str]]: id of created collection and ids of upserted quiz questions
     """
-
-    x = {"transcript": "my video about coffee"}
-    await asummarize_video(video_metadata=x, api_keys=api_keys)
-    logger.error(x["description"])
 
     # get video transcript
     transcript = await aget_video_transcript(youtube_url, language)
@@ -156,7 +156,7 @@ async def afilter_most_relevant_questions(
     return qa_list_final
 
 
-async def aget_video_transcript(youtube_url: str, language: QuizLanguage) -> str:
+async def aget_video_transcript(youtube_url: str, language: QuizLanguage) -> Document:
     """Retrieves transcript of given youtube video in given language
 
     Args:
@@ -174,6 +174,17 @@ async def aget_video_transcript(youtube_url: str, language: QuizLanguage) -> str
         youtube_url,
         language.name,
     )
+
+    # check if running in test mode
+    if os.getenv("EXECUTION_CONTEXT") == "test":
+        # mock YoutubeLoader.load() if we are in test mode
+        logger.debug("Mocking YoutubeLoader.load() in test context.")
+        with patch(
+            "langchain_community.document_loaders.YoutubeLoader.load"
+        ) as mock_load:
+            # create a mock document with a mock transcript
+            mock_load.return_value = [MOCK_TRANSCRIPT]
+            return MOCK_TRANSCRIPT
 
     loader = YoutubeLoader.from_youtube_url(
         youtube_url=youtube_url,
@@ -282,7 +293,7 @@ async def agenerate_quiz_from_transcript(
     qa_pairs = list(itertools.chain.from_iterable(qa_pairs))
 
     if len(qa_pairs) < len(chunks):
-        logger.error(
+        logger.warning(
             "Only generated %s quiz questions in quiz '%s', expected %s.",
             str(len(qa_pairs)),
             quiz_name,
