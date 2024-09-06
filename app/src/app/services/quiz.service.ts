@@ -11,11 +11,11 @@ import {
 import { AuthService } from './auth.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Page } from './page.model';
 import { Configs } from '../shared/api.configs';
 import { KeyService } from './key.service';
 import { MessageService } from './message.service';
 import { Router } from '@angular/router';
+import { Page } from './page.model';
 
 @Injectable({
   providedIn: 'root',

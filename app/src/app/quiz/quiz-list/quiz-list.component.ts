@@ -85,7 +85,7 @@ export class QuizListComponent {
       )
       .subscribe({
         next: (page) => {
-          this.totalPages.set(page.totalPages);
+          this.totalPages.set(page.page.totalPages);
           this.quizzes.set(page.content);
           this.isLoadingQuizzes.set(false);
 
