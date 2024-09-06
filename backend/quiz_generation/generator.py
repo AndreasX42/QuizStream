@@ -53,7 +53,7 @@ async def agenerate_quiz(
         Union[str, list[str]]: id of created collection and ids of upserted quiz questions
     """
 
-    x = {"description": "my video"}
+    x = {"transcript": "my video about coffee"}
     await asummarize_video(video_metadata=x, api_keys=api_keys)
     logger.error(x["description"])
 
