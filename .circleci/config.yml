@@ -45,7 +45,7 @@ jobs:
       - run:
           name: Push Angular app image
           command: |
-            docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG -t $DOCKER_USER/$IMAGE_NAME_BASE-app:latest -f ./app/Dockerfile.prod.beta ./app
+            docker build -t $DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG -t $DOCKER_USER/$IMAGE_NAME_BASE-app:latest -f ./app/Dockerfile.prod ./app
             docker push $DOCKER_USER/$IMAGE_NAME_BASE-app:$TAG
             docker push $DOCKER_USER/$IMAGE_NAME_BASE-app:latest
   push_api_image:
