@@ -1,0 +1,28 @@
+.auth-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-button {
+  width: 280px;
+  margin-top: 10px;
+  text-align: center; 
+}
+
+a[mat-raised-button] {
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+a[mat-raised-button]:hover {
+  background-color: #0f9300;
+  transform: translateY(-3px);
+}
+
+// a[mat-raised-button][color="primary"] {
+//   background-color: #25cb35;
+// }
+
+// a[mat-raised-button][color="accent"] {
+//   background-color: #e1470a;
+// }

@@ -62,10 +62,7 @@
             <p>Correct Answers: {{ quiz().numCorrect }}</p>
             <p>
               <strong>Success Rate: </strong
-              >{{
-                (100 * quiz().numCorrect) /
-                  (quiz().numQuestions * quiz().numTries) | number : "1.2-2"
-              }}%
+              >{{ calculateSuccessRate() | number : "1.2-2" }}%
             </p>
           </fieldset>
         </div>

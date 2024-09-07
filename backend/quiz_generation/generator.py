@@ -4,17 +4,16 @@ import asyncio
 import logging
 import itertools
 from typing import Union
-from json import JSONDecodeError
 from unittest.mock import patch
 
 from fastapi import HTTPException, status
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.docstore.document import Document
-from langchain.chains.llm import LLMChain
 from langchain.chains.qa_generation.base import QAGenerationChain
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain_community.document_loaders import YoutubeLoader
+from langchain_core.output_parsers import StrOutputParser
 
 
 from backend.commons.prompts import get_qa_generation_prompt
@@ -124,15 +123,15 @@ async def afilter_most_relevant_questions(
 
     # set up llm chain
     try:
-        llm_chain = LLMChain(
-            llm=ChatOpenAI(
-                temperature=0, model="gpt-4o-mini", api_key=api_keys["OPENAI_API_KEY"]
-            ),
-            prompt=RELEVANCY_FILTER_PROMPT,
+
+        llm = ChatOpenAI(
+            temperature=0, model="gpt-4o-mini", api_key=api_keys["OPENAI_API_KEY"]
         )
 
+        grading_chain = RELEVANCY_FILTER_PROMPT | llm | StrOutputParser()
+
         # run llm chain on list of formatted prompts
-        grades_list = await llm_chain.aapply(relevancy_filter_prompts)
+        grades_list = await grading_chain.abatch(relevancy_filter_prompts)
 
     except Exception as e:
         raise HTTPException(
@@ -142,9 +141,7 @@ async def afilter_most_relevant_questions(
 
     # format grades and remove all with grade 0
     grades_list = [
-        (i, float(grade["text"]))
-        for i, grade in enumerate(grades_list)
-        if float(grade["text"]) > 0
+        (i, float(grade)) for i, grade in enumerate(grades_list) if float(grade) > 0
     ]
 
     # sort by grade and remove all questions with grade 0
@@ -224,14 +221,12 @@ async def asummarize_video(video_metadata: dict[str, str], api_keys: dict[str, s
     doc_to_summarize = Document(page_content=video_metadata["transcript"])
 
     try:
-        llm_chain = LLMChain(
-            llm=ChatOpenAI(
-                temperature=0, model="gpt-4o-mini", api_key=api_keys["OPENAI_API_KEY"]
-            ),
-            prompt=prompt,
+        llm = ChatOpenAI(
+            temperature=0, model="gpt-4o-mini", api_key=api_keys["OPENAI_API_KEY"]
         )
 
-        video_metadata["description"] = llm_chain.run(doc_to_summarize)
+        summarizing_chain = prompt | llm | StrOutputParser()
+        video_metadata["description"] = summarizing_chain.invoke(doc_to_summarize)
 
     except Exception as e:
         raise HTTPException(
@@ -326,30 +321,33 @@ async def get_quiz_question_from_chunk(
     processed_pairs = []
 
     while num_attempt <= max_retries and len(processed_pairs) < 1:
-        try:
-            # Attempt to generate qa pairs
-            qa_pairs = qa_generator_chain.run(chunk.page_content)
 
-            # Attach chunk metadata to generated pairs
-            for qa_pair in qa_pairs:
-                qa_pair["page_content"] = qa_pair.pop("question")
-                qa_pair["metadata"] = dict(**chunk.metadata)
-                qa_pair["metadata"].update(
+        try:
+            # attempt to generate qa pairs
+            questions_answers_dict = qa_generator_chain.invoke(chunk.page_content)
+
+            if not isinstance(questions_answers_dict, dict):
+                raise TypeError(
+                    f"Unexpected return type: {type(questions_answers_dict)}. Expected a dict."
+                )
+
+            for question_answer in questions_answers_dict["questions"]:
+                question = question_answer["question"]
+                answers = question_answer["answer"]
+                metadata = {**chunk.metadata}
+                metadata.update(
                     {
-                        "answers": qa_pair.pop("answer"),
+                        "answers": answers,
                         "id": str(uuid.uuid4()),
                         "context": chunk.page_content,
                     }
                 )
+                qa_document = Document(page_content=question, metadata=metadata)
+                processed_pairs.append(qa_document)
+            break
 
-                qa_pair = Document(
-                    page_content=qa_pair["page_content"], metadata=qa_pair["metadata"]
-                )
-
-                processed_pairs.append(qa_pair)
-
-        except JSONDecodeError:
-            # Increment and retry with updated prompt
+        except Exception:
+            # increment and retry with updated prompt
             num_attempt += 1
             qa_generator_chain.llm_chain.prompt.messages[
                 1

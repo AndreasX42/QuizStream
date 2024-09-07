@@ -117,7 +117,7 @@ public class QuizControllerIntegrationTest {
         QuizCreateDto quizCreateDto = new QuizCreateDto(testUser.getId(), "My first quiz",
                 "https://www.youtube.com/watch?v=IFx8eABfivg",
                 Map.of("OPENAI_API_KEY", apiKeyTest),
-                UserQuiz.Language.ES,
+                UserQuiz.Language.EN,
                 UserQuiz.Type.MULTIPLE_CHOICE,
                 UserQuiz.Difficulty.HARD);
 
@@ -170,7 +170,7 @@ public class QuizControllerIntegrationTest {
         assertThat(quizOutboundDto.numCorrect()).isEqualTo(0);
 
         assertThat(quizOutboundDto.numQuestions()).isGreaterThan(0);
-        assertThat(quizOutboundDto.language()).isEqualTo(UserQuiz.Language.ES);
+        assertThat(quizOutboundDto.language()).isEqualTo(UserQuiz.Language.EN);
         assertThat(quizOutboundDto.type()).isEqualTo(UserQuiz.Type.MULTIPLE_CHOICE);
         assertThat(quizOutboundDto.difficulty()).isEqualTo(UserQuiz.Difficulty.HARD);
 

@@ -83,4 +83,15 @@ export class QuizComponent {
       sub.unsubscribe();
     });
   }
+
+  calculateSuccessRate(): number {
+    if (this.quiz().numTries === 0) {
+      return 0.0;
+    }
+
+    return (
+      (100 * this.quiz().numCorrect) /
+      (this.quiz().numQuestions * this.quiz().numTries)
+    );
+  }
 }
