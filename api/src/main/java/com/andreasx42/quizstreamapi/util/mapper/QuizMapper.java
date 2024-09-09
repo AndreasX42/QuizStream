@@ -12,7 +12,6 @@ import com.andreasx42.quizstreamapi.entity.embedding.EmbeddingMetadata;
 import com.andreasx42.quizstreamapi.entity.embedding.LangchainPGEmbedding;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -22,12 +21,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Component
-@AllArgsConstructor
 public class QuizMapper {
 
     private final ObjectMapper objectMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(QuizMapper.class);
+
+    public QuizMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     public QuizOutboundDto convertToQuizOutboundDto(UserQuiz userQuiz) {
         try {

@@ -12,6 +12,16 @@ export interface Quiz {
   difficulty: QuizDifficulty;
 }
 
+export interface QuizRequest {
+  userId: number;
+  quizName: string;
+  status: RequestStatus;
+  dateCreated: string;
+  dateFinished: string | null;
+  errorMessage: string | null;
+  quizId: string | null;
+}
+
 export interface QuizCreateRequestDto {
   userId: number;
   quizName: string;
@@ -58,6 +68,13 @@ export enum QuizDifficulty {
   HARD = 'HARD',
 }
 
+export enum RequestStatus {
+  ALL = 'ALL',
+  CREATING = 'CREATING',
+  FINISHED = 'FINISHED',
+  FAILED = 'FAILED',
+}
+
 export enum QuizType {
   MULTIPLE_CHOICE = 'MULTIPLE_CHOICE',
 }
@@ -69,9 +86,19 @@ export enum QuizLanguage {
 }
 
 export function getEnumDisplayName(
-  enumValue: QuizDifficulty | QuizType | QuizLanguage
+  enumValue: RequestStatus | QuizDifficulty | QuizType | QuizLanguage
 ): string {
   switch (enumValue) {
+    // Request status cases
+    case RequestStatus.ALL:
+      return 'All';
+    case RequestStatus.CREATING:
+      return 'Creating';
+    case RequestStatus.FINISHED:
+      return 'Finished';
+    case RequestStatus.FAILED:
+      return 'Failed';
+
     // QuizDifficulty cases
     case QuizDifficulty.EASY:
       return 'Easy';

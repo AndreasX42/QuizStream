@@ -75,5 +75,8 @@ def assert_quiz_name_not_exists(user_id: int, quiz_name: str, session: Session):
     if matchWithUserQuizzes:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Quiz name '{quiz_name}' already exists for user {user_id}.",
+            detail={
+                "error_external": f"Quiz with name '{quiz_name}' already exists.",
+                "error_internal": f"Quiz name '{quiz_name}' already exists for user {user_id}.",
+            },
         )

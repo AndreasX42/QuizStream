@@ -62,7 +62,7 @@ export class NewQuizComponent {
   );
 
   youtubeRegExPattern =
-    /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|v\/|.+\?v=)?(\w{11})(\S+)?$/;
+    /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|v\/|.+\/|v=|\/)?([0-9A-Za-z_-]{11})(\S+)?$/;
 
   form = new FormGroup({
     quizName: new FormControl('', {

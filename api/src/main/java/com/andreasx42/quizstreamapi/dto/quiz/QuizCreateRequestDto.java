@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.Map;
 
-public record QuizCreateDto(
+public record QuizCreateRequestDto(
 
         @NotNull Long userId,
         @NotNull String quizName,

@@ -1,7 +1,9 @@
 package com.andreasx42.quizstreamapi.controller;
 
 import com.andreasx42.quizstreamapi.dto.quiz.*;
+import com.andreasx42.quizstreamapi.entity.QuizRequest;
 import com.andreasx42.quizstreamapi.exception.ErrorResponse;
+import com.andreasx42.quizstreamapi.service.QuizRequestService;
 import com.andreasx42.quizstreamapi.service.QuizService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -10,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -27,12 +28,17 @@ import java.util.UUID;
 @RestController
 @RequestMapping
         ("/quizzes")
-@AllArgsConstructor
 @Tag(name = "Quiz Controller", description = "Endpoints to create and manage quizzes")
 public class QuizController {
 
     private final QuizService quizService;
+    private final QuizRequestService quizRequestsService;
     private static final Logger logger = LoggerFactory.getLogger(QuizService.class);
+
+    public QuizController(QuizService quizService, QuizRequestService quizJobsService) {
+        this.quizService = quizService;
+        this.quizRequestsService = quizJobsService;
+    }
 
 
     // GET quiz by quiz id
@@ -67,14 +73,14 @@ public class QuizController {
     @PreAuthorize("#quizCreateDto.userId == principal.id or hasAuthority('ADMIN')")
     @Operation(summary = "Creates a quiz from provided data")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Successful creation of quiz", content = @Content(schema = @Schema(implementation = QuizOutboundDto.class))),
+            @ApiResponse(responseCode = "201", description = "Successfully started quiz creation", content = @Content(schema = @Schema(implementation = QuizRequestDto.class))),
             @ApiResponse(responseCode = "400", description = "Bad request: unsuccessful submission", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
     })
-    public ResponseEntity<QuizCreateResultDto> createQuiz(@RequestBody QuizCreateDto quizCreateDto) {
+    public ResponseEntity<QuizRequestDto> createQuiz(@RequestBody QuizCreateRequestDto quizCreateDto) {
 
-        QuizCreateResultDto createdQuiz = quizService.createQuizOnBackend(quizCreateDto);
+        QuizRequestDto quizJobDto = quizService.createQuiz(quizCreateDto);
 
-        return new ResponseEntity<>(createdQuiz, HttpStatus.CREATED);
+        return new ResponseEntity<>(quizJobDto, HttpStatus.CREATED);
     }
 
     // UPDATE quiz
@@ -121,4 +127,35 @@ public class QuizController {
 
         return new ResponseEntity<>(quizDetails, HttpStatus.OK);
     }
+
+    // GET returns list of quiz jobs of user
+    @GetMapping(value = "/requests/users/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("#userId == principal.id or hasAuthority('ADMIN')")
+    @Operation(summary = "Returns list of open jobs for quiz creation")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "404", description = "Fetching quiz jobs failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Successful retrieval of list of quiz jobs", content = @Content(schema = @Schema(implementation = QuizRequestDto.class))),
+    })
+    public ResponseEntity<Page<QuizRequestDto>> getQuizRequestsByUserId(@PathVariable Long userId, @RequestParam(required = false) QuizRequest.Status status, Pageable pageable) {
+
+        Page<QuizRequestDto> quizJobs = quizRequestsService.getRequestsForUserId(userId, status, pageable);
+
+        return new ResponseEntity<>(quizJobs, HttpStatus.OK);
+    }
+
+    // DELETE quiz job
+    @DeleteMapping("/requests")
+    @PreAuthorize("#quizDeleteRequestDto.userId == principal.id or hasAuthority('ADMIN')")
+    @Operation(summary = "Deletes quiz job with given user id and quiz name")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful deletion of quiz job", content = @Content(schema = @Schema(implementation = HttpStatus.class))),
+            @ApiResponse(responseCode = "400", description = "Bad request: unsuccessful submission", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<HttpStatus> deleteQuizRequestForUser(@RequestBody QuizDeleteRequestDto quizDeleteRequestDto) {
+
+        quizRequestsService.deleteRequestForUser(quizDeleteRequestDto);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 }

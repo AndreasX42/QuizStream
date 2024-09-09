@@ -1,0 +1,171 @@
+@if(isLoadingRequests()) {
+<div class="loading-container">
+  <mat-spinner></mat-spinner>
+  <p>Loading requests...</p>
+</div>
+} @else {
+
+<div class="sort-container">
+  <label for="requestSort" class="sort-label">Sort by:</label>
+  <mat-select
+    id="requestSort"
+    class="sort-select"
+    [(value)]="requestSortBy"
+    (selectionChange)="reloadRequests()"
+  >
+    <mat-option value="dateCreated,desc">Newest first</mat-option>
+    <mat-option value="dateCreated,asc">Oldest first</mat-option>
+  </mat-select>
+
+  <label for="requestStatus" class="sort-label">Request status:</label>
+  <mat-select
+    id="requestStatus"
+    class="sort-select"
+    [(value)]="requestStatus"
+    (selectionChange)="reloadRequests()"
+  >
+    <mat-option *ngFor="let type of requestStatusList" [value]="type">{{
+      getEnumDisplayName(type)
+    }}</mat-option>
+  </mat-select>
+
+  <label for="requestPageSize" class="page-size-label">Page size:</label>
+  <mat-select
+    id="requestPageSize"
+    class="page-size-select"
+    [(value)]="requestPageSize"
+    (selectionChange)="reloadRequests()"
+  >
+    <mat-option value="5">5</mat-option>
+    <mat-option value="10">10</mat-option>
+    <mat-option value="20">20</mat-option>
+  </mat-select>
+</div>
+
+@if(requests().length > 0) {
+<div class="requests-table-container">
+  <table mat-table [dataSource]="requests()" class="mat-elevation-z8">
+    <!-- Define table columns -->
+    <ng-container matColumnDef="quizName">
+      <th mat-header-cell *matHeaderCellDef class="quiz-name-header">
+        Quiz Name
+      </th>
+      <td mat-cell *matCellDef="let request">
+        <div class="quiz-name-row">
+          {{ request.quizName }}
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <td mat-cell *matCellDef="let request">
+        <button mat-raised-button [color]="getStatusColor(request.status)">
+          <ng-container *ngIf="request.status === 'CREATING'; else showStatus">
+            <span>CREATING</span>
+            <mat-progress-bar mode="indeterminate" color="accent" />
+          </ng-container>
+          <ng-template #showStatus>
+            <span>{{ request.status }}</span>
+          </ng-template>
+        </button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="dateCreated">
+      <th mat-header-cell *matHeaderCellDef>Date Created</th>
+      <td mat-cell *matCellDef="let request">
+        {{ request.dateCreated | date : "MM/dd/yy" }}<br />
+        {{ request.dateCreated | date : "h:mm:ss a" }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="dateFinished">
+      <th mat-header-cell *matHeaderCellDef>Date Finished</th>
+      <td mat-cell *matCellDef="let request">
+        {{ request.dateFinished | date : "MM/dd/yy" }}<br />
+        {{ request.dateFinished | date : "h:mm:ss a" }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="errorMessage">
+      <th mat-header-cell *matHeaderCellDef class="error-message-header">
+        System Message
+      </th>
+      <td mat-cell *matCellDef="let request">
+        <div class="error-message">
+          {{
+            request.errorMessage
+              ? request.errorMessage
+              : request.status === "FAILED"
+              ? "Unexpected error processing request. Please try again later."
+              : request.status === "FINISHED"
+              ? "Request succeeded."
+              : ""
+          }}
+        </div>
+      </td>
+    </ng-container>
+
+    <!-- Delete Column -->
+    <ng-container matColumnDef="delete">
+      <th mat-header-cell *matHeaderCellDef class="actions-column">Actions</th>
+      <td mat-cell *matCellDef="let request" class="actions-column">
+        <button
+          mat-icon-button
+          color="warn"
+          (click)="onDeleteQuizRequest(request.userId, request.quizName)"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <!-- Table headers and rows -->
+    <tr mat-header-row *matHeaderRowDef="displayedRequestColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedRequestColumns"></tr>
+  </table>
+
+  <!-- Pagination Controls -->
+  <div class="pagination-container">
+    <button
+      mat-flat-button
+      class="pagination-button"
+      (click)="onRequestPageChange(requestCurrentPage() - 1)"
+      [disabled]="requestCurrentPage() === 0"
+    >
+      Previous
+    </button>
+
+    <div class="page-numbers">
+      <button
+        mat-raised-button
+        *ngFor="let page of requestPagesArray()"
+        class="pagination-number"
+        [class.active]="page === requestCurrentPage()"
+        (click)="onRequestPageChange(page)"
+      >
+        {{ page + 1 }}
+      </button>
+    </div>
+
+    <button
+      mat-flat-button
+      class="pagination-button"
+      (click)="onRequestPageChange(requestCurrentPage() + 1)"
+      [disabled]="requestCurrentPage() >= requestTotalPages() - 1"
+    >
+      Next
+    </button>
+  </div>
+</div>
+} @else {
+<div class="main-page-container">
+  <div class="main-msg">
+    <p>No requests found.</p>
+    <a mat-raised-button color="primary" routerLink="/quizzes/new">
+      Create New Quiz
+    </a>
+  </div>
+</div>
+} }

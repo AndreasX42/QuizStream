@@ -1,0 +1,3 @@
+app:
+    - material paginator
+    - form tooltips

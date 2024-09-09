@@ -3,11 +3,9 @@ package com.andreasx42.quizstreamapi.util.mapper;
 import com.andreasx42.quizstreamapi.dto.user.UserOutboundDto;
 import com.andreasx42.quizstreamapi.dto.user.UserRegisterDto;
 import com.andreasx42.quizstreamapi.entity.User;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@AllArgsConstructor
 public class UserMapper {
 
 

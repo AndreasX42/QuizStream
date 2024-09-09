@@ -4,9 +4,7 @@ import com.andreasx42.quizstreamapi.dto.quiz.QuizUpdateDto;
 import com.andreasx42.quizstreamapi.entity.UserQuiz;
 import com.andreasx42.quizstreamapi.entity.UserQuizId;
 import com.andreasx42.quizstreamapi.exception.EntityNotFoundException;
-import com.andreasx42.quizstreamapi.repository.LangchainPGCollectionRepository;
 import com.andreasx42.quizstreamapi.repository.UserQuizRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,18 +13,18 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
 public class UserQuizService {
 
     private final UserQuizRepository userQuizRepository;
 
-    private final LangchainPGCollectionRepository langchainPGCollectionRepository;
+    public UserQuizService(UserQuizRepository userQuizRepository) {
+        this.userQuizRepository = userQuizRepository;
+    }
 
 
     public UserQuiz getByUserQuizId(Long userId, UUID quizId) {
         return userQuizRepository.findById_UserIdAndId_QuizId(userId, quizId)
                 .orElseThrow(() -> new EntityNotFoundException(String.valueOf(quizId), UserQuiz.class));
-
     }
 
     public Page<UserQuiz> getAllUserQuizzes(Long userId, Pageable pageable) {

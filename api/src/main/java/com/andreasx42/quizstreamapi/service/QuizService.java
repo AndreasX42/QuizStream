@@ -1,37 +1,38 @@
 package com.andreasx42.quizstreamapi.service;
 
 import com.andreasx42.quizstreamapi.dto.quiz.*;
+import com.andreasx42.quizstreamapi.entity.QuizRequest;
 import com.andreasx42.quizstreamapi.entity.UserQuiz;
 import com.andreasx42.quizstreamapi.entity.embedding.LangchainPGEmbedding;
-import com.andreasx42.quizstreamapi.exception.BadBackendResponseException;
-import com.andreasx42.quizstreamapi.security.config.EnvConfigs;
 import com.andreasx42.quizstreamapi.util.mapper.QuizMapper;
-import lombok.AllArgsConstructor;
+import com.andreasx42.quizstreamapi.util.mapper.QuizRequestMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
 public class QuizService {
 
     private static final Logger logger = LoggerFactory.getLogger(QuizService.class);
-    private final RestTemplate restTemplate;
 
     private final UserQuizService userQuizService;
-    private final EnvConfigs envConfigs;
+    private final QuizRequestService quizJobService;
+    private final QuizCreationAsyncBackendService quizCreationAsyncBackendService;
     private final QuizMapper quizMapper;
+    private final QuizRequestMapper quizJobMapper;
+
+    public QuizService(UserQuizService userQuizService, QuizRequestService quizJobService, QuizCreationAsyncBackendService quizCreationAsyncBackendService, QuizMapper quizMapper, QuizRequestMapper quizJobMapper) {
+        this.userQuizService = userQuizService;
+        this.quizJobService = quizJobService;
+        this.quizCreationAsyncBackendService = quizCreationAsyncBackendService;
+        this.quizMapper = quizMapper;
+        this.quizJobMapper = quizJobMapper;
+    }
 
 
     public Page<QuizOutboundDto> getAllUserQuizzes(Long userId, Pageable pageable) {
@@ -58,7 +59,7 @@ public class QuizService {
 
     }
 
-    public QuizCreateResultDto createQuizOnBackend(QuizCreateDto quizCreateDto) {
+    public QuizRequestDto createQuiz(QuizCreateRequestDto quizCreateDto) {
 
         logger.info("Creating quiz '{}' for user with id '{}', '{}', '{}', '{}'.",
                 quizCreateDto.quizName(), quizCreateDto.userId(), quizCreateDto.language()
@@ -66,44 +67,13 @@ public class QuizService {
                         .name(), quizCreateDto.type()
                         .name());
 
-        // Create the request body for FastAPI
-        Map<String, Object> body = Map.of(
-                "user_id", quizCreateDto.userId(),
-                "quiz_name", quizCreateDto.quizName(),
-                "api_keys", quizCreateDto.apiKeys(),
-                "youtube_url", quizCreateDto.videoUrl(),
-                "language", quizCreateDto.language(),
-                "type", quizCreateDto.type()
-                        .toString(),
-                "difficulty", quizCreateDto.difficulty()
-                        .toString()
-        );
+        // create quizJob in table to keep track of status
+        QuizRequest quizJob = this.quizJobService.createQuizRequest(quizCreateDto.userId(), quizCreateDto.quizName());
 
-        // Make the POST request
-        try {
-            HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, new HttpHeaders());
+        // call backend asynchronously and update quizJob when done
+        quizCreationAsyncBackendService.createQuiz(quizCreateDto, quizJob);
 
-            ResponseEntity<String> response = restTemplate.exchange(
-                    envConfigs.backendCreateNewQuizEndpoint,
-                    HttpMethod.POST,
-                    request,
-                    String.class
-            );
-
-            QuizCreateResultDto quizDto = quizMapper.convertToQuizOutboundDto(response.getBody());
-
-            logger.info("Successfully created quiz '{}' for user with id '{}', '{}', '{}', '{}'.",
-                    quizCreateDto.quizName(), quizCreateDto.userId(), quizCreateDto.language()
-                            .name(), quizCreateDto.difficulty()
-                            .name(), quizCreateDto.type()
-                            .name());
-
-            return quizDto;
-
-        } catch (Exception e) {
-            logger.error("Backend API call failed: {}", e.getMessage());
-            throw new BadBackendResponseException(e.getMessage(), QuizService.class);
-        }
+        return quizJobMapper.mapFromEntityOutbound(quizJob);
     }
 
     public QuizOutboundDto updateQuiz(QuizUpdateDto quizUpdateDto) {

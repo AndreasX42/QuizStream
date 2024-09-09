@@ -3,13 +3,16 @@ package com.andreasx42.quizstreamapi.controller;
 import com.andreasx42.quizstreamapi.dto.auth.LoginRequestDto;
 import com.andreasx42.quizstreamapi.dto.auth.LoginResponseDto;
 import com.andreasx42.quizstreamapi.dto.quiz.*;
+import com.andreasx42.quizstreamapi.entity.QuizRequest;
 import com.andreasx42.quizstreamapi.entity.User;
 import com.andreasx42.quizstreamapi.entity.UserQuiz;
 import com.andreasx42.quizstreamapi.repository.UserRepository;
 import com.andreasx42.quizstreamapi.security.config.EnvConfigs;
+import com.andreasx42.quizstreamapi.service.QuizRequestService;
 import com.andreasx42.quizstreamapi.service.QuizService;
+import com.andreasx42.quizstreamapi.service.UserQuizService;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,10 +28,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.assertj.core.api.Assertions.within;
+import static org.awaitility.Awaitility.await;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Commit
@@ -44,6 +53,8 @@ public class QuizControllerIntegrationTest {
 
     private final QuizService quizService;
     private final UserRepository userRepository;
+    private final QuizRequestService quizRequestService;
+    private final UserQuizService userQuizService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EnvConfigs envConfigs;
     private final ObjectMapper objectMapper;
@@ -51,9 +62,11 @@ public class QuizControllerIntegrationTest {
 
 
     @Autowired
-    public QuizControllerIntegrationTest(QuizService quizService, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, EnvConfigs envConfigs, ObjectMapper objectMapper, MockMvc mockMvc) {
+    public QuizControllerIntegrationTest(QuizService quizService, UserRepository userRepository, QuizRequestService quizRequestService, UserQuizService userQuizService, BCryptPasswordEncoder bCryptPasswordEncoder, EnvConfigs envConfigs, ObjectMapper objectMapper, MockMvc mockMvc) {
         this.quizService = quizService;
         this.userRepository = userRepository;
+        this.quizRequestService = quizRequestService;
+        this.userQuizService = userQuizService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.envConfigs = envConfigs;
         this.objectMapper = objectMapper;
@@ -62,8 +75,12 @@ public class QuizControllerIntegrationTest {
 
     private User testUser;
     private String testUserJWT;
-    private QuizCreateResultDto quizCreateData;
+    private UUID createdQuizId;
     private QuizOutboundDto quizOutboundData;
+    private QuizCreateRequestDto quizCreateRequestDto;
+
+    Predicate<Optional<QuizRequest>> isPresentAndTerminated = quizRequest -> quizRequest.isPresent() && quizRequest.get()
+            .getStatus()!=QuizRequest.Status.CREATING;
 
     @BeforeAll
     public void setUp() {
@@ -81,6 +98,13 @@ public class QuizControllerIntegrationTest {
 
         this.testUser = userRepository.save(testUser);
         this.testUser.setPassword(userPassword);
+
+        this.quizCreateRequestDto = new QuizCreateRequestDto(testUser.getId(), "my first quiz",
+                "https://www.youtube.com/watch?v=IFx8eABfivg",
+                Map.of("OPENAI_API_KEY", apiKeyTest),
+                UserQuiz.Language.EN,
+                UserQuiz.Type.MULTIPLE_CHOICE,
+                UserQuiz.Difficulty.HARD);
     }
 
     @Test
@@ -114,41 +138,75 @@ public class QuizControllerIntegrationTest {
     @Order(2)
     public void testCreateQuiz_whenValidQuizDataProvided_shouldCreateQuizSuccessfully() throws Exception {
 
-        QuizCreateDto quizCreateDto = new QuizCreateDto(testUser.getId(), "My first quiz",
-                "https://www.youtube.com/watch?v=IFx8eABfivg",
-                Map.of("OPENAI_API_KEY", apiKeyTest),
-                UserQuiz.Language.EN,
-                UserQuiz.Type.MULTIPLE_CHOICE,
-                UserQuiz.Difficulty.HARD);
-
-        String quizCreateDtoJson = objectMapper.writeValueAsString(quizCreateDto);
+        String quizCreateRequestDtoJson = objectMapper.writeValueAsString(quizCreateRequestDto);
 
         String response = mockMvc.perform(MockMvcRequestBuilders.post("/quizzes/new")
                         .header("Authorization", testUserJWT)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(quizCreateDtoJson))
+                        .content(quizCreateRequestDtoJson))
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        QuizCreateResultDto quizCreateResultDto = objectMapper.readValue(response, QuizCreateResultDto.class);
+        // check response from endpoint
+        QuizRequestDto quizCreateResponseDto = objectMapper.readValue(response, QuizRequestDto.class);
 
-        assertThat(quizCreateResultDto).isNotNull();
-        assertThat(quizCreateResultDto.userId()).isEqualTo(testUser.getId());
-        assertThat(quizCreateResultDto.quizName()).isEqualTo(quizCreateDto.quizName()
-                .toLowerCase());
-        assertThat(quizCreateResultDto.quizId()).isNotNull();
+        assertThat(quizCreateResponseDto).isNotNull();
+        assertThat(quizCreateResponseDto.userId()).isEqualTo(testUser.getId());
+        assertThat(quizCreateResponseDto.quizName()).isEqualTo(quizCreateRequestDto.quizName()
+        );
+        assertThat(quizCreateResponseDto.dateCreated()).isNotNull();
+        assertThat(quizCreateResponseDto.errorMessage()).isNull();
 
-        // store quiz data info
-        this.quizCreateData = quizCreateResultDto;
+        // await the creation of quiz
+        await()
+                .atMost(120, TimeUnit.SECONDS)
+                .pollInterval(2, TimeUnit.SECONDS)
+                .until(() -> isPresentAndTerminated.test(quizRequestService.getRequestByQuizRequestId(testUser.getId(), quizCreateRequestDto.quizName()
+                )));
+
+        // check that QuizRequest was created in quiz_requests table
+        QuizRequest quizRequestRow = quizRequestService.getRequestByQuizRequestId(testUser.getId(), quizCreateRequestDto.quizName()
+                )
+                .orElseThrow();
+
+        assertThat(quizRequestRow.getStatus()).isEqualTo(QuizRequest.Status.FINISHED);
+        assertThat(quizRequestRow.getId()
+                .getUserId()).isEqualTo(quizCreateRequestDto.userId());
+        assertThat(quizRequestRow.getId()
+                .getQuizName()).isEqualTo(quizCreateRequestDto.quizName());
+        assertThat(quizRequestRow.getStatus()).isEqualTo(QuizRequest.Status.FINISHED);
+        assertThat(quizRequestRow.getQuizId()).isNotNull();
+        assertThat(quizRequestRow.getDateCreated()).isCloseTo(quizCreateResponseDto.dateCreated(), within(1, ChronoUnit.SECONDS));
+        assertThat(quizRequestRow.getDateFinished()).isAfter(quizRequestRow.getDateCreated());
+        assertThat(quizRequestRow.getMessageInternal()).isNull();
+        assertThat(quizRequestRow.getMessageExternal()).isNull();
+
+        // check that UserQUiz was created in user_quiz table
+        UserQuiz userQuizRow = userQuizService.getByUserQuizId(testUser.getId(), quizRequestRow.getQuizId());
+        assertThat(userQuizRow.getId()
+                .getUserId()).isEqualTo(testUser.getId());
+        assertThat(userQuizRow.getId()
+                .getQuizId()).isEqualTo(quizRequestRow.getQuizId());
+        assertThat(userQuizRow.getDateCreated()).isBetween(quizRequestRow.getDateCreated(), quizRequestRow.getDateFinished());
+        assertThat(userQuizRow.getNumQuestions()).isGreaterThan(0);
+        assertThat(userQuizRow.getNumTries()).isEqualTo(0);
+        assertThat(userQuizRow.getNumCorrect()).isEqualTo(0);
+        assertThat(userQuizRow.getLanguage()).isEqualTo(quizCreateRequestDto.language());
+        assertThat(userQuizRow.getType()).isEqualTo(quizCreateRequestDto.type());
+        assertThat(userQuizRow.getDifficulty()).isEqualTo(quizCreateRequestDto.difficulty());
+
+        // store quiz id for later use
+        this.createdQuizId = userQuizRow.getId()
+                .getQuizId();
     }
 
     @Test
     @Order(3)
     public void testGetQuizByUserQuizId_whenUserQuizIdValid_shouldFetchQuiz() throws Exception {
 
-        String response = mockMvc.perform(MockMvcRequestBuilders.get("/quizzes/{quizId}/users/{userId}", quizCreateData.quizId(), testUser.getId())
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/quizzes/{quizId}/users/{userId}", createdQuizId, testUser.getId())
                         .header("Authorization", testUserJWT)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -160,9 +218,9 @@ public class QuizControllerIntegrationTest {
 
         assertThat(quizOutboundDto).isNotNull();
         assertThat(quizOutboundDto.userId()).isEqualTo(testUser.getId());
-        assertThat(quizOutboundDto.quizName()).isEqualTo(quizCreateData.quizName()
-                .toLowerCase());
-        assertThat(quizOutboundDto.quizId()).isEqualTo(quizCreateData.quizId());
+        assertThat(quizOutboundDto.quizName()).isEqualTo(quizCreateRequestDto.quizName()
+        );
+        assertThat(quizOutboundDto.quizId()).isEqualTo(createdQuizId);
 
         assertThat(quizOutboundDto.dateCreated()).isEqualTo(LocalDate.now()
                 .toString());
@@ -192,7 +250,7 @@ public class QuizControllerIntegrationTest {
     @Order(4)
     public void testCreateQuiz_whenQuizNameAlreadyExists_shouldThrowException() throws Exception {
 
-        QuizCreateDto quizCreateDto = new QuizCreateDto(testUser.getId(), quizOutboundData.quizName(),
+        QuizCreateRequestDto quizCreateDto = new QuizCreateRequestDto(testUser.getId(), quizOutboundData.quizName(),
                 "https://www.youtube.com/watch?v=" + quizOutboundData.metadata()
                         .videoUrl(),
                 Map.of("OPENAI_API_KEY", apiKeyTest),
@@ -206,15 +264,30 @@ public class QuizControllerIntegrationTest {
                         .header("Authorization", testUserJWT)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(quizCreateDtoJson))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(CoreMatchers.containsString(String.format("Quiz name '%s' already exists for user %s.", quizOutboundData.quizName(), quizCreateData.userId()))));
+                .andExpect(status().isCreated());
+
+        // await the creation of quiz
+        await()
+                .atMost(120, TimeUnit.SECONDS)
+                .pollInterval(2, TimeUnit.SECONDS)
+                .until(() -> isPresentAndTerminated.test(quizRequestService.getRequestByQuizRequestId(testUser.getId(), quizCreateRequestDto.quizName()
+                )));
+
+        // check that QuizRequest has failed
+        QuizRequest quizRequestRow = quizRequestService.getRequestByQuizRequestId(testUser.getId(), quizCreateRequestDto.quizName()
+                )
+                .orElseThrow();
+
+        assertThat(quizRequestRow.getStatus()).isEqualTo(QuizRequest.Status.FAILED);
+        assertThat(quizRequestRow.getMessageInternal()).contains("already exists");
+        assertThat(quizRequestRow.getMessageExternal()).contains("already exists");
     }
 
     @Test
     @Order(5)
     public void testCreateQuiz_whenInvalidAPIKeyProvided_shouldThrowException() throws Exception {
 
-        QuizCreateDto quizCreateDto = new QuizCreateDto(testUser.getId(), "My second quiz",
+        QuizCreateRequestDto newQuizCreateDto = new QuizCreateRequestDto(testUser.getId(), "my second quiz",
                 "https://www.youtube.com/watch?v=" + quizOutboundData.metadata()
                         .videoUrl(),
                 Map.of("OPENAI_API_KEY", "invalid api key"),
@@ -222,14 +295,29 @@ public class QuizControllerIntegrationTest {
                 quizOutboundData.type(),
                 quizOutboundData.difficulty());
 
-        String quizCreateDtoJson = objectMapper.writeValueAsString(quizCreateDto);
+        String quizCreateDtoJson = objectMapper.writeValueAsString(newQuizCreateDto);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/quizzes/new")
                         .header("Authorization", testUserJWT)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(quizCreateDtoJson))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(CoreMatchers.containsString("Invalid API key provided.")));
+                .andExpect(status().isCreated());
+
+        // await the creation of quiz
+        await()
+                .atMost(120, TimeUnit.SECONDS)
+                .pollInterval(2, TimeUnit.SECONDS)
+                .until(() -> isPresentAndTerminated.test(quizRequestService.getRequestByQuizRequestId(testUser.getId(), newQuizCreateDto.quizName()
+                )));
+
+        // check that QuizRequest has failed
+        QuizRequest quizRequestRow = quizRequestService.getRequestByQuizRequestId(testUser.getId(), newQuizCreateDto.quizName()
+                )
+                .orElseThrow();
+
+        assertThat(quizRequestRow.getStatus()).isEqualTo(QuizRequest.Status.FAILED);
+        assertThat(quizRequestRow.getMessageInternal()).contains("Incorrect API key");
+        assertThat(quizRequestRow.getMessageExternal()).contains("Invalid OpenAI API key");
     }
 
     @Test
@@ -256,7 +344,7 @@ public class QuizControllerIntegrationTest {
         assertThat(quizUpdateResultDto.numCorrect()).isEqualTo(quizUpdateDto.numCorrect());
         assertThat(quizUpdateResultDto.numTries()).isEqualTo(1);
         assertThat(quizUpdateResultDto.quizName()).isEqualTo(quizUpdateDto.quizName()
-                .toLowerCase());
+        );
     }
 
     @Test
@@ -294,9 +382,83 @@ public class QuizControllerIntegrationTest {
                         .header("Authorization", testUserJWT))
                 .andExpect(status().isNoContent());
 
-        Page<QuizOutboundDto> allUserQuizzes = quizService.getAllUserQuizzes(testUser.getId(), PageRequest.of(0, 10));
+        Page<QuizOutboundDto> allUserQuizzes = quizService.getAllUserQuizzes(testUser.getId(), PageRequest.of(0, 1));
 
         assertThat(allUserQuizzes.getTotalElements()).isEqualTo(0);
+    }
+
+    @Test
+    @Order(9)
+    public void testGetAllQuizRequests_whenValidUserIdProvided_shouldFetchQuizRequestHistory() throws Exception {
+
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/quizzes/requests/users/{userId}", testUser.getId())
+                        .header("Authorization", testUserJWT)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sort", "dateCreated,desc"))
+                //.param("status", "CREATING"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode rootNode = objectMapper.readTree(response);
+        long totalElements = rootNode.path("page")
+                .path("totalElements")
+                .asLong();
+
+        assertThat(totalElements).isEqualTo(2);
+    }
+
+    @Test
+    @Order(10)
+    public void testGetFinishedQuizRequests_whenValidUserIdAndStatusParamProvided_shouldFetchFinishedQuizRequests() throws Exception {
+
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/quizzes/requests/users/{userId}", testUser.getId())
+                        .header("Authorization", testUserJWT)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sort", "dateCreated,desc")
+                        .param("status", "FINISHED"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode rootNode = objectMapper.readTree(response);
+        long totalElements = rootNode.path("page")
+                .path("totalElements")
+                .asLong();
+
+        // should be 0 'FINISHED' quiz requests, because first successful request was overriden by
+        // second attempt to create a quiz with same name
+        assertThat(totalElements).isEqualTo(0);
+    }
+
+    @Test
+    @Order(11)
+    public void testGetFailedQuizRequests_whenValidUserIdAndStatusParamProvided_shouldFetchFailedQuizRequests() throws Exception {
+
+        String response = mockMvc.perform(MockMvcRequestBuilders.get("/quizzes/requests/users/{userId}", testUser.getId())
+                        .header("Authorization", testUserJWT)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sort", "dateCreated,desc")
+                        .param("status", "FAILED"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode rootNode = objectMapper.readTree(response);
+        long totalElements = rootNode.path("page")
+                .path("totalElements")
+                .asLong();
+
+        assertThat(totalElements).isEqualTo(2);
     }
 
 }

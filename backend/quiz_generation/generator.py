@@ -11,9 +11,10 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.docstore.document import Document
 from langchain.chains.qa_generation.base import QAGenerationChain
 from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 from langchain_openai import ChatOpenAI
 from langchain_community.document_loaders import YoutubeLoader
-from langchain_core.output_parsers import StrOutputParser
+from openai import APIError as OpenAIError
 
 
 from backend.commons.prompts import get_qa_generation_prompt
@@ -24,6 +25,7 @@ from backend.commons.prompts import (
 from backend.commons.db import create_collection
 from backend.api.models import QuizDifficulty, QuizLanguage
 from backend.tests.mock_youtube_loader import MOCK_TRANSCRIPT
+from backend.quiz_generation.utils import LANGUAGE_CODES, redact_api_key
 
 logger = logging.getLogger(__name__)
 
@@ -121,7 +123,6 @@ async def afilter_most_relevant_questions(
         for i in range(len(qa_pairs))
     ]
 
-    # set up llm chain
     try:
 
         llm = ChatOpenAI(
@@ -136,8 +137,11 @@ async def afilter_most_relevant_questions(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid API key provided. " + str(e),
-        )
+            detail={
+                "error_external": f"{type(e).__name__}: Error filtering for best quiz questions.",
+                "error_internal": f"{type(e)}: {str(e)}",
+            },
+        ) from e
 
     # format grades and remove all with grade 0
     grades_list = [
@@ -185,7 +189,7 @@ async def aget_video_transcript(youtube_url: str, language: QuizLanguage) -> Doc
 
     loader = YoutubeLoader.from_youtube_url(
         youtube_url=youtube_url,
-        language=["en", "es", "de", "fr", "pt"],
+        language=LANGUAGE_CODES,
         translation=language.name.lower(),
         add_video_info=True,
     )
@@ -195,7 +199,10 @@ async def aget_video_transcript(youtube_url: str, language: QuizLanguage) -> Doc
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Error fetching video transcript for {youtube_url}. " + str(e),
+            detail={
+                "error_external": f"{type(e).__name__}: Error fetching video transcript.",
+                "error_internal": f"{type(e)}: {str(e)}",
+            },
         ) from e
 
 
@@ -221,6 +228,7 @@ async def asummarize_video(video_metadata: dict[str, str], api_keys: dict[str, s
     doc_to_summarize = Document(page_content=video_metadata["transcript"])
 
     try:
+
         llm = ChatOpenAI(
             temperature=0, model="gpt-4o-mini", api_key=api_keys["OPENAI_API_KEY"]
         )
@@ -228,11 +236,28 @@ async def asummarize_video(video_metadata: dict[str, str], api_keys: dict[str, s
         summarizing_chain = prompt | llm | StrOutputParser()
         video_metadata["description"] = summarizing_chain.invoke(doc_to_summarize)
 
+    except OpenAIError as e:
+        if "invalid_api_key" in e.message:
+            msg = "Invalid OpenAI API key provided."
+        else:
+            msg = "Error during OpenAI API call."
+
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "error_external": f"{type(e).__name__}: {msg}",
+                "error_internal": f"{type(e)}: {redact_api_key(str(e))}",
+            },
+        ) from e
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid API key provided. " + str(e),
-        )
+            detail={
+                "error_external": f"{type(e).__name__}: Error summarizing video transcript.",
+                "error_internal": f"{type(e)}: {str(e)}",
+            },
+        ) from e
 
 
 async def agenerate_quiz_from_transcript(
@@ -266,26 +291,30 @@ async def agenerate_quiz_from_transcript(
             model="gpt-4o-mini",
             api_key=api_keys["OPENAI_API_KEY"],
         )
+
+        qa_generator_chain = QAGenerationChain.from_llm(
+            llm=llm,
+            prompt=get_qa_generation_prompt(
+                difficulty=difficulty.name, language=language.name, num_attempt=1
+            ),
+        )
+
+        tasks = [
+            get_quiz_question_from_chunk(chunk, qa_generator_chain, i)
+            for i, chunk in enumerate(chunks)
+        ]
+
+        qa_pairs = await asyncio.gather(*tasks)
+        qa_pairs = list(itertools.chain.from_iterable(qa_pairs))
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid API key provided. " + str(e),
-        )
-
-    qa_generator_chain = QAGenerationChain.from_llm(
-        llm=llm,
-        prompt=get_qa_generation_prompt(
-            difficulty=difficulty.name, language=language.name, num_attempt=1
-        ),
-    )
-
-    tasks = [
-        get_quiz_question_from_chunk(chunk, qa_generator_chain, i)
-        for i, chunk in enumerate(chunks)
-    ]
-
-    qa_pairs = await asyncio.gather(*tasks)
-    qa_pairs = list(itertools.chain.from_iterable(qa_pairs))
+            detail={
+                "error_external": f"{type(e).__name__}: Error generating quiz questions.",
+                "error_internal": f"{type(e)}: {str(e)}",
+            },
+        ) from e
 
     if len(qa_pairs) < len(chunks):
         logger.warning(

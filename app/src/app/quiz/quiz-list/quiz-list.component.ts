@@ -1,4 +1,13 @@
-import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  OnInit,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
@@ -11,9 +20,14 @@ import { QuizComponent } from '../quiz/quiz.component';
 import { Quiz } from '../../models/quiz.model';
 import { AuthService } from '../../services/auth.service';
 import { MatOption, MatSelect } from '@angular/material/select';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MessageService } from '../../services/message.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
+import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { QuizRequestComponent } from '../quiz-request/quiz-request.component';
+import { QuizRequestService } from '../../services/quiz.requests.service';
 
 @Component({
   selector: 'app-quiz-list',
@@ -32,21 +46,30 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
     MatButtonModule,
     CommonModule,
     MatProgressSpinner,
+    MatTabsModule,
+    MatTableModule,
+    RouterLink,
+    MatChipsModule,
+    MatIconModule,
+    QuizRequestComponent,
   ],
   templateUrl: './quiz-list.component.html',
   styleUrl: './quiz-list.component.scss',
 })
-export class QuizListComponent {
+export class QuizListComponent implements OnInit {
   private quizService = inject(QuizService);
   private authService = inject(AuthService);
   private destroyRef = inject(DestroyRef);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private messageService = inject(MessageService);
+  private quizRequestService = inject(QuizRequestService);
 
   user = this.authService.user;
 
   isLoadingQuizzes = signal(false);
   expandedQuizId = signal('');
+  selectedTabIndex = signal(0);
 
   pageSize = signal<string>('3');
   sortBy = signal<string>('dateCreated,desc');
@@ -60,7 +83,7 @@ export class QuizListComponent {
   quizzes = signal<Quiz[]>([]);
 
   constructor() {
-    const ref = effect(
+    const loadQuizzesEffect = effect(
       () => {
         this.loadQuizzes();
       },
@@ -70,7 +93,37 @@ export class QuizListComponent {
     );
 
     this.destroyRef.onDestroy(() => {
-      ref.destroy();
+      loadQuizzesEffect.destroy();
+    });
+  }
+
+  ngOnInit(): void {
+    const ref = this.route.fragment.subscribe((fragment) => {
+      if (fragment === 'requests') {
+        this.selectedTabIndex.set(1);
+      } else {
+        this.selectedTabIndex.set(0);
+      }
+    });
+
+    this.destroyRef.onDestroy(() => {
+      ref.unsubscribe();
+    });
+  }
+
+  onTabChange(event: MatTabChangeEvent): void {
+    let fragment = '';
+    if (event.index === 0) {
+      fragment = 'list';
+      this.loadQuizzes();
+    } else {
+      fragment = 'requests';
+      this.quizRequestService.loadRequests();
+    }
+
+    this.router.navigate([], {
+      fragment: fragment,
+      replaceUrl: true,
     });
   }
 
@@ -108,19 +161,6 @@ export class QuizListComponent {
 
   onDeleteQuiz() {
     this.loadQuizzes();
-  }
-
-  onSortChange(sortBy: string): void {
-    if (!sortBy) {
-      return;
-    }
-
-    this.sortBy.set(sortBy);
-  }
-
-  onPageSizeChange(pageSize: string): void {
-    this.pageSize.set(pageSize);
-    this.currentPage.set(0);
   }
 
   onPageChange(page: number): void {

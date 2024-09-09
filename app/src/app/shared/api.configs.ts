@@ -9,6 +9,7 @@ export class Configs {
   static LOGIN_URL: string = this.USERS_ENDPOINT + '/login';
   static REGISTER_URL: string = this.USERS_ENDPOINT + '/register';
   static GET_BY_USERNAME: string = this.USERS_ENDPOINT + '/name';
+  static QUIZ_REQUESTS: string = this.QUIZZES_ENDPOINT + '/requests';
   static GET_ALL_QUIZZES_BY_USER_ID: string =
     this.QUIZZES_ENDPOINT + this.USERS_ENDPOINT;
 }

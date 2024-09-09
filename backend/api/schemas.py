@@ -32,7 +32,8 @@ class QuizCreateRequestDto(BaseModel):
         youtube_regex = (
             r"(https?://)?(www\.)?"
             r"(youtube|youtu|youtube-nocookie)\.(com|be)/"
-            r"(watch\?v=|embed/|v/|.+\?v=)?([^&=%\?]{11})"
+            r"(?:watch\?v=|embed/|v/|.+/|v=|\/)"
+            r"([0-9A-Za-z_-]{11})"
         )
 
         youtube_pattern = re.compile(youtube_regex)

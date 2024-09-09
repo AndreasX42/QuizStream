@@ -11,7 +11,7 @@ export class MessageService {
   // List of messages
   // Success messages
   static MSG_SUCCESS_REGISTER = 'Registered successfully, you can log in now.';
-  static MSG_SUCCESS_CREATED_QUIZ = 'Quiz created successfully.';
+  static MSG_SUCCESS_CREATED_QUIZ = 'Quiz request created successfully.';
   static MSG_SUCCESS_ADDED_API_KEY = 'API key was added successfully.';
 
   // Error messages
@@ -26,6 +26,8 @@ export class MessageService {
     'Your quiz statistics could not be updated.';
   static MSG_ERROR_LOADING_QUIZ_LIST =
     'Unexpected error loading quizzes, try again later.';
+  static MSG_ERROR_LOADING_QUIZ_REQUESTS =
+    'Unexpected error loading quiz requests, try again later.';
   static MSG_ERROR_LOADING_QUIZ =
     'Something went wrong loading quiz details, try again later.';
   static MSG_ERROR_API_KEY_PROVIDER_ALREADY_EXISTS =
@@ -35,7 +37,8 @@ export class MessageService {
     'You already created a quiz with this name, choose another one.';
   static MSG_ERROR_FETCHING_VIDEO_TRANSCRIPT =
     'Something went wrong fetching the video transcript, try another video.';
-  static MSG_ERROR_CREATING_QUIZ = 'Something went wrong creating the quiz.';
+  static MSG_ERROR_CREATING_QUIZ_REQUEST =
+    'Something went wrong creating the quiz request.';
 
   // Warning messages
   static MSG_WARNING_LOGIN_FIST =

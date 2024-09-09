@@ -80,39 +80,21 @@ export class QuizService {
       next: () => {
         this.isCreating.set(false);
       },
-      error: (error) => {
-        console.log(error);
+      error: () => {
         this.isCreating.set(false);
-        const errorMessage = Array.isArray(error.error?.messages)
-          ? error.error.messages.join(' ')
-          : error.error?.message || '';
-
-        if (errorMessage?.includes('Invalid API key provided.')) {
-          this.messageService.showErrorModal(
-            MessageService.MSG_ERROR_API_KEY_INVALID
-          );
-        } else if (errorMessage?.includes('already exists for user')) {
-          this.messageService.showErrorModal(
-            MessageService.MSG_ERROR_QUIZ_NAME_ALREADY_EXISTS
-          );
-        } else if (
-          errorMessage?.includes('Error fetching video transcript for ')
-        ) {
-          this.messageService.showErrorModal(
-            MessageService.MSG_ERROR_FETCHING_VIDEO_TRANSCRIPT
-          );
-        } else {
-          this.messageService.showErrorModal(
-            MessageService.MSG_ERROR_CREATING_QUIZ
-          );
-        }
+        this.messageService.showErrorModal(
+          MessageService.MSG_ERROR_CREATING_QUIZ_REQUEST
+        );
       },
 
       complete: () => {
         this.messageService.showSuccessModal(
           MessageService.MSG_SUCCESS_CREATED_QUIZ
         );
+
         this.router.navigate(['/quizzes'], {
+          queryParams: { createdRequest: 'true' },
+          fragment: 'requests',
           replaceUrl: true,
         });
       },
@@ -128,7 +110,7 @@ export class QuizService {
       `${Configs.BASE_URL}${Configs.QUIZZES_ENDPOINT}/new`,
       {
         userId: requestDto.userId,
-        quizName: requestDto.quizName,
+        quizName: requestDto.quizName.toLowerCase(),
         videoUrl: requestDto.videoUrl,
         apiKeys: requestDto.apiKeys,
         language: requestDto.language,
