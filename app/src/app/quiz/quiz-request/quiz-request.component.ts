@@ -9,7 +9,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { QuizRequestService } from '../../services/quiz.requests.service';
 import { AuthService } from '../../services/auth.service';
 import { MessageService } from '../../services/message.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   getEnumDisplayName,
   RequestMetadata,
@@ -35,6 +35,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatProgressBarModule,
     MatPaginatorModule,
     MatTooltipModule,
+    RouterLink,
   ],
   templateUrl: './quiz-request.component.html',
   styleUrls: ['./quiz-request.component.scss'],
