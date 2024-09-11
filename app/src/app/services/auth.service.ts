@@ -169,7 +169,7 @@ export class AuthService {
 
   logout(): void {
     if (this.isTokenExpired()) {
-      this.messageService.showErrorModal(
+      this.messageService.showWarningModal(
         MessageService.MSG_ERROR_SESSION_EXPIRED
       );
     }

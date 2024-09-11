@@ -2,7 +2,7 @@ package com.andreasx42.quizstreamapi.service;
 
 import com.andreasx42.quizstreamapi.dto.quiz.QuizCreateRequestDto;
 import com.andreasx42.quizstreamapi.dto.quiz.QuizCreateResultDto;
-import com.andreasx42.quizstreamapi.entity.QuizRequest;
+import com.andreasx42.quizstreamapi.entity.request.QuizRequest;
 import com.andreasx42.quizstreamapi.security.config.EnvConfigs;
 import com.andreasx42.quizstreamapi.util.mapper.QuizMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;

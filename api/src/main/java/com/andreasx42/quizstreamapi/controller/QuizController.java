@@ -1,7 +1,7 @@
 package com.andreasx42.quizstreamapi.controller;
 
 import com.andreasx42.quizstreamapi.dto.quiz.*;
-import com.andreasx42.quizstreamapi.entity.QuizRequest;
+import com.andreasx42.quizstreamapi.entity.request.QuizRequest;
 import com.andreasx42.quizstreamapi.exception.ErrorResponse;
 import com.andreasx42.quizstreamapi.service.QuizRequestService;
 import com.andreasx42.quizstreamapi.service.QuizService;

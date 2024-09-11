@@ -10,8 +10,14 @@ import { QuizRequestService } from '../../services/quiz.requests.service';
 import { AuthService } from '../../services/auth.service';
 import { MessageService } from '../../services/message.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { getEnumDisplayName, RequestStatus } from '../../models/quiz.model';
+import {
+  getEnumDisplayName,
+  RequestMetadata,
+  RequestStatus,
+} from '../../models/quiz.model';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-quiz-requests',
@@ -27,6 +33,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     DatePipe,
     TitleCasePipe,
     MatProgressBarModule,
+    MatPaginatorModule,
+    MatTooltipModule,
   ],
   templateUrl: './quiz-request.component.html',
   styleUrls: ['./quiz-request.component.scss'],
@@ -43,13 +51,13 @@ export class QuizRequestComponent implements OnInit {
   user = this.authService.user;
 
   requests = this.quizRequestService.requests.asReadonly();
-  requestPageSize = this.quizRequestService.requestPageSize;
-  requestSortBy = this.quizRequestService.requestSortBy;
-  requestCurrentPage = this.quizRequestService.requestCurrentPage;
-  requestTotalPages = this.quizRequestService.requestTotalPages;
+  pageSize = this.quizRequestService.pageSize;
+  totalItems = this.quizRequestService.totalItems;
+  sortBy = this.quizRequestService.sortBy;
+  currentPage = this.quizRequestService.currentPage;
+  totalPages = this.quizRequestService.totalPages;
   requestStatus = this.quizRequestService.requestStatus;
   isLoadingRequests = this.quizRequestService.isLoadingRequests;
-  requestPagesArray = this.quizRequestService.requestPagesArray;
 
   requestStatusList = Object.values(RequestStatus).filter(
     (value) => typeof value === 'string'
@@ -69,11 +77,6 @@ export class QuizRequestComponent implements OnInit {
       const createdRequest = params['createdRequest'];
       if (createdRequest === 'true') {
         this.quizRequestService.loadRequestsPolling();
-
-        this.router.navigate([], {
-          fragment: 'requests',
-          replaceUrl: true,
-        });
       }
     });
 
@@ -82,12 +85,30 @@ export class QuizRequestComponent implements OnInit {
     }
   }
 
+  getMetadataTooltip(metadata: RequestMetadata | undefined): string {
+    if (!metadata) {
+      return 'No metadata available';
+    }
+
+    const formattedLanguage = this.getEnumDisplayName(metadata.language);
+    const formattedDifficulty = this.getEnumDisplayName(metadata.difficulty);
+    const formattedType = this.getEnumDisplayName(metadata.type);
+
+    return `
+      Language: ${formattedLanguage}
+      Difficulty: ${formattedDifficulty}
+      Quiz Type: ${formattedType}
+      Video Link: ${metadata.videoUrl}
+    `;
+  }
+
   reloadRequests() {
     this.quizRequestService.loadRequests();
   }
 
-  onRequestPageChange(page: number): void {
-    this.requestCurrentPage.set(page);
+  onPaginatorChange(event: PageEvent) {
+    this.currentPage.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
     this.quizRequestService.loadRequests();
   }
 

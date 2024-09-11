@@ -221,8 +221,6 @@ async def asummarize_video(video_metadata: dict[str, str], api_keys: dict[str, s
         "{text}"
     CONCISE SUMMARY:"""
 
-    logger.debug("Generating summary of video transcript.")
-
     prompt = PromptTemplate.from_template(prompt_template)
 
     doc_to_summarize = Document(page_content=video_metadata["transcript"])
@@ -236,7 +234,18 @@ async def asummarize_video(video_metadata: dict[str, str], api_keys: dict[str, s
         summarizing_chain = prompt | llm | StrOutputParser()
         video_metadata["description"] = summarizing_chain.invoke(doc_to_summarize)
 
+    except KeyError as e:
+
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "error_external": f"{type(e).__name__}: No OpenAI API key provided.",
+                "error_internal": f"{type(e)}: No OpenAI API key provided. " + str(e),
+            },
+        ) from e
+
     except OpenAIError as e:
+
         if "invalid_api_key" in e.message:
             msg = "Invalid OpenAI API key provided."
         else:
@@ -251,6 +260,7 @@ async def asummarize_video(video_metadata: dict[str, str], api_keys: dict[str, s
         ) from e
 
     except Exception as e:
+
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={

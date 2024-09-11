@@ -1,9 +1,9 @@
 package com.andreasx42.quizstreamapi.service;
 
 import com.andreasx42.quizstreamapi.dto.quiz.*;
-import com.andreasx42.quizstreamapi.entity.QuizRequest;
 import com.andreasx42.quizstreamapi.entity.UserQuiz;
 import com.andreasx42.quizstreamapi.entity.embedding.LangchainPGEmbedding;
+import com.andreasx42.quizstreamapi.entity.request.QuizRequest;
 import com.andreasx42.quizstreamapi.util.mapper.QuizMapper;
 import com.andreasx42.quizstreamapi.util.mapper.QuizRequestMapper;
 import org.slf4j.Logger;
@@ -21,14 +21,14 @@ public class QuizService {
     private static final Logger logger = LoggerFactory.getLogger(QuizService.class);
 
     private final UserQuizService userQuizService;
-    private final QuizRequestService quizJobService;
+    private final QuizRequestService quizRequestService;
     private final QuizCreationAsyncBackendService quizCreationAsyncBackendService;
     private final QuizMapper quizMapper;
     private final QuizRequestMapper quizJobMapper;
 
     public QuizService(UserQuizService userQuizService, QuizRequestService quizJobService, QuizCreationAsyncBackendService quizCreationAsyncBackendService, QuizMapper quizMapper, QuizRequestMapper quizJobMapper) {
         this.userQuizService = userQuizService;
-        this.quizJobService = quizJobService;
+        this.quizRequestService = quizJobService;
         this.quizCreationAsyncBackendService = quizCreationAsyncBackendService;
         this.quizMapper = quizMapper;
         this.quizJobMapper = quizJobMapper;
@@ -68,7 +68,7 @@ public class QuizService {
                         .name());
 
         // create quizJob in table to keep track of status
-        QuizRequest quizJob = this.quizJobService.createQuizRequest(quizCreateDto.userId(), quizCreateDto.quizName());
+        QuizRequest quizJob = this.quizRequestService.createQuizRequest(quizCreateDto);
 
         // call backend asynchronously and update quizJob when done
         quizCreationAsyncBackendService.createQuiz(quizCreateDto, quizJob);

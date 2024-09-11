@@ -36,6 +36,14 @@ a.ref-link {
   }
 }
 
+mat-paginator {
+  background-color: transparent !important;
+}
+
+.mat-tooltip {
+  white-space: pre-line !important;
+}
+  
 
 /* CSS for Forms */
 
@@ -116,3 +124,4 @@ form {
   font-size: 1.2rem;
   margin: 15px 0;
 }
+

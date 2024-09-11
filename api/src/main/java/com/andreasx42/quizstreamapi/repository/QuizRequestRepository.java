@@ -1,8 +1,8 @@
 package com.andreasx42.quizstreamapi.repository;
 
 
-import com.andreasx42.quizstreamapi.entity.QuizRequest;
-import com.andreasx42.quizstreamapi.entity.QuizRequestId;
+import com.andreasx42.quizstreamapi.entity.request.QuizRequest;
+import com.andreasx42.quizstreamapi.entity.request.QuizRequestId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

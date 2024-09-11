@@ -17,12 +17,16 @@
         <mat-option value="dateCreated,asc">Oldest first</mat-option>
       </mat-select>
 
-      <label for="pageSize" class="page-size-label">Page size:</label>
-      <mat-select id="pageSize" class="page-size-select" [(value)]="pageSize">
-        <mat-option value="3">3</mat-option>
-        <mat-option value="5">5</mat-option>
-        <mat-option value="10">10</mat-option>
-      </mat-select>
+      <mat-paginator
+        [length]="totalItems()"
+        [pageSize]="pageSize()"
+        [pageSizeOptions]="[3, 5, 10]"
+        aria-label="Select page"
+        [pageIndex]="currentPage()"
+        (page)="onPaginatorChange($event)"
+      >
+      </mat-paginator>
+
       }
     </div>
 
@@ -34,45 +38,14 @@
         <app-quiz [quiz]="quiz" (quizDeleted)="onDeleteQuiz()" />
         }
       </div>
-
-      <!-- Pagination Controls -->
-      <div class="pagination-container">
-        <button
-          mat-flat-button
-          class="pagination-button"
-          (click)="onPageChange(currentPage() - 1)"
-          [disabled]="currentPage() === 0"
-        >
-          Previous
-        </button>
-
-        <div class="page-numbers">
-          <button
-            mat-raised-button
-            *ngFor="let page of pagesArray()"
-            class="pagination-number"
-            [class.active]="page === currentPage()"
-            (click)="onPageChange(page)"
-          >
-            {{ page + 1 }}
-          </button>
-        </div>
-
-        <button
-          mat-flat-button
-          class="pagination-button"
-          (click)="onPageChange(currentPage() + 1)"
-          [disabled]="currentPage() >= totalPages() - 1"
-        >
-          Next
-        </button>
-      </div>
     </div>
     }
   </mat-tab>
 
   <!-- Tab 2: Quiz Jobs List -->
   <mat-tab label="Request History">
+    @defer(when selectedTabIndex() === 1) {
     <app-quiz-requests />
+    }
   </mat-tab>
 </mat-tab-group>

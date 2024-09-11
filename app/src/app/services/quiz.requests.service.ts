@@ -18,6 +18,7 @@ import {
 import { Page } from './page.model';
 import { AuthService } from './auth.service';
 import { MessageService } from './message.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -27,22 +28,21 @@ export class QuizRequestService {
   private authService = inject(AuthService);
   private messageService = inject(MessageService);
   private destroyRef = inject(DestroyRef);
+  private router = inject(Router);
 
   isLoadingRequests = signal(false);
   requests = signal<QuizRequest[]>([]);
 
   // pagination and sorting signals
-  requestPageSize = signal<string>('5');
-  requestSortBy = signal<string>('dateCreated,desc');
-  requestCurrentPage = signal<number>(0);
-  requestTotalPages = signal<number>(0);
+  totalItems = signal<number>(0);
+  pageSize = signal<number>(5);
+  sortBy = signal<string>('dateCreated,desc');
+  currentPage = signal<number>(0);
+  totalPages = signal<number>(0);
   requestStatus = signal<RequestStatus>(RequestStatus.ALL);
 
   requestPagesArray(): number[] {
-    return Array.from(
-      { length: this.requestTotalPages() },
-      (_, index) => index
-    );
+    return Array.from({ length: this.totalPages() }, (_, index) => index);
   }
 
   loadRequests(): void {
@@ -50,16 +50,17 @@ export class QuizRequestService {
 
     const sub = this.getQuizRequests(
       this.authService.user()!.id,
-      this.requestCurrentPage(),
-      this.requestPageSize(),
-      this.requestSortBy(),
+      this.currentPage(),
+      this.pageSize(),
+      this.sortBy(),
       this.requestStatus()
     ).subscribe({
       next: (page) => {
-        this.requestTotalPages.set(page.page.totalPages);
-        this.requests.set(page.content);
+        this.totalItems.set(page.page.totalElements);
+        this.totalPages.set(page.page.totalPages);
         this.isLoadingRequests.set(false);
 
+        this.requests.set(page.content);
         // continue fetching requests if some are still in creating state
         if (
           this.requests().some((req) => req.status === RequestStatus.CREATING)
@@ -87,9 +88,9 @@ export class QuizRequestService {
       switchMap(() =>
         this.getQuizRequests(
           this.authService.user()!.id,
-          this.requestCurrentPage(),
-          this.requestPageSize(),
-          this.requestSortBy(),
+          this.currentPage(),
+          this.pageSize(),
+          this.sortBy(),
           this.requestStatus()
         )
       ),
@@ -107,7 +108,7 @@ export class QuizRequestService {
 
     const sub = polling.subscribe({
       next: (page) => {
-        this.requestTotalPages.set(page.page.totalPages);
+        this.totalPages.set(page.page.totalPages);
         this.requests.set(page.content);
         this.isLoadingRequests.set(false);
       },
@@ -116,6 +117,12 @@ export class QuizRequestService {
         this.messageService.showErrorModal(
           MessageService.MSG_ERROR_LOADING_QUIZ_REQUESTS
         );
+      },
+      complete: () => {
+        this.router.navigate([], {
+          fragment: 'requests',
+          replaceUrl: true,
+        });
       },
     });
 
@@ -127,13 +134,13 @@ export class QuizRequestService {
   getQuizRequests(
     userId: number,
     page: number,
-    size: string,
+    size: number,
     sort: string,
     status: RequestStatus
   ): Observable<Page<QuizRequest>> {
     let params = new HttpParams()
       .set('page', page.toString())
-      .set('size', size)
+      .set('size', size.toString())
       .set('sort', sort);
 
     if (status !== RequestStatus.ALL) {

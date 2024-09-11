@@ -3,7 +3,7 @@
 .quiz-card {
   width: 80%;
   max-width: 80px;
-  min-width: 750px;
+  min-width: 850px;
   min-height: 40px;
   background-color: var(--form-background);
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
@@ -81,7 +81,6 @@ mat-card-actions .action-button {
   border: 1px solid  #d4d4d4;
   padding: 5px;
   border-radius: 5px;
-  // margin: 10px 0;
   padding: 5px 10px 5px 10px;
   position: relative;
 }

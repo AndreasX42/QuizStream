@@ -1,4 +1,4 @@
-package com.andreasx42.quizstreamapi.entity;
+package com.andreasx42.quizstreamapi.entity.request;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

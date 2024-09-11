@@ -125,12 +125,3 @@ export class NewQuizComponent {
     });
   }
 }
-
-export const canLeaveEditPage: CanDeactivateFn<NewQuizComponent> = (
-  component
-) => {
-  if (component.form.touched && component.form.invalid) {
-    return window.confirm('Do you really want to leave?');
-  }
-  return true;
-};

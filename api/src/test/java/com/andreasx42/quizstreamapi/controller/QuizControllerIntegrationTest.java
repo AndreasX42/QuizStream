@@ -3,9 +3,9 @@ package com.andreasx42.quizstreamapi.controller;
 import com.andreasx42.quizstreamapi.dto.auth.LoginRequestDto;
 import com.andreasx42.quizstreamapi.dto.auth.LoginResponseDto;
 import com.andreasx42.quizstreamapi.dto.quiz.*;
-import com.andreasx42.quizstreamapi.entity.QuizRequest;
 import com.andreasx42.quizstreamapi.entity.User;
 import com.andreasx42.quizstreamapi.entity.UserQuiz;
+import com.andreasx42.quizstreamapi.entity.request.QuizRequest;
 import com.andreasx42.quizstreamapi.repository.UserRepository;
 import com.andreasx42.quizstreamapi.security.config.EnvConfigs;
 import com.andreasx42.quizstreamapi.service.QuizRequestService;
@@ -109,7 +109,7 @@ public class QuizControllerIntegrationTest {
 
     @Test
     @Order(1)
-    public void testRegisteredUser_whenValidUserDetailsProvided_shouldLoginSuccessfullyAndReceiveJWT() throws Exception {
+    public void testRegisterUser_whenValidUserDetailsProvided_shouldLoginSuccessfullyAndReceiveJWT() throws Exception {
 
         LoginRequestDto loginRequestDto = new LoginRequestDto(testUser.getUsername(), this.testUser.getPassword());
         String loginRequestDtoJson = objectMapper.writeValueAsString(loginRequestDto);
@@ -183,7 +183,7 @@ public class QuizControllerIntegrationTest {
         assertThat(quizRequestRow.getMessageInternal()).isNull();
         assertThat(quizRequestRow.getMessageExternal()).isNull();
 
-        // check that UserQUiz was created in user_quiz table
+        // check that UserQuiz was created in user_quiz table
         UserQuiz userQuizRow = userQuizService.getByUserQuizId(testUser.getId(), quizRequestRow.getQuizId());
         assertThat(userQuizRow.getId()
                 .getUserId()).isEqualTo(testUser.getId());
@@ -397,7 +397,6 @@ public class QuizControllerIntegrationTest {
                         .param("page", "0")
                         .param("size", "10")
                         .param("sort", "dateCreated,desc"))
-                //.param("status", "CREATING"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()

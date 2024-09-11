@@ -10,7 +10,7 @@
   <mat-select
     id="requestSort"
     class="sort-select"
-    [(value)]="requestSortBy"
+    [(value)]="sortBy"
     (selectionChange)="reloadRequests()"
   >
     <mat-option value="dateCreated,desc">Newest first</mat-option>
@@ -20,7 +20,7 @@
   <label for="requestStatus" class="sort-label">Request status:</label>
   <mat-select
     id="requestStatus"
-    class="sort-select"
+    class="req-sort-select"
     [(value)]="requestStatus"
     (selectionChange)="reloadRequests()"
   >
@@ -29,17 +29,15 @@
     }}</mat-option>
   </mat-select>
 
-  <label for="requestPageSize" class="page-size-label">Page size:</label>
-  <mat-select
-    id="requestPageSize"
-    class="page-size-select"
-    [(value)]="requestPageSize"
-    (selectionChange)="reloadRequests()"
+  <mat-paginator
+    [length]="totalItems()"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="[5, 10, 25]"
+    aria-label="Select page"
+    [pageIndex]="currentPage()"
+    (page)="onPaginatorChange($event)"
   >
-    <mat-option value="5">5</mat-option>
-    <mat-option value="10">10</mat-option>
-    <mat-option value="20">20</mat-option>
-  </mat-select>
+  </mat-paginator>
 </div>
 
 @if(requests().length > 0) {
@@ -48,11 +46,20 @@
     <!-- Define table columns -->
     <ng-container matColumnDef="quizName">
       <th mat-header-cell *matHeaderCellDef class="quiz-name-header">
-        Quiz Name
+        <div class="header-content">
+          <mat-icon>menu</mat-icon>
+          <span>Quiz Name</span>
+        </div>
       </th>
-      <td mat-cell *matCellDef="let request">
+      <td
+        mat-cell
+        *matCellDef="let request"
+        matTooltipClass="mat-tooltip"
+        [matTooltip]="getMetadataTooltip(request.metadata)"
+        [matTooltipPosition]="'right'"
+      >
         <div class="quiz-name-row">
-          {{ request.quizName }}
+          {{ request.quizName | titlecase }}
         </div>
       </td>
     </ng-container>
@@ -76,7 +83,7 @@
       <th mat-header-cell *matHeaderCellDef>Date Created</th>
       <td mat-cell *matCellDef="let request">
         {{ request.dateCreated | date : "MM/dd/yy" }}<br />
-        {{ request.dateCreated | date : "h:mm:ss a" }}
+        {{ request.dateCreated | date : "HH:mm:ss" }}
       </td>
     </ng-container>
 
@@ -84,7 +91,7 @@
       <th mat-header-cell *matHeaderCellDef>Date Finished</th>
       <td mat-cell *matCellDef="let request">
         {{ request.dateFinished | date : "MM/dd/yy" }}<br />
-        {{ request.dateFinished | date : "h:mm:ss a" }}
+        {{ request.dateFinished | date : "HH:mm:ss" }}
       </td>
     </ng-container>
 
@@ -125,39 +132,6 @@
     <tr mat-header-row *matHeaderRowDef="displayedRequestColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedRequestColumns"></tr>
   </table>
-
-  <!-- Pagination Controls -->
-  <div class="pagination-container">
-    <button
-      mat-flat-button
-      class="pagination-button"
-      (click)="onRequestPageChange(requestCurrentPage() - 1)"
-      [disabled]="requestCurrentPage() === 0"
-    >
-      Previous
-    </button>
-
-    <div class="page-numbers">
-      <button
-        mat-raised-button
-        *ngFor="let page of requestPagesArray()"
-        class="pagination-number"
-        [class.active]="page === requestCurrentPage()"
-        (click)="onRequestPageChange(page)"
-      >
-        {{ page + 1 }}
-      </button>
-    </div>
-
-    <button
-      mat-flat-button
-      class="pagination-button"
-      (click)="onRequestPageChange(requestCurrentPage() + 1)"
-      [disabled]="requestCurrentPage() >= requestTotalPages() - 1"
-    >
-      Next
-    </button>
-  </div>
 </div>
 } @else {
 <div class="main-page-container">

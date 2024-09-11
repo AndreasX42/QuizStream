@@ -1,20 +1,7 @@
-import { CanMatchFn, RedirectCommand, Router, Routes } from '@angular/router';
-
-import { NotFoundComponent } from './shared/not-found/not-found.component';
-
+import { Routes } from '@angular/router';
 import { StartPageComponent } from './start/start.page.component';
-import { QuizListComponent } from './quiz/quiz-list/quiz-list.component';
-import {
-  canLeaveEditPage,
-  NewQuizComponent,
-} from './quiz/new-quiz/new-quiz.component';
-import { KeyComponent } from './key/key.component';
-import { LoginComponent } from './auth/login/login.component';
-import { RegisterComponent } from './auth/register/register.component';
-import { ProfileComponent } from './auth/profile/profile.component';
 import { AuthGuard } from './shared/guards/auth.guard';
-import { AboutComponent } from './about/about.component';
-import { SolveQuizComponent } from './quiz/solve-quiz/solve-quiz.component';
+import { canLeaveEditPage } from './shared/guards/leave.guard';
 
 export const routes: Routes = [
   {
@@ -22,51 +9,67 @@ export const routes: Routes = [
     component: StartPageComponent,
   },
   {
-    path: 'getting-started',
-    component: StartPageComponent,
-  },
-  {
     path: 'about',
-    component: AboutComponent,
+    loadComponent: () =>
+      import('./about/about.component').then((mod) => mod.AboutComponent),
   },
   {
     path: 'quizzes',
-    component: QuizListComponent,
+    loadComponent: () =>
+      import('./quiz/quiz-list/quiz-list.component').then(
+        (mod) => mod.QuizListComponent
+      ),
     canActivate: [AuthGuard],
   },
   {
     path: 'quizzes/new',
-    component: NewQuizComponent,
+    loadComponent: () =>
+      import('./quiz/new-quiz/new-quiz.component').then(
+        (mod) => mod.NewQuizComponent
+      ),
     canActivate: [AuthGuard],
     canDeactivate: [canLeaveEditPage],
   },
   {
     path: 'quizzes/run/:quizId',
-    component: SolveQuizComponent,
+    loadComponent: () =>
+      import('./quiz/solve-quiz/solve-quiz.component').then(
+        (mod) => mod.SolveQuizComponent
+      ),
     canActivate: [AuthGuard],
-    // canDeactivate: [canLeaveEditPage],
   },
   {
     path: 'keys',
-    component: KeyComponent,
+    loadComponent: () =>
+      import('./key/key.component').then((mod) => mod.KeyComponent),
     canActivate: [AuthGuard],
   },
   {
     path: 'login',
-    component: LoginComponent,
+    loadComponent: () =>
+      import('./auth/login/login.component').then((mod) => mod.LoginComponent),
   },
   {
     path: 'register',
-    component: RegisterComponent,
+    loadComponent: () =>
+      import('./auth/register/register.component').then(
+        (mod) => mod.RegisterComponent
+      ),
     canDeactivate: [canLeaveEditPage],
   },
   {
     path: 'profile',
-    component: ProfileComponent,
+    loadComponent: () =>
+      import('./auth/profile/profile.component').then(
+        (mod) => mod.ProfileComponent
+      ),
     canActivate: [AuthGuard],
   },
   {
     path: '**',
-    component: NotFoundComponent,
+    loadComponent: () =>
+      import('./shared/not-found/not-found.component').then(
+        (mod) => mod.NotFoundComponent
+      ),
   },
 ];

@@ -1,9 +1,11 @@
 package com.andreasx42.quizstreamapi.service;
 
+import com.andreasx42.quizstreamapi.dto.quiz.QuizCreateRequestDto;
 import com.andreasx42.quizstreamapi.dto.quiz.QuizDeleteRequestDto;
 import com.andreasx42.quizstreamapi.dto.quiz.QuizRequestDto;
-import com.andreasx42.quizstreamapi.entity.QuizRequest;
-import com.andreasx42.quizstreamapi.entity.QuizRequestId;
+import com.andreasx42.quizstreamapi.entity.request.QuizRequest;
+import com.andreasx42.quizstreamapi.entity.request.QuizRequestId;
+import com.andreasx42.quizstreamapi.entity.request.RequestMetadata;
 import com.andreasx42.quizstreamapi.exception.EntityNotFoundException;
 import com.andreasx42.quizstreamapi.repository.QuizRequestRepository;
 import com.andreasx42.quizstreamapi.util.mapper.QuizRequestMapper;
@@ -27,11 +29,19 @@ public class QuizRequestService {
         this.userService = userService;
     }
 
-    public QuizRequest createQuizRequest(Long userId, String quizName) {
+    public QuizRequest createQuizRequest(QuizCreateRequestDto quizCreateDto) {
+
+        RequestMetadata requestMetadata = new RequestMetadata(
+                quizCreateDto.videoUrl(),
+                quizCreateDto.language(),
+                quizCreateDto.difficulty(),
+                quizCreateDto.type());
 
         QuizRequest newRequest = QuizRequest.builder()
-                .id(new QuizRequestId(userId, quizName.toLowerCase()))
-                .user(userService.getById(userId))
+                .id(new QuizRequestId(quizCreateDto.userId(), quizCreateDto.quizName()
+                        .toLowerCase()))
+                .user(userService.getById(quizCreateDto.userId()))
+                .requestMetadata(requestMetadata)
                 .messageInternal(null)
                 .messageExternal(null)
                 .build();

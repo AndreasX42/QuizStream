@@ -1,7 +1,10 @@
-package com.andreasx42.quizstreamapi.entity;
+package com.andreasx42.quizstreamapi.entity.request;
 
+import com.andreasx42.quizstreamapi.entity.User;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Type;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -53,6 +56,10 @@ public class QuizRequest {
     @Builder.Default
     @Column(name = "message_ext", nullable = true, updatable = true, columnDefinition = "TEXT")
     private String messageExternal = null;
+
+    @Type(JsonType.class)
+    @Column(columnDefinition = "json", updatable = false)
+    private RequestMetadata requestMetadata;
 
     public void markAsFinished(Status status, UUID quizId, String messageInternal, String messageExternal) {
         this.status = status;

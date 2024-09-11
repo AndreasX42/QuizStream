@@ -1,3 +1,7 @@
 app:
-    - material paginator
+    x material paginator
+    x lazy loading
     - form tooltips
+    - chips for video categories
+    - expansion panels
+    - quiz request details

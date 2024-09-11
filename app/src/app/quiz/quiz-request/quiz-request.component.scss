@@ -29,6 +29,15 @@
   .quiz-name-header {
     padding-left: 30px;
   }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+  }
+  
+  .header-content mat-icon {
+    margin-right: 5px;
+  }
   
   .quiz-name-row {
     width: 150px;
@@ -87,26 +96,21 @@
     text-align: center;
   }
   
-  .page-size-label {
-    margin-left: 20px;
-    font-weight: bold;
-  }
-  
-  .page-size-select {
-    padding: 5px 10px;
-    font-size: 16px;
-    border-radius: 5px;
-    width: 70px;
-  }
-  
   .sort-label {
-    margin-right: 10px;
-    font-weight: bold;
+    // margin-right: 10px;
+    font-size: 12px;
   }
 
   .sort-select {
-    width: 155px;
-    font-size: 16px;
+    margin-right: 35px;
+    width: 145px;
+    font-size: 14px;
+  }
+
+  .req-sort-select {
+    margin-right: 35px;
+    width: 120px;
+    font-size: 14px;
   }
 
   .sort-container {
@@ -115,54 +119,4 @@
     justify-content: center;
     margin: 2rem auto;
     gap: 20px;
-  }
-  
-.pagination-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 30px;
-  }
-  
-  .pagination-button {
-    padding: 8px 15px;
-    font-size: 14px;
-    border: none;
-    background-color: #4b8dff;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .pagination-button:disabled {
-    background-color: #979797;
-    cursor: not-allowed;
-  }
-  
-  .page-numbers {
-    display: block;
-    align-items: center;
-    gap: 5px;
-  }
-  
-  .pagination-number {
-    padding: 8px 12px;
-    font-size: 14px;
-    border: none;
-    color: var(--font-color);
-    border-radius: 5px;
-    margin: 2px;
-    cursor: pointer;
-  }
-  
-  .pagination-number.active {
-    background-color: #4b8dff;
-    color: white;
-    font-weight: bold;
-  }
-  
-  .pagination-button:hover,
-  .pagination-number:hover {
-    background-color: #005cbb;
-    color: white;
   }

@@ -38,12 +38,12 @@ export class QuizService {
   getAllQuizzes(
     userId: number,
     page: number,
-    size: string,
+    size: number,
     sort: string
   ): Observable<Page<Quiz>> {
     let params = new HttpParams()
       .set('page', page.toString())
-      .set('size', size)
+      .set('size', size.toString())
       .set('sort', sort);
 
     return this.httpClient.get<Page<Quiz>>(

@@ -4,16 +4,13 @@ import {
   effect,
   inject,
   OnInit,
-  output,
   signal,
-  viewChild,
 } from '@angular/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
-
 import { QuizService } from '../../services/quiz.service';
 import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 import { QuizComponent } from '../quiz/quiz.component';
@@ -28,6 +25,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { QuizRequestComponent } from '../quiz-request/quiz-request.component';
 import { QuizRequestService } from '../../services/quiz.requests.service';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-quiz-list',
@@ -52,6 +50,7 @@ import { QuizRequestService } from '../../services/quiz.requests.service';
     MatChipsModule,
     MatIconModule,
     QuizRequestComponent,
+    MatPaginatorModule,
   ],
   templateUrl: './quiz-list.component.html',
   styleUrl: './quiz-list.component.scss',
@@ -71,14 +70,11 @@ export class QuizListComponent implements OnInit {
   expandedQuizId = signal('');
   selectedTabIndex = signal(0);
 
-  pageSize = signal<string>('3');
   sortBy = signal<string>('dateCreated,desc');
+  pageSize = signal<number>(3);
   currentPage = signal<number>(0);
   totalPages = signal<number>(0);
-
-  pagesArray(): number[] {
-    return Array.from({ length: this.totalPages() }, (_, index) => index);
-  }
+  totalItems = signal<number>(0);
 
   quizzes = signal<Quiz[]>([]);
 
@@ -138,15 +134,16 @@ export class QuizListComponent implements OnInit {
       )
       .subscribe({
         next: (page) => {
+          this.totalItems.set(page.page.totalElements);
           this.totalPages.set(page.page.totalPages);
-          this.quizzes.set(page.content);
           this.isLoadingQuizzes.set(false);
 
+          this.quizzes.set(page.content);
           if (this.quizzes().length === 0) {
             this.router.navigate(['/getting-started']);
           }
         },
-        error: (err) => {
+        error: () => {
           this.isLoadingQuizzes.set(false);
           this.messageService.showErrorModal(
             MessageService.MSG_ERROR_LOADING_QUIZ_LIST
@@ -163,8 +160,9 @@ export class QuizListComponent implements OnInit {
     this.loadQuizzes();
   }
 
-  onPageChange(page: number): void {
-    this.currentPage.set(page);
+  onPaginatorChange(event: PageEvent) {
+    this.currentPage.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
   }
 
   toggleExpansion(quizId: string): void {

@@ -1,3 +1,5 @@
+import { QuizRequestComponent } from '../quiz/quiz-request/quiz-request.component';
+
 export interface Quiz {
   userId: number;
   quizId: string;
@@ -20,6 +22,14 @@ export interface QuizRequest {
   dateFinished: string | null;
   errorMessage: string | null;
   quizId: string | null;
+  metadata: RequestMetadata;
+}
+
+export interface RequestMetadata {
+  videoUrl: string;
+  language: QuizLanguage;
+  difficulty: QuizDifficulty;
+  type: QuizType;
 }
 
 export interface QuizCreateRequestDto {
