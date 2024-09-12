@@ -28,6 +28,28 @@ export class ThemeService {
     this.isDarkMode.set(false);
   }
 
+  private applySystemDefaultTheme(): void {
+    const prefersDarkScheme = window.matchMedia(
+      '(prefers-color-scheme: dark)'
+    ).matches;
+
+    if (prefersDarkScheme) {
+      this.enableDarkMode();
+    } else {
+      this.disableDarkMode();
+    }
+  }
+
+  toggleThemeByName(theme: string) {
+    if (theme === 'system-default') {
+      this.applySystemDefaultTheme();
+    } else if (theme === 'light') {
+      this.disableDarkMode();
+    } else {
+      this.enableDarkMode();
+    }
+  }
+
   toggleTheme() {
     if (this.isDarkMode()) {
       this.disableDarkMode();

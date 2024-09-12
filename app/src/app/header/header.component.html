@@ -29,12 +29,26 @@
       About
     </a>
 
-    <a
-      mat-button
-      [routerLink]="isLoggedIn() ? ['/profile'] : ['/login']"
-      routerLinkActive="selected"
+    <a mat-button routerLinkActive="selected" [matMenuTriggerFor]="account"
+      >Account</a
     >
-      {{ isLoggedIn() ? "Profile" : "Login" }}
-    </a>
+    <mat-menu #account="matMenu">
+      @if(isLoggedIn()) {
+      <button mat-menu-item routerLink="/profile">User Profile</button>
+      <button mat-menu-item (click)="logout()">Logout</button>
+      } @else {
+      <button mat-menu-item routerLink="/login">Login</button>
+      <button mat-menu-item routerLink="/register">Register</button>
+      }
+      <button mat-menu-item [matMenuTriggerFor]="appearance">Appearance</button>
+    </mat-menu>
+
+    <mat-menu #appearance="matMenu">
+      <button mat-menu-item (click)="toggleThemeByName('system-default')">
+        System Default
+      </button>
+      <button mat-menu-item (click)="toggleThemeByName('light')">Light</button>
+      <button mat-menu-item (click)="toggleThemeByName('dark')">Dark</button>
+    </mat-menu>
   </mat-toolbar-row>
 </mat-toolbar>

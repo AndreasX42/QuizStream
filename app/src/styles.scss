@@ -1,13 +1,12 @@
 @use '@angular/material' as mat;
 @use "./app/custom_theme.scss" as custom_themes;
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
 html, body, app-root, app-header, .app-frame {
   overflow: auto;
   margin: 0;
   height: 100%;
   box-sizing: border-box;
-  font-family: 'Open Sans', sans-serif;
+  font-family: Roboto, 'Open Sans', sans-serif;
 }
 
 /* Define Light and Dark Mode */
@@ -24,8 +23,8 @@ html.darkMode {
   @include mat.core-color(custom_themes.$dark-theme);
   @include mat.all-component-colors(custom_themes.$dark-theme);
   @include mat.core-typography(custom_themes.$dark-theme);
-  @include mat.button-typography(custom_themes.$dark-theme)
-}
+  @include mat.button-typography(custom_themes.$dark-theme);
+  @include mat.menu-typography(custom_themes.$dark-theme);}
 
 a.ref-link {
   color: #0c9ad7 !important;
@@ -43,7 +42,7 @@ mat-paginator {
 .mat-tooltip {
   white-space: pre-line !important;
 }
-  
+
 
 /* CSS for Forms */
 
