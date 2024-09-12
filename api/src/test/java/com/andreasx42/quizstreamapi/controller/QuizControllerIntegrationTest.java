@@ -158,6 +158,14 @@ public class QuizControllerIntegrationTest {
         );
         assertThat(quizCreateResponseDto.dateCreated()).isNotNull();
         assertThat(quizCreateResponseDto.errorMessage()).isNull();
+        assertThat(quizCreateResponseDto.metadata()
+                .videoUrl()).isEqualTo(quizCreateRequestDto.videoUrl());
+        assertThat(quizCreateResponseDto.metadata()
+                .language()).isEqualTo(quizCreateRequestDto.language());
+        assertThat(quizCreateResponseDto.metadata()
+                .difficulty()).isEqualTo(quizCreateRequestDto.difficulty());
+        assertThat(quizCreateResponseDto.metadata()
+                .type()).isEqualTo(quizCreateRequestDto.type());
 
         // await the creation of quiz
         await()

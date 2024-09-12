@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { MatButton } from '@angular/material/button';
 import { interval } from 'rxjs';
@@ -15,6 +15,7 @@ import { ThemeService } from '../../services/theme.service';
 export class ProfileComponent implements OnInit {
   private authService = inject(AuthService);
   private themeService = inject(ThemeService);
+  private destroyRef = inject(DestroyRef);
   selectedDarkMode = this.themeService.isDarkMode;
 
   toggleTheme() {
@@ -39,7 +40,7 @@ export class ProfileComponent implements OnInit {
 
       const expiryTime = decodedToken.exp * 1000;
 
-      interval(1000).subscribe(() => {
+      const sub = interval(1000).subscribe(() => {
         const currentTime = Date.now();
         const timeLeft = expiryTime - currentTime;
 
@@ -49,6 +50,10 @@ export class ProfileComponent implements OnInit {
           this.sessionTimeLeft.set('Session expired');
           this.authService.logout();
         }
+      });
+
+      this.destroyRef.onDestroy(() => {
+        sub.unsubscribe();
       });
     }
   }
