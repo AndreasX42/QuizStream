@@ -4,12 +4,6 @@
   padding: 1rem;
 }
 
-.actions-column {
-  padding-right: 35px;
-  text-align: right;
-  justify-content: flex-end;
-
-}
 
 .content-column {
   padding-left: 35px;
@@ -24,4 +18,31 @@ table {
 .form-note {
   margin-top: 15px;
   text-align: left;
+}
+
+.column-header {
+  font-weight: 500 !important;
+}
+
+.mat-column-provider {
+  font-weight: normal;
+  text-align: left;
+  padding-left: 35px !important;
+  flex: 0 0 30% !important;
+  width: 30% !important;
+}
+
+.mat-column-key {
+  font-weight: normal;
+  text-align: left;
+  flex: 0 0 50% !important;
+  width: 50% !important;
+}
+
+.mat-column-delete {
+  padding-right: 35px;
+  text-align: right;
+  justify-content: flex-end;
+  flex: 0 0 20% !important;
+  width: 20% !important;
 }

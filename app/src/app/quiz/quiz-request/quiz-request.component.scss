@@ -1,122 +1,126 @@
 .loading-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 80vh;
-    text-align: center;
-    font-size: 1.2em;
-  }
-  
-  .loading-container mat-spinner {
-    margin-bottom: 15px;
-  }
-  
-  @media (max-width: 600px) {
-    .loading-container {
-      height: 60vh;
-    }
-  }
-  
-  .error-message {
-    max-height: 70px;
-    overflow-y: auto;
-    word-wrap: break-word; 
-    white-space: pre-wrap; 
-    margin: 5px;
-  }
-  
-  .quiz-name-header {
-    padding-left: 30px;
-  }
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  text-align: center;
+  font-size: 1.2em;
+}
 
-  .header-content {
-    display: flex;
-    align-items: center;
-  }
-  
-  .header-content mat-icon {
-    margin-right: 5px;
-  }
-  
-  .quiz-name-row {
-    width: 150px;
-    padding-left: 15px;
-    overflow-y: auto;
-    word-wrap: break-word; 
-    white-space: pre-wrap; 
-    margin: 5px;
-  }
-  
-  .requests-table-container {
-    margin: 2rem auto;
-    max-width: 75rem;
-    min-height: 500px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  .mat-column-quizName {
-    height: 70px;
-    flex: 0 0 20% !important;
-    width: 20% !important;
-    min-width: 200px !important;
-  }
-  
-  .mat-column-status {
-    text-align: center;
-    flex: 0 0 15% !important;
-    width: 15% !important;
-  }
-  
-  .mat-column-dateCreated {
-    text-align: center;
-    flex: 0 0 15% !important;
-    width: 15% !important;
-  }
-  .mat-column-dateFinished {
-    text-align: center;
-    flex: 0 0 15% !important;
-    width: 15% !important;
-  }
-  
-  .mat-column-errorMessage {
-    flex: 0 0 20% !important;
-    width: 20% !important;
-    min-width: 500px !important;
-    padding: 5px !important; 
-  }
-  
-  .mat-column-delete {
-    flex: 0 0 15% !important;
-    width: 15% !important;
-    padding-right: 35px !important;
-    text-align: center;
-  }
-  
-  .sort-label {
-    // margin-right: 10px;
-    font-size: 12px;
-  }
+.loading-container mat-spinner {
+  margin-bottom: 15px;
+}
 
-  .sort-select {
-    margin-right: 35px;
-    width: 145px;
-    font-size: 14px;
+@media (max-width: 600px) {
+  .loading-container {
+    height: 60vh;
   }
+}
+.column-header {
+    font-weight: 500 !important;
+}
 
-  .req-sort-select {
-    margin-right: 35px;
-    width: 120px;
-    font-size: 14px;
-  }
+.error-message {
+  max-height: 70px;
+  overflow-y: auto;
+  word-wrap: break-word; 
+  white-space: pre-wrap; 
+  margin: 5px;
+}
 
-  .sort-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 2rem auto;
-    gap: 20px;
-  }
+.quiz-name-header {
+  padding-left: 30px;
+}
+.header-content {
+  display: flex;
+  align-items: center;
+}
+
+.header-content mat-icon {
+  margin-right: 5px;
+}
+
+.quiz-name-row {
+  width: 150px;
+  padding-left: 15px;
+  overflow-y: auto;
+  word-wrap: break-word; 
+  white-space: pre-wrap; 
+  margin: 5px;
+}
+
+.requests-table-container {
+  margin: 2rem auto;
+  max-width: 75rem;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mat-column-quizName {
+  font-weight: normal;
+  height: 70px;
+  flex: 0 0 20% !important;
+  width: 20% !important;
+  min-width: 200px !important;
+}
+
+.mat-column-status {
+  font-weight: normal;
+  text-align: center;
+  flex: 0 0 15% !important;
+  width: 15% !important;
+}
+
+.mat-column-dateCreated {
+  font-weight: normal;
+  text-align: center;
+  flex: 0 0 15% !important;
+  width: 15% !important;
+}
+
+.mat-column-dateFinished {
+  font-weight: normal;
+  text-align: center;
+  flex: 0 0 20% !important;
+  width: 20% !important;
+}
+
+.mat-column-errorMessage {
+  font-weight: normal;
+  flex: 0 0 15% !important;
+  width: 15% !important;
+  min-width: 475px !important;
+  padding: 5px !important; 
+}
+
+.mat-column-delete {
+  flex: 0 0 15% !important;
+  width: 15% !important;
+  padding-right: 35px !important;
+  text-align: center;
+}
+
+.sort-label {
+  font-size: 12px;
+}
+.sort-select {
+  margin-right: 35px;
+  width: 145px;
+  font-size: 14px;
+}
+.req-sort-select {
+  margin-right: 35px;
+  width: 120px;
+  font-size: 14px;
+}
+.sort-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem auto;
+  gap: 20px;
+}

@@ -91,6 +91,7 @@ export class QuizRequestComponent implements OnInit {
       return 'No metadata available';
     }
 
+    const videoUrl = metadata.videoUrl.split('youtube.com')[1];
     const formattedLanguage = this.getEnumDisplayName(metadata.language);
     const formattedDifficulty = this.getEnumDisplayName(metadata.difficulty);
     const formattedType = this.getEnumDisplayName(metadata.type);
@@ -99,7 +100,7 @@ export class QuizRequestComponent implements OnInit {
       Language: ${formattedLanguage}
       Difficulty: ${formattedDifficulty}
       Quiz Type: ${formattedType}
-      Video Link: ${metadata.videoUrl}
+      Video Link: youtube.com${videoUrl}
     `;
   }
 

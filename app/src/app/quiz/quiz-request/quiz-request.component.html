@@ -48,7 +48,7 @@
       <th mat-header-cell *matHeaderCellDef class="quiz-name-header">
         <div class="header-content">
           <mat-icon>menu</mat-icon>
-          <span>Quiz Name</span>
+          <span class="column-header">Quiz Name</span>
         </div>
       </th>
       <td
@@ -65,7 +65,7 @@
     </ng-container>
 
     <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <th mat-header-cell *matHeaderCellDef class="column-header">Status</th>
       <td mat-cell *matCellDef="let request">
         <button mat-raised-button [color]="getStatusColor(request.status)">
           <ng-container *ngIf="request.status === 'CREATING'; else showStatus">
@@ -80,7 +80,9 @@
     </ng-container>
 
     <ng-container matColumnDef="dateCreated">
-      <th mat-header-cell *matHeaderCellDef>Date Created</th>
+      <th mat-header-cell *matHeaderCellDef class="column-header">
+        Date Created
+      </th>
       <td mat-cell *matCellDef="let request">
         {{ request.dateCreated | date : "MM/dd/yy" }}<br />
         {{ request.dateCreated | date : "HH:mm:ss" }}
@@ -88,7 +90,9 @@
     </ng-container>
 
     <ng-container matColumnDef="dateFinished">
-      <th mat-header-cell *matHeaderCellDef>Date Finished</th>
+      <th mat-header-cell *matHeaderCellDef class="column-header">
+        Date Finished
+      </th>
       <td mat-cell *matCellDef="let request">
         {{ request.dateFinished | date : "MM/dd/yy" }}<br />
         {{ request.dateFinished | date : "HH:mm:ss" }}
@@ -96,7 +100,7 @@
     </ng-container>
 
     <ng-container matColumnDef="errorMessage">
-      <th mat-header-cell *matHeaderCellDef class="error-message-header">
+      <th mat-header-cell *matHeaderCellDef class="column-header">
         System Message
       </th>
       <td mat-cell *matCellDef="let request">
@@ -116,8 +120,8 @@
 
     <!-- Delete Column -->
     <ng-container matColumnDef="delete">
-      <th mat-header-cell *matHeaderCellDef class="actions-column">Actions</th>
-      <td mat-cell *matCellDef="let request" class="actions-column">
+      <th mat-header-cell *matHeaderCellDef class="column-header">Actions</th>
+      <td mat-cell *matCellDef="let request">
         <button
           mat-icon-button
           color="warn"
