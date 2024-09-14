@@ -11,6 +11,7 @@ import com.andreasx42.quizstreamapi.security.config.EnvConfigs;
 import com.andreasx42.quizstreamapi.service.QuizRequestService;
 import com.andreasx42.quizstreamapi.service.QuizService;
 import com.andreasx42.quizstreamapi.service.UserQuizService;
+import com.andreasx42.quizstreamapi.util.Util;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
@@ -22,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.web.servlet.MockMvc;
@@ -114,24 +116,30 @@ public class QuizControllerIntegrationTest {
         LoginRequestDto loginRequestDto = new LoginRequestDto(testUser.getUsername(), this.testUser.getPassword());
         String loginRequestDtoJson = objectMapper.writeValueAsString(loginRequestDto);
 
-        String response = mockMvc.perform(MockMvcRequestBuilders.post(envConfigs.AUTH_PATH)
+        MockHttpServletResponse response = mockMvc.perform(MockMvcRequestBuilders.post(envConfigs.AUTH_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginRequestDtoJson))
                 .andExpect(status().isOk())
                 .andReturn()
-                .getResponse()
-                .getContentAsString();
+                .getResponse();
 
-        LoginResponseDto loginResponseDto = objectMapper.readValue(response, LoginResponseDto.class);
+        // check jwt in header
+        Util.assertThatIsValidJwtToken(response, testUser.getUsername(), testUser.getRole()
+                        .name(),
+                envConfigs.BEARER_PREFIX, envConfigs.getJwtSecret(), envConfigs.TOKEN_EXPIRATION);
+
+        // check login response dto
+        LoginResponseDto loginResponseDto = objectMapper.readValue(response.getContentAsString(), LoginResponseDto.class);
 
         assertThat(loginResponseDto).isNotNull();
         assertThat(loginResponseDto.userId()).isEqualTo(testUser.getId());
         assertThat(loginResponseDto.userName()).isEqualTo(testUser.getUsername());
         assertThat(loginResponseDto.email()).isEqualTo(testUser.getEmail());
-        assertThat(loginResponseDto.jwtToken()).matches("^[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+$");
+        assertThat(loginResponseDto.role()).isEqualTo(testUser.getRole()
+                .name());
 
         // store jwt token for later use
-        this.testUserJWT = "Bearer " + loginResponseDto.jwtToken();
+        this.testUserJWT = response.getHeader("Authorization");
     }
 
     @Test

@@ -1,5 +1,5 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -40,33 +40,37 @@ export class AuthService {
           password: password,
         },
         {
-          observe: 'body',
+          observe: 'response',
         }
       )
       .pipe(
-        tap((body: LoginResponse) => {
-          if (body && body.jwtToken) {
-            const token: string = body.jwtToken;
-            const userId: number = body.userId;
-            const userName: string = body.userName;
-            const email: string = body.email;
+        tap((response: HttpResponse<any>) => {
+          const jwtToken: string | null = response.headers.get('Authorization');
 
-            // Set authentication state
-            this._isLoggedIn.set(true);
-            this._userToken.set(token);
-            this._user.set({ id: userId, username: username, email: email });
-
-            // Store the token and user data in localStorage
-            localStorage.setItem(this.localStorageTokenKey, token);
-            localStorage.setItem(
-              this.localStorageUserKey,
-              JSON.stringify(this.user())
-            );
-          } else {
+          if (!jwtToken) {
             throw new Error(
               'Login failed: JWT token not found in the response.'
             );
           }
+
+          const token = jwtToken.replace('Bearer ', '');
+
+          const body: LoginResponse = response.body;
+          const userId: number = body.userId;
+          const email: string = body.email;
+          // const userName: string = body.userName;
+
+          // Set authentication state
+          this._isLoggedIn.set(true);
+          this._userToken.set(token);
+          this._user.set({ id: userId, username: username, email: email });
+
+          // Store the token and user data in localStorage
+          localStorage.setItem(this.localStorageTokenKey, token);
+          localStorage.setItem(
+            this.localStorageUserKey,
+            JSON.stringify(this.user())
+          );
         }),
         catchError((error) => {
           let errorMessage = MessageService.MSG_ERROR_UNKOWN;

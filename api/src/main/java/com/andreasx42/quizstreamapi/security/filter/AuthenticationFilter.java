@@ -56,7 +56,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
 
         String role = authResult.getAuthorities()
                 .stream()
@@ -72,15 +72,14 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
         response.addHeader(envConfigs.AUTHORIZATION, envConfigs.BEARER_PREFIX + token);
 
-        // Create a response object with token and user data
+        // Create a response object user data
         CustomUserDetails userDetails = (CustomUserDetails) authResult.getPrincipal();
 
         LoginResponseDto loginResponse = new LoginResponseDto(
-                token,
                 userDetails.getId(),
                 userDetails.getUsername(),
-                userDetails.getEmail()
-        );
+                userDetails.getEmail(),
+                role);
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), loginResponse);

@@ -1,5 +1,7 @@
 package com.andreasx42.quizstreamapi.service;
 
+import com.andreasx42.quizstreamapi.dto.auth.LoginRequestDto;
+import com.andreasx42.quizstreamapi.dto.auth.LoginResponseDto;
 import com.andreasx42.quizstreamapi.dto.user.UserOutboundDto;
 import com.andreasx42.quizstreamapi.dto.user.UserRegisterDto;
 import com.andreasx42.quizstreamapi.dto.user.UserUpdateRequestDto;
@@ -14,6 +16,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -128,4 +131,30 @@ public class UserService {
         return new UserUpdateResponseDto(updatedUser.getId(), updatedUser.getUsername(), updatedUser.getEmail(), refreshedJwtToken);
     }
 
+    public LoginResponseDto authenticateUser(LoginRequestDto userCredentials) {
+
+        User user = getByUserName(userCredentials.username());
+
+        if (!bCryptPasswordEncoder.matches(userCredentials.password(), user.getPassword())) {
+            throw new BadCredentialsException("Incorrect password");
+        }
+
+        return new LoginResponseDto(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getRole()
+                        .name()
+        );
+
+
+    }
+
+    public String getJwtToken(LoginResponseDto loginResponseDto) {
+        return JWT.create()
+                .withSubject(loginResponseDto.userName())
+                .withExpiresAt(new Date(System.currentTimeMillis() + envConfigs.TOKEN_EXPIRATION))
+                .withClaim("role", loginResponseDto.role())
+                .sign(Algorithm.HMAC512(envConfigs.getJwtSecret()));
+    }
 }

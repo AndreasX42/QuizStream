@@ -44,11 +44,13 @@
     </mat-menu>
 
     <mat-menu #appearance="matMenu">
+      <button mat-menu-item (click)="toggleThemeByName('light')">Light</button>
+      <button mat-menu-item (click)="toggleThemeByName('dark')">
+        Dark (Beta)
+      </button>
       <button mat-menu-item (click)="toggleThemeByName('system-default')">
         System Default
       </button>
-      <button mat-menu-item (click)="toggleThemeByName('light')">Light</button>
-      <button mat-menu-item (click)="toggleThemeByName('dark')">Dark</button>
     </mat-menu>
   </mat-toolbar-row>
 </mat-toolbar>

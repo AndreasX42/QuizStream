@@ -1,5 +1,7 @@
 package com.andreasx42.quizstreamapi.controller;
 
+import com.andreasx42.quizstreamapi.dto.auth.LoginRequestDto;
+import com.andreasx42.quizstreamapi.dto.auth.LoginResponseDto;
 import com.andreasx42.quizstreamapi.dto.user.UserOutboundDto;
 import com.andreasx42.quizstreamapi.dto.user.UserRegisterDto;
 import com.andreasx42.quizstreamapi.dto.user.UserUpdateRequestDto;
@@ -8,7 +10,6 @@ import com.andreasx42.quizstreamapi.exception.ErrorResponse;
 import com.andreasx42.quizstreamapi.service.UserService;
 import com.andreasx42.quizstreamapi.util.mapper.UserMapper;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,8 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +32,24 @@ public class UserController {
 
     private final UserService userService;
     private final UserMapper userMapper;
+
+    @Operation(summary = "Authenticates user")
+    @ApiResponses(value = {@ApiResponse(responseCode = "404", description = "Authentication failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Authentication succeeded  ", content = @Content(schema = @Schema(implementation = LoginRequestDto.class))),})
+    @PostMapping(value = "/authenticate", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoginResponseDto> authenticateUser(@RequestBody LoginRequestDto userCredentials) {
+
+        // authenticate user and generate jwt
+        LoginResponseDto loginResponseDto = userService.authenticateUser(userCredentials);
+        String token = userService.getJwtToken(loginResponseDto);
+
+        // create headers and add the Authorization header
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + token);
+
+        // return the response with the login data and the header
+        return new ResponseEntity<>(loginResponseDto, headers, HttpStatus.OK);
+    }
 
     @Operation(summary = "Returns a user based on id")
     @ApiResponses(value = {@ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
@@ -55,17 +73,7 @@ public class UserController {
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "Retrieves paged list of users")
-    @ApiResponse(responseCode = "200", description = "Successful retrieval of all users", content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserOutboundDto.class))))
-    @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Page<UserOutboundDto>> getAllUsers(Pageable pageable) {
-
-        Page<UserOutboundDto> users = userService.getAll(pageable);
-        return new ResponseEntity<>(users, HttpStatus.OK);
-    }
-
-    @Operation(summary = "Creates a user from provided data")
+    @Operation(summary = "Creates a user")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successful creation of user", content = @Content(schema = @Schema(implementation = UserOutboundDto.class))),
             @ApiResponse(responseCode = "400", description = "Creation of user not successful", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))})
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -75,7 +83,7 @@ public class UserController {
         return new ResponseEntity<>(userRegisteredDto, HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Updates a user from provided data")
+    @Operation(summary = "Updates a user")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successful update of user", content = @Content(schema = @Schema(implementation = UserOutboundDto.class))),
             @ApiResponse(responseCode = "400", description = "Unsuccessful submission", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))})
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -86,7 +94,7 @@ public class UserController {
         return new ResponseEntity<>(userUpdatedDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "Deletes user with given ID")
+    @Operation(summary = "Deletes user with given id")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successful deletion of user", content = @Content(schema = @Schema(implementation = HttpStatus.class))),
             @ApiResponse(responseCode = "400", description = "Bad request: unsuccessful submission", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))})
     @DeleteMapping(value = "/{id}")

@@ -131,7 +131,7 @@ public class QuizController {
     // GET returns list of quiz jobs of user
     @GetMapping(value = "/requests/users/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("#userId == principal.id or hasAuthority('ADMIN')")
-    @Operation(summary = "Returns list of open jobs for quiz creation")
+    @Operation(summary = "Returns list of quiz requests for given user id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "404", description = "Fetching quiz jobs failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "200", description = "Successful retrieval of list of quiz jobs", content = @Content(schema = @Schema(implementation = QuizRequestDto.class))),
@@ -146,7 +146,7 @@ public class QuizController {
     // DELETE quiz job
     @DeleteMapping("/requests")
     @PreAuthorize("#quizDeleteRequestDto.userId == principal.id or hasAuthority('ADMIN')")
-    @Operation(summary = "Deletes quiz job with given user id and quiz name")
+    @Operation(summary = "Deletes quiz request with given user id and quiz name")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful deletion of quiz job", content = @Content(schema = @Schema(implementation = HttpStatus.class))),
             @ApiResponse(responseCode = "400", description = "Bad request: unsuccessful submission", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))

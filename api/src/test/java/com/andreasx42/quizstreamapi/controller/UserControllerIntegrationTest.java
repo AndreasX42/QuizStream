@@ -10,6 +10,7 @@ import com.andreasx42.quizstreamapi.entity.User;
 import com.andreasx42.quizstreamapi.repository.UserRepository;
 import com.andreasx42.quizstreamapi.security.config.EnvConfigs;
 import com.andreasx42.quizstreamapi.service.UserService;
+import com.andreasx42.quizstreamapi.util.Util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.web.servlet.MockMvc;
@@ -120,24 +122,30 @@ public class UserControllerIntegrationTest {
         LoginRequestDto loginRequestDto = new LoginRequestDto(testUser.getUsername(), this.testUser.getPassword());
         String loginRequestDtoJson = objectMapper.writeValueAsString(loginRequestDto);
 
-        String response = mockMvc.perform(MockMvcRequestBuilders.post(envConfigs.AUTH_PATH)
+        MockHttpServletResponse response = mockMvc.perform(MockMvcRequestBuilders.post(envConfigs.AUTH_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginRequestDtoJson))
                 .andExpect(status().isOk())
                 .andReturn()
-                .getResponse()
-                .getContentAsString();
+                .getResponse();
 
-        LoginResponseDto loginResponseDto = objectMapper.readValue(response, LoginResponseDto.class);
+        // check that jwt token is in header
+        Util.assertThatIsValidJwtToken(response, testUser.getUsername(), testUser.getRole()
+                        .name(),
+                envConfigs.BEARER_PREFIX, envConfigs.getJwtSecret(), envConfigs.TOKEN_EXPIRATION);
+
+        // test endpoint response
+        LoginResponseDto loginResponseDto = objectMapper.readValue(response.getContentAsString(), LoginResponseDto.class);
 
         assertThat(loginResponseDto).isNotNull();
         assertThat(loginResponseDto.userId()).isEqualTo(testUser.getId());
         assertThat(loginResponseDto.userName()).isEqualTo(testUser.getUsername());
         assertThat(loginResponseDto.email()).isEqualTo(testUser.getEmail());
-        assertThat(loginResponseDto.jwtToken()).matches("^[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+$");
+        assertThat(loginResponseDto.role()).isEqualTo(testUser.getRole()
+                .name());
 
         // store jwt token for later use
-        this.testUserJWT = "Bearer " + loginResponseDto.jwtToken();
+        this.testUserJWT = response.getHeader("Authorization");
     }
 
     @Test
@@ -178,40 +186,40 @@ public class UserControllerIntegrationTest {
 
     @Test
     @Order(5)
-    public void testGetAllUsers_whenRegisteredUserRequestsAllUsersList_shouldThrowErrorBecauseOnlyAdminAllowed() throws Exception {
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/users/all")
-                        .header("Authorization", testUserJWT))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @Order(6)
-    public void testGetAllUsers_whenAdminRequestsAllUsersList_shouldRetrieveList() throws Exception {
+    public void testAuthenticateAdmin_whenUserProvidesValidAdminCredentials_shouldReceiveCorrectlyFormatedJWT() throws Exception {
 
         // first get jwt for admin
         LoginRequestDto loginRequestDto = new LoginRequestDto(testAdmin.getUsername(), this.testAdmin.getPassword());
         String loginRequestDtoJson = objectMapper.writeValueAsString(loginRequestDto);
 
-        String response = mockMvc.perform(MockMvcRequestBuilders.post(envConfigs.AUTH_PATH)
+        // test second auth endpoint '/users/authenticate'
+        MockHttpServletResponse response = mockMvc.perform(MockMvcRequestBuilders.post("/users/authenticate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginRequestDtoJson))
                 .andExpect(status().isOk())
                 .andReturn()
-                .getResponse()
-                .getContentAsString();
+                .getResponse();
 
-        LoginResponseDto loginResponseDto = objectMapper.readValue(response, LoginResponseDto.class);
-        this.testAdminJWT = "Bearer " + loginResponseDto.jwtToken();
+        // check that jwt token is in header
+        Util.assertThatIsValidJwtToken(response, testAdmin.getUsername(), testAdmin.getRole()
+                        .name(),
+                envConfigs.BEARER_PREFIX, envConfigs.getJwtSecret(), envConfigs.TOKEN_EXPIRATION);
 
-        // now perform the 'users/all' request
-        mockMvc.perform(MockMvcRequestBuilders.get("/users/all")
-                        .header("Authorization", testAdminJWT))
-                .andExpect(status().isOk());
+        // test endpoint response
+        LoginResponseDto loginResponseDto = objectMapper.readValue(response.getContentAsString(), LoginResponseDto.class);
+
+        assertThat(loginResponseDto).isNotNull();
+        assertThat(loginResponseDto.userId()).isEqualTo(testAdmin.getId());
+        assertThat(loginResponseDto.userName()).isEqualTo(testAdmin.getUsername());
+        assertThat(loginResponseDto.email()).isEqualTo(testAdmin.getEmail());
+        assertThat(loginResponseDto.role()).isEqualTo(testAdmin.getRole()
+                .name());
+
+        this.testAdminJWT = response.getHeader("Authorization");
     }
 
     @Test
-    @Order(7)
+    @Order(6)
     public void testUpdateUser_whenProvidedValidNewUserDetails_shouldUpdateUserInDb() throws Exception {
 
         UserUpdateRequestDto newUserDataDto = new UserUpdateRequestDto("new_" + testUser.getUsername(), "new_" + testUser.getEmail(), "new_" + testUser.getPassword());
@@ -245,7 +253,7 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
-    @Order(8)
+    @Order(7)
     public void testUpdateUser_whenProvidedNoNewUserDetails_shouldMakeNoChangesToEntity() throws Exception {
 
         UserUpdateRequestDto newUserDataDto = new UserUpdateRequestDto(null, null, null);
@@ -273,7 +281,7 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
-    @Order(9)
+    @Order(8)
     public void testUpdateUser_whenUserUpdatesAdminDetails_shouldRejectRequest() throws Exception {
 
         UserUpdateRequestDto newUserDataDto = new UserUpdateRequestDto(null, null, null);
@@ -287,7 +295,7 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
-    @Order(10)
+    @Order(9)
     public void testUpdateUser_whenAdminUpdatesUsersDetails_shouldPermitRequest() throws Exception {
 
         UserUpdateRequestDto newUserDataDto = new UserUpdateRequestDto(null, null, null);
@@ -301,8 +309,8 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
-    @Order(11)
-    public void testDeleteUser_whenUserDeletesAdminAccount_shouldRequestRequest() throws Exception {
+    @Order(10)
+    public void testDeleteUser_whenUserTriesToDeleteAdminAccount_shouldBeDenied() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/users/{id}", testAdmin.getId())
                         .header("Authorization", testUserJWT))
@@ -310,7 +318,7 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
-    @Order(12)
+    @Order(11)
     public void testDeleteUser_whenValidUserIdProvided_shouldDeleteEntity() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/users/{id}", testUser.getId())

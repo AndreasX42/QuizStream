@@ -11,11 +11,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @AllArgsConstructor
@@ -26,23 +27,23 @@ public class SecurityConfig {
     private UserService userService;
     private EnvConfigs envConfigs;
 
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         AuthenticationFilter authFilter = new AuthenticationFilter(authenticationManager, envConfigs);
         authFilter.setFilterProcessesUrl(envConfigs.AUTH_PATH);
 
-        http.cors()
-                .and()
-                .headers(headers -> headers.frameOptions()
-                        .disable())
-                .csrf(csrf -> csrf.disable())
+        http
+                .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
+                .headers(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**",
-                                "/swagger-ui.html", "/swagger-resources/**",
-                                "/webjars/**")
-                        .permitAll() // Allow access to Swagger UI and API documentation
+                        .requestMatchers("/api/v1/swagger-ui/**", "/api/v1/openapi/**")
+                        .permitAll()
                         .requestMatchers(HttpMethod.POST, envConfigs.REGISTER_PATH)
+                        .permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users/authenticate")
                         .permitAll()
                         .anyRequest()
                         .authenticated())
@@ -56,14 +57,17 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin(envConfigs.getAppHost());
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
+        config.addExposedHeader("Authorization");
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
+
+        return source;
     }
 }
