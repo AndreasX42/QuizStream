@@ -37,7 +37,7 @@
 
 QuizStream is built using a microservices architecture, with the following components:
 
-![image](https://github.com/user-attachments/assets/4d37b603-af40-4547-afad-32d97017449b)
+![image](https://github.com/user-attachments/assets/f770212c-7961-4d78-a375-58bbabf6906d)
 
 
 ## 🌟 Features
