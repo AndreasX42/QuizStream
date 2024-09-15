@@ -4,13 +4,13 @@
 >
   <!-- Tab 1: Quiz List -->
   <mat-tab label="My Quizzes">
+    @if(isLoadingQuizzes()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Loading quizzes...</p>
+    </div>
+    } @else if(quizzes().length > 0) {
     <div class="sort-container">
-      @if(isLoadingQuizzes()) {
-      <div class="loading-container">
-        <mat-spinner></mat-spinner>
-        <p>Loading quizzes...</p>
-      </div>
-      } @else {
       <label for="sort" class="sort-label">Sort by:</label>
       <mat-select id="sort" class="sort-select" [(value)]="sortBy">
         <mat-option value="dateCreated,desc">Newest first</mat-option>
@@ -26,17 +26,23 @@
         (page)="onPaginatorChange($event)"
       >
       </mat-paginator>
-
-      }
     </div>
 
-    @if(!isLoadingQuizzes()) {
     <div class="quiz-list-container">
       <!-- Quiz List -->
       <div class="quiz-list">
         @for(quiz of quizzes(); track quiz.quizId) {
         <app-quiz [quiz]="quiz" (quizDeleted)="onDeleteQuiz()" />
         }
+      </div>
+    </div>
+    } @else {
+    <div class="main-page-container">
+      <div class="main-msg">
+        <p>No quizzes found.</p>
+        <a mat-raised-button color="primary" routerLink="/quizzes/new">
+          Create New Quiz
+        </a>
       </div>
     </div>
     }

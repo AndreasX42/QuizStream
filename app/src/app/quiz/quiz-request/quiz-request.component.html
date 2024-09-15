@@ -3,8 +3,7 @@
   <mat-spinner></mat-spinner>
   <p>Loading requests...</p>
 </div>
-} @else {
-
+} @else if(requests().length > 0) {
 <div class="sort-container">
   <label for="requestSort" class="sort-label">Sort by:</label>
   <mat-select
@@ -39,8 +38,6 @@
   >
   </mat-paginator>
 </div>
-
-@if(requests().length > 0) {
 <div class="requests-table-container">
   <table mat-table [dataSource]="requests()" class="mat-elevation-z8">
     <!-- Define table columns -->
@@ -146,4 +143,4 @@
     </a>
   </div>
 </div>
-} }
+}

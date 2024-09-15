@@ -139,9 +139,6 @@ export class QuizListComponent implements OnInit {
           this.isLoadingQuizzes.set(false);
 
           this.quizzes.set(page.content);
-          if (this.quizzes().length === 0) {
-            this.router.navigate(['/getting-started']);
-          }
         },
         error: () => {
           this.isLoadingQuizzes.set(false);

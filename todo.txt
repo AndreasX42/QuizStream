@@ -5,3 +5,8 @@ app:
     x quiz request details
     - chips for video categories
     - expansion panels
+
+
+Solution to fix nginx reverse proxy issue to access Spring Boot OpenAPI documentation
+https://stackoverflow.com/questions/65091452/springdoc-swagger-behind-an-nginx-proxy/77619072#77619072
+https://springdoc.org/faq.html#how-can-i-deploy-the-deploy-springdoc-openapi-ui-behind-a-reverse-proxy

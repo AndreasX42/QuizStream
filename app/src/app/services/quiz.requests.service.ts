@@ -61,7 +61,6 @@ export class QuizRequestService {
         this.isLoadingRequests.set(false);
 
         this.requests.set(page.content);
-        // continue fetching requests if some are still in creating state
         if (
           this.requests().some((req) => req.status === RequestStatus.CREATING)
         ) {
