@@ -32,18 +32,18 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         AuthenticationFilter authFilter = new AuthenticationFilter(authenticationManager, envConfigs);
-        authFilter.setFilterProcessesUrl(envConfigs.AUTH_PATH);
+        authFilter.setFilterProcessesUrl(envConfigs.AUTH_PATH_FRONTEND);
 
         http
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .headers(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/v1/swagger-ui/**", "/api/v1/openapi/**")
+                        .requestMatchers("/swagger-ui/**", "/openapi/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, envConfigs.REGISTER_PATH)
                         .permitAll()
-                        .requestMatchers(HttpMethod.POST, "/users/authenticate")
+                        .requestMatchers(HttpMethod.POST, envConfigs.AUTH_PATH_API)
                         .permitAll()
                         .anyRequest()
                         .authenticated())

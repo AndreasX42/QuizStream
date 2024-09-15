@@ -14,7 +14,8 @@ public class EnvConfigs {
     public final String BEARER_PREFIX = "Bearer ";
     public final String AUTHORIZATION = "Authorization";
     public final String REGISTER_PATH = "/users/register";
-    public final String AUTH_PATH = "/users/login";
+    public final String AUTH_PATH_FRONTEND = "/users/login";
+    public final String AUTH_PATH_API = "/users/authenticate";
 
     @PostConstruct
     public void init() {
