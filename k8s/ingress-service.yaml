@@ -9,7 +9,7 @@ metadata:
     nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, OPTIONS"
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/configuration-snippet: |
-      proxy_set_header X-Forwarded-Prefix "/api/v1";
+      proxy_set_header X-Forwarded-Prefix "/api/v1/";
       proxy_set_header X-Script-Name /pgadmin;
       add_header Access-Control-Allow-Origin $http_origin;
       add_header Access-Control-Allow-Methods "POST, GET, OPTIONS";
