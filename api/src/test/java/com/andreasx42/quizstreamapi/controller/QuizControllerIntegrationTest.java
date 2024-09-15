@@ -116,7 +116,7 @@ public class QuizControllerIntegrationTest {
         LoginRequestDto loginRequestDto = new LoginRequestDto(testUser.getUsername(), this.testUser.getPassword());
         String loginRequestDtoJson = objectMapper.writeValueAsString(loginRequestDto);
 
-        MockHttpServletResponse response = mockMvc.perform(MockMvcRequestBuilders.post(envConfigs.AUTH_PATH)
+        MockHttpServletResponse response = mockMvc.perform(MockMvcRequestBuilders.post(envConfigs.AUTH_PATH_FRONTEND)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginRequestDtoJson))
                 .andExpect(status().isOk())

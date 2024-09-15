@@ -122,7 +122,7 @@ public class UserControllerIntegrationTest {
         LoginRequestDto loginRequestDto = new LoginRequestDto(testUser.getUsername(), this.testUser.getPassword());
         String loginRequestDtoJson = objectMapper.writeValueAsString(loginRequestDto);
 
-        MockHttpServletResponse response = mockMvc.perform(MockMvcRequestBuilders.post(envConfigs.AUTH_PATH)
+        MockHttpServletResponse response = mockMvc.perform(MockMvcRequestBuilders.post(envConfigs.AUTH_PATH_API)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginRequestDtoJson))
                 .andExpect(status().isOk())
@@ -193,7 +193,7 @@ public class UserControllerIntegrationTest {
         String loginRequestDtoJson = objectMapper.writeValueAsString(loginRequestDto);
 
         // test second auth endpoint '/users/authenticate'
-        MockHttpServletResponse response = mockMvc.perform(MockMvcRequestBuilders.post("/users/authenticate")
+        MockHttpServletResponse response = mockMvc.perform(MockMvcRequestBuilders.post(envConfigs.AUTH_PATH_API)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginRequestDtoJson))
                 .andExpect(status().isOk())
