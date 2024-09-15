@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .headers(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/swagger-ui/**", "/openapi/**")
+                        .requestMatchers("/swagger-ui/**", "/openapi/**", "/api-docs/**", "/v3/api-docs/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, envConfigs.REGISTER_PATH)
                         .permitAll()
