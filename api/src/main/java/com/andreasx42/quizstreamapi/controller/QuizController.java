@@ -103,7 +103,7 @@ public class QuizController {
     @PreAuthorize("#userId == principal.id or hasAuthority('ADMIN')")
     @Operation(summary = "Deletes quiz with given user and quiz id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful deletion of quiz", content = @Content(schema = @Schema(implementation = HttpStatus.class))),
+            @ApiResponse(responseCode = "204", description = "Successful deletion of quiz", content = @Content(schema = @Schema(implementation = HttpStatus.class))),
             @ApiResponse(responseCode = "400", description = "Bad request: unsuccessful submission", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<HttpStatus> deleteQuiz(@PathVariable Long userId, @PathVariable UUID quizId) {
@@ -148,7 +148,7 @@ public class QuizController {
     @PreAuthorize("#quizDeleteRequestDto.userId == principal.id or hasAuthority('ADMIN')")
     @Operation(summary = "Deletes quiz request with given user id and quiz name")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful deletion of quiz job", content = @Content(schema = @Schema(implementation = HttpStatus.class))),
+            @ApiResponse(responseCode = "204", description = "Successful deletion of quiz job", content = @Content(schema = @Schema(implementation = HttpStatus.class))),
             @ApiResponse(responseCode = "400", description = "Bad request: unsuccessful submission", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<HttpStatus> deleteQuizRequestForUser(@RequestBody QuizDeleteRequestDto quizDeleteRequestDto) {

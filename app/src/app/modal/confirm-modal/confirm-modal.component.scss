@@ -1,0 +1,25 @@
+.dialog-container {
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .dialog-title {
+    color: #f3b10a;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-top: 10px;
+  }
+  
+  .dialog-content {
+    color: var(--font-color);
+    font-size: 1rem;
+    margin-top: 20px;
+  }
+  
+  .dialog-button {
+    margin: 0px;
+  }
+  
+  .confirmation-actions{
+    margin: 0px;
+  }

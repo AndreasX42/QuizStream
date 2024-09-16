@@ -4,6 +4,7 @@ import { MatButton } from '@angular/material/button';
 import { interval } from 'rxjs';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ThemeService } from '../../services/theme.service';
+import { MessageService } from '../../services/message.service';
 
 @Component({
   selector: 'app-profile',
@@ -15,6 +16,7 @@ import { ThemeService } from '../../services/theme.service';
 export class ProfileComponent implements OnInit {
   private authService = inject(AuthService);
   private themeService = inject(ThemeService);
+  private messageService = inject(MessageService);
   private destroyRef = inject(DestroyRef);
   selectedDarkMode = this.themeService.isDarkMode;
 
@@ -31,6 +33,27 @@ export class ProfileComponent implements OnInit {
 
   logout(): void {
     this.authService.logout();
+  }
+
+  deleteAccount(): void {
+    const dialogRef = this.messageService.showConfirmModal(
+      MessageService.MSG_WARNING_DELETE_USER_ACCOUNT
+    );
+
+    dialogRef.afterClosed().subscribe((confirm) => {
+      if (!confirm) {
+        return;
+      }
+
+      const sub = this.authService.deleteUserAccount().subscribe({
+        complete: () => {
+          this.authService.logout();
+          this.messageService.showSuccessModal(
+            MessageService.MSG_SUCCESS_DELETE_USER_ACCOUNT
+          );
+        },
+      });
+    });
   }
 
   initializeSessionTimer(): void {

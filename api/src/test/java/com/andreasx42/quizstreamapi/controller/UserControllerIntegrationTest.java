@@ -7,7 +7,11 @@ import com.andreasx42.quizstreamapi.dto.user.UserRegisterDto;
 import com.andreasx42.quizstreamapi.dto.user.UserUpdateRequestDto;
 import com.andreasx42.quizstreamapi.dto.user.UserUpdateResponseDto;
 import com.andreasx42.quizstreamapi.entity.User;
-import com.andreasx42.quizstreamapi.repository.UserRepository;
+import com.andreasx42.quizstreamapi.entity.UserQuiz;
+import com.andreasx42.quizstreamapi.entity.UserQuizId;
+import com.andreasx42.quizstreamapi.entity.embedding.LangchainPGEmbedding;
+import com.andreasx42.quizstreamapi.entity.request.QuizRequestId;
+import com.andreasx42.quizstreamapi.repository.*;
 import com.andreasx42.quizstreamapi.security.config.EnvConfigs;
 import com.andreasx42.quizstreamapi.service.UserService;
 import com.andreasx42.quizstreamapi.util.Util;
@@ -17,12 +21,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -38,6 +46,10 @@ public class UserControllerIntegrationTest {
 
     private final UserService userService;
     private final UserRepository userRepository;
+    private final UserQuizRepository userQuizRepository;
+    private final QuizRequestRepository quizRequestRepository;
+    private final LangchainPGCollectionRepository langchainPGCollectionRepository;
+    private final LangchainPGEmbeddingRepository langchainPGEmbeddingRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EnvConfigs envConfigs;
     private final ObjectMapper objectMapper;
@@ -45,9 +57,13 @@ public class UserControllerIntegrationTest {
 
 
     @Autowired
-    public UserControllerIntegrationTest(UserService userService, UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, EnvConfigs envConfigs, ObjectMapper objectMapper, MockMvc mockMvc) {
+    public UserControllerIntegrationTest(UserService userService, UserRepository userRepository, UserQuizRepository userQuizRepository, QuizRequestRepository quizRequestRepository, LangchainPGCollectionRepository langchainPGCollectionRepository, LangchainPGEmbeddingRepository langchainPGEmbeddingRepository, BCryptPasswordEncoder bCryptPasswordEncoder, EnvConfigs envConfigs, ObjectMapper objectMapper, MockMvc mockMvc) {
         this.userService = userService;
         this.userRepository = userRepository;
+        this.userQuizRepository = userQuizRepository;
+        this.quizRequestRepository = quizRequestRepository;
+        this.langchainPGCollectionRepository = langchainPGCollectionRepository;
+        this.langchainPGEmbeddingRepository = langchainPGEmbeddingRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.envConfigs = envConfigs;
         this.objectMapper = objectMapper;
@@ -321,13 +337,40 @@ public class UserControllerIntegrationTest {
     @Order(11)
     public void testDeleteUser_whenValidUserIdProvided_shouldDeleteEntity() throws Exception {
 
+        // get user info about quizzes created
+        List<UUID> quizIds = userQuizRepository.findAll()
+                .stream()
+                .map(UserQuiz::getId)
+                .filter(id -> id
+                        .getUserId()
+                        .equals(testUser.getId()))
+                .map(UserQuizId::getQuizId)
+                .toList();
+
+        // delete user
         mockMvc.perform(MockMvcRequestBuilders.delete("/users/{id}", testUser.getId())
                         .header("Authorization", testUserJWT))
                 .andExpect(status().isNoContent());
 
+        // check that all user rows from all tables have been deleted
         mockMvc.perform(MockMvcRequestBuilders.get("/users/id/{id}", testUser.getId())
                         .header("Authorization", testUserJWT))
                 .andExpect(status().isNotFound());
+
+        assertThat(userQuizRepository.findByUser_Id(testUser.getId(), Pageable.ofSize(1))
+                .getTotalElements()).isEqualTo(0);
+
+        assertThat(quizRequestRepository.findAllById(quizIds.stream()
+                .map(quiz_id -> new QuizRequestId(testUser.getId(), quiz_id.toString()))
+                .toList())).hasSize(0);
+
+        assertThat(langchainPGCollectionRepository.findAllById(quizIds)).hasSize(0);
+
+        assertThat(langchainPGEmbeddingRepository.findAll()
+                .stream()
+                .map(LangchainPGEmbedding::getCollectionId)
+                .filter(quizIds::contains)).hasSize(0);
+
     }
 
 }

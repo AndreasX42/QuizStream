@@ -37,7 +37,7 @@ public class LangchainPGCollection {
     @Column(columnDefinition = "json", updatable = false, insertable = false)
     private CollectionMetadata cmetadata;
 
-    @OneToMany(mappedBy = "collection", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "collection", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<LangchainPGEmbedding> embeddings = new ArrayList<>();
 
     @OneToOne(mappedBy = "langchainCollection", cascade = CascadeType.ALL, orphanRemoval = true)

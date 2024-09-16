@@ -5,8 +5,9 @@ import com.andreasx42.quizstreamapi.dto.auth.LoginResponseDto;
 import com.andreasx42.quizstreamapi.dto.quiz.*;
 import com.andreasx42.quizstreamapi.entity.User;
 import com.andreasx42.quizstreamapi.entity.UserQuiz;
+import com.andreasx42.quizstreamapi.entity.embedding.LangchainPGEmbedding;
 import com.andreasx42.quizstreamapi.entity.request.QuizRequest;
-import com.andreasx42.quizstreamapi.repository.UserRepository;
+import com.andreasx42.quizstreamapi.repository.*;
 import com.andreasx42.quizstreamapi.security.config.EnvConfigs;
 import com.andreasx42.quizstreamapi.service.QuizRequestService;
 import com.andreasx42.quizstreamapi.service.QuizService;
@@ -20,8 +21,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -55,6 +54,10 @@ public class QuizControllerIntegrationTest {
 
     private final QuizService quizService;
     private final UserRepository userRepository;
+    private final UserQuizRepository userQuizRepository;
+    private final QuizRequestRepository quizRequestRepository;
+    private final LangchainPGCollectionRepository langchainPGCollectionRepository;
+    private final LangchainPGEmbeddingRepository langchainPGEmbeddingRepository;
     private final QuizRequestService quizRequestService;
     private final UserQuizService userQuizService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -64,9 +67,13 @@ public class QuizControllerIntegrationTest {
 
 
     @Autowired
-    public QuizControllerIntegrationTest(QuizService quizService, UserRepository userRepository, QuizRequestService quizRequestService, UserQuizService userQuizService, BCryptPasswordEncoder bCryptPasswordEncoder, EnvConfigs envConfigs, ObjectMapper objectMapper, MockMvc mockMvc) {
+    public QuizControllerIntegrationTest(QuizService quizService, UserRepository userRepository, UserQuizRepository userQuizRepository, QuizRequestRepository quizRequestRepository, LangchainPGCollectionRepository langchainPGCollectionRepository, LangchainPGEmbeddingRepository langchainPGEmbeddingRepository, QuizRequestService quizRequestService, UserQuizService userQuizService, BCryptPasswordEncoder bCryptPasswordEncoder, EnvConfigs envConfigs, ObjectMapper objectMapper, MockMvc mockMvc) {
         this.quizService = quizService;
         this.userRepository = userRepository;
+        this.userQuizRepository = userQuizRepository;
+        this.quizRequestRepository = quizRequestRepository;
+        this.langchainPGCollectionRepository = langchainPGCollectionRepository;
+        this.langchainPGEmbeddingRepository = langchainPGEmbeddingRepository;
         this.quizRequestService = quizRequestService;
         this.userQuizService = userQuizService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
@@ -394,13 +401,23 @@ public class QuizControllerIntegrationTest {
     @Order(8)
     public void testDeleteQuiz_whenValidUserQuizIdProvided_shouldDeleteQuiz() throws Exception {
 
+        // delete quiz
         mockMvc.perform(MockMvcRequestBuilders.delete("/quizzes/{quizId}/users/{userId}", quizOutboundData.quizId(), testUser.getId())
                         .header("Authorization", testUserJWT))
                 .andExpect(status().isNoContent());
 
-        Page<QuizOutboundDto> allUserQuizzes = quizService.getAllUserQuizzes(testUser.getId(), PageRequest.of(0, 1));
+        // check that all rows in corresponding tables have been deleted
+        assertThat(userQuizRepository.findById_UserIdAndId_QuizId(testUser.getId(), quizOutboundData.quizId())
+                .isPresent()).isFalse();
 
-        assertThat(allUserQuizzes.getTotalElements()).isEqualTo(0);
+        assertThat(langchainPGCollectionRepository.findById(quizOutboundData.quizId())
+                .isPresent()).isFalse();
+
+        assertThat(langchainPGEmbeddingRepository.findAll()
+                .stream()
+                .map(LangchainPGEmbedding::getCollectionId)
+                .filter(quizOutboundData.quizId()::equals)
+                .toList()).hasSize(0);
     }
 
     @Test

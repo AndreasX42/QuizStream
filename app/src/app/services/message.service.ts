@@ -3,6 +3,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ErrorModalComponent } from '../modal/error-modal/error-modal.component';
 import { SuccessModalComponent } from '../modal/success-modal/success-modal.component';
 import { WarnModalComponent } from '../modal/warn-modal/warn-modal.component';
+import { ConfirmModalComponent } from '../modal/confirm-modal/confirm-modal.component';
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +14,7 @@ export class MessageService {
   static MSG_SUCCESS_REGISTER = 'Registered successfully, you can log in now.';
   static MSG_SUCCESS_CREATED_QUIZ = 'Quiz request created successfully.';
   static MSG_SUCCESS_ADDED_API_KEY = 'API key was added successfully.';
+  static MSG_SUCCESS_DELETE_USER_ACCOUNT = 'Account was deleted successfully.';
 
   // Error messages
   static MSG_ERROR_UNKOWN = 'Something went wrong, please try again later.';
@@ -20,6 +22,8 @@ export class MessageService {
     'Username or password incorrect.';
   static MSG_ERROR_LOAD_PROFILE_DATA =
     'Something went wrong loading profile data, please try again later.';
+  static MSG_ERROR_DELETE_USER_ACCOUNT =
+    'Something went wrong deleting account, please try again later.';
   static MSG_ERROR_SESSION_EXPIRED =
     'Your session has expired. Please log in again.';
   static MSG_ERROR_QUIZ_UPDATE_FAILED =
@@ -43,9 +47,11 @@ export class MessageService {
   // Warning messages
   static MSG_WARNING_LOGIN_FIST =
     'You have to log in, in order to use this service.';
+  static MSG_WARNING_DELETE_USER_ACCOUNT =
+    'Deleting user account cannot be undone. Are you sure?';
 
   // Dialog handling with MatDialog
-  private dialog = inject(MatDialog);
+  private readonly dialog = inject(MatDialog);
 
   showErrorModal(message: string): MatDialogRef<ErrorModalComponent, void> {
     return this.dialog.open(ErrorModalComponent, {
@@ -61,6 +67,12 @@ export class MessageService {
 
   showWarningModal(message: string): MatDialogRef<WarnModalComponent, void> {
     return this.dialog.open(WarnModalComponent, {
+      data: { title: 'Warning!', message: message },
+    });
+  }
+
+  showConfirmModal(message: string): MatDialogRef<ConfirmModalComponent, void> {
+    return this.dialog.open(ConfirmModalComponent, {
       data: { title: 'Warning!', message: message },
     });
   }

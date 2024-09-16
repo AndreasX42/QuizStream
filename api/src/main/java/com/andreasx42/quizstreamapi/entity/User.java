@@ -1,5 +1,6 @@
 package com.andreasx42.quizstreamapi.entity;
 
+import com.andreasx42.quizstreamapi.entity.request.QuizRequest;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
@@ -63,7 +64,11 @@ public class User {
     private Boolean isActive = true;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<UserQuiz> quizzes;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<QuizRequest> requests;
 
 }

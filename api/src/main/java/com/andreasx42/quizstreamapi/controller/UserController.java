@@ -95,7 +95,7 @@ public class UserController {
     }
 
     @Operation(summary = "Deletes user with given id")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successful deletion of user", content = @Content(schema = @Schema(implementation = HttpStatus.class))),
+    @ApiResponses(value = {@ApiResponse(responseCode = "204", description = "Successful deletion of user", content = @Content(schema = @Schema(implementation = HttpStatus.class))),
             @ApiResponse(responseCode = "400", description = "Bad request: unsuccessful submission", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))})
     @DeleteMapping(value = "/{id}")
     @PreAuthorize("#id == principal.id or hasAuthority('ADMIN')")

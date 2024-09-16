@@ -1,5 +1,5 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -158,6 +158,32 @@ export class AuthService {
             MessageService.MSG_ERROR_LOAD_PROFILE_DATA
           );
           this.router.navigate(['/']);
+          return throwError(() => new Error(error.message));
+        })
+      );
+  }
+
+  deleteUserAccount(): Observable<any> {
+    return this.httpClient
+      .delete<any>(
+        `${Configs.BASE_URL}${Configs.USERS_ENDPOINT}/${this.user()!.id}`,
+        {
+          observe: 'response',
+        }
+      )
+      .pipe(
+        tap({
+          next: (response) => {
+            if (response.status !== HttpStatusCode.NoContent) {
+              throw new Error('Error deleting user');
+            }
+          },
+        }),
+        catchError((error) => {
+          this.messageService.showErrorModal(
+            MessageService.MSG_ERROR_DELETE_USER_ACCOUNT
+          );
+          this.router.navigate(['/profile'], { replaceUrl: true });
           return throwError(() => new Error(error.message));
         })
       );
