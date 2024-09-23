@@ -5,11 +5,13 @@ import { interval } from 'rxjs';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ThemeService } from '../../services/theme.service';
 import { MessageService } from '../../services/message.service';
+import { TitleCasePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [MatButton, MatSlideToggleModule],
+  imports: [MatButton, MatSlideToggleModule, TitleCasePipe, RouterLink],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
 })
@@ -52,6 +54,10 @@ export class ProfileComponent implements OnInit {
             MessageService.MSG_SUCCESS_DELETE_USER_ACCOUNT
           );
         },
+      });
+
+      this.destroyRef.onDestroy(() => {
+        sub.unsubscribe();
       });
     });
   }

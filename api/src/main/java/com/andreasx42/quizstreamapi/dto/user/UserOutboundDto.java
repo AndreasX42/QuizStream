@@ -9,6 +9,7 @@ public record UserOutboundDto(
 
         @NotNull Long id,
         @NotNull String username,
-        @NotNull @Email String email) {
+        @NotNull @Email String email,
+        @NotNull String role) {
 
 }

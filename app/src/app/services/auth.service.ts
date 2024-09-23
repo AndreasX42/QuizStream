@@ -58,12 +58,17 @@ export class AuthService {
           const body: LoginResponse = response.body;
           const userId: number = body.userId;
           const email: string = body.email;
-          // const userName: string = body.userName;
+          const role: string = body.role;
 
           // Set authentication state
           this._isLoggedIn.set(true);
           this._userToken.set(token);
-          this._user.set({ id: userId, username: username, email: email });
+          this._user.set({
+            id: userId,
+            username: username,
+            email: email,
+            role: role,
+          });
 
           // Store the token and user data in localStorage
           localStorage.setItem(this.localStorageTokenKey, token);
@@ -150,6 +155,7 @@ export class AuthService {
               id: user.id,
               username: user.username,
               email: user.email,
+              role: user.role,
             });
           },
         }),

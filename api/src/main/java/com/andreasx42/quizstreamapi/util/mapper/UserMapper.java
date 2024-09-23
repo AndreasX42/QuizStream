@@ -10,7 +10,8 @@ public class UserMapper {
 
 
     public UserOutboundDto mapFromEntityOutbound(User user) {
-        return new UserOutboundDto(user.getId(), user.getUsername(), user.getEmail());
+        return new UserOutboundDto(user.getId(), user.getUsername(), user.getEmail(), user.getRole()
+                .name());
     }
 
 
