@@ -88,6 +88,12 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>me.escoffier.loom</groupId>
+            <artifactId>loom-unit</artifactId>
+            <version>0.3.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.7.4</version>

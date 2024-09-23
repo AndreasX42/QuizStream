@@ -15,7 +15,10 @@ import com.andreasx42.quizstreamapi.service.UserQuizService;
 import com.andreasx42.quizstreamapi.util.Util;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.escoffier.loom.loomunit.LoomUnitExtension;
+import me.escoffier.loom.loomunit.ShouldNotPin;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -47,6 +50,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ExtendWith(LoomUnitExtension.class)
+@ShouldNotPin
 public class QuizControllerIntegrationTest {
 
     @Value("${api.key.test}")
