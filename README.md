@@ -24,20 +24,20 @@
 - CircleCI pushes the Docker images after each successful build to
   - https://hub.docker.com/u/andreasx42
 - Checkout repository
-  - Start application with ‘docker-compose -f docker-compose_all.yaml up --build’
-    - Application should be available on localhost:4200.
-    - Backend API documentation is available on localhost:9090/swagger-ui/index.html
+  - Start application with ‘docker-compose -f docker-compose_dev_all.yaml up --build’
+    - Frontend should be available on localhost:4200.
   - Use Kubernetes with 'kubectl apply -f ./k8s' to deploy locally
-    - Application should be available directly on localhost/
-    - For backend API access we use nginx routing with localhost/api/v1/\*
-    - Be aware to check deployment configs for image versions
+    - Frontend should be available directly on localhost/
+    - For backend API access we use nginx routing with localhost/api/v1/*
+    - Be aware to check deployment configs for Docker image versions
    
 
 ## 🌐 Architecture
 
 QuizStream is built using a microservices architecture, with the following components:
 
-![image](https://github.com/user-attachments/assets/4229711d-6c7e-4d4f-998f-f030483a5bcb)
+![image](https://github.com/user-attachments/assets/b0ab92db-9f66-4dff-8143-7bafe7115499)
+
 
 
 ## 🌟 Features
