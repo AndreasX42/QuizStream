@@ -8,6 +8,10 @@ export const canLeaveEditPage: CanDeactivateFn<any> = (component) => {
 };
 
 export const canLeaveSolvePage: CanDeactivateFn<any> = (component) => {
+  if (component.isCompleted()) {
+    return true;
+  }
+
   return window.confirm(
     'Do you really want to leave? Any progress will not be saved.'
   );
