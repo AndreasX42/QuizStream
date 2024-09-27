@@ -82,7 +82,13 @@ class LangchainPGEmbedding(Base):
 
 class User(Base):
     __tablename__ = "users"
-    id = Column(BigInteger, primary_key=True, index=True)
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        nullable=False,
+        default=uuid.uuid4,
+        index=True,
+    )
     username = Column(String, index=False, unique=True, nullable=False)
     password = Column(String, index=False, unique=False, nullable=False)
     email = Column(String, index=False, unique=True, nullable=False)
@@ -93,7 +99,9 @@ class User(Base):
 
 class UserToQuiz(Base):
     __tablename__ = "user_quiz"
-    user_id = Column(UUID, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    user_id = Column(
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
+    )
     quiz_id = Column(UUID, ForeignKey("langchain_pg_collection.uuid"), primary_key=True)
     num_tries = Column(Integer, default=0)
     num_correct = Column(Integer, default=0)
