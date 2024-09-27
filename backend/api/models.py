@@ -93,9 +93,7 @@ class User(Base):
 
 class UserToQuiz(Base):
     __tablename__ = "user_quiz"
-    user_id = Column(
-        BigInteger, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
-    )
+    user_id = Column(UUID, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
     quiz_id = Column(UUID, ForeignKey("langchain_pg_collection.uuid"), primary_key=True)
     num_tries = Column(Integer, default=0)
     num_correct = Column(Integer, default=0)

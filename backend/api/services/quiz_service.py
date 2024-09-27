@@ -6,6 +6,7 @@ from backend.api.models import UserToQuiz, LangchainPGCollection
 from fastapi import HTTPException, status
 
 import datetime as dt
+from uuid import UUID
 
 
 async def create_quiz(
@@ -45,7 +46,7 @@ async def create_quiz(
     return quizResultDto
 
 
-def assert_quiz_name_not_exists(user_id: int, quiz_name: str, session: Session):
+def assert_quiz_name_not_exists(user_id: UUID, quiz_name: str, session: Session):
     """Check on uniqueness of quiz name"""
 
     quizzes_with_same_name = (

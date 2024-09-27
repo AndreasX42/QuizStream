@@ -131,7 +131,7 @@ export class QuizRequestService {
   }
 
   getQuizRequests(
-    userId: number,
+    userId: string,
     page: number,
     size: number,
     sort: string,

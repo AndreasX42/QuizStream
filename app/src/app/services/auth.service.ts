@@ -56,7 +56,7 @@ export class AuthService {
           const token = jwtToken.replace('Bearer ', '');
 
           const body: LoginResponse = response.body;
-          const userId: number = body.userId;
+          const userId: string = body.userId;
           const email: string = body.email;
           const role: string = body.role;
 

@@ -36,7 +36,7 @@ export class QuizService {
   }
 
   getAllQuizzes(
-    userId: number,
+    userId: string,
     page: number,
     size: number,
     sort: string

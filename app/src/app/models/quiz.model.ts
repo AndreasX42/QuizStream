@@ -1,7 +1,5 @@
-import { QuizRequestComponent } from '../quiz/quiz-request/quiz-request.component';
-
 export interface Quiz {
-  userId: number;
+  userId: string;
   quizId: string;
   quizName: string;
   dateCreated: string;
@@ -15,7 +13,7 @@ export interface Quiz {
 }
 
 export interface QuizRequest {
-  userId: number;
+  userId: string;
   quizName: string;
   status: RequestStatus;
   dateCreated: string;
@@ -33,7 +31,7 @@ export interface RequestMetadata {
 }
 
 export interface QuizCreateRequestDto {
-  userId: number;
+  userId: string;
   quizName: string;
   apiKeys: object;
   videoUrl: string;
@@ -43,14 +41,14 @@ export interface QuizCreateRequestDto {
 }
 
 export interface QuizUpdateRequestDto {
-  userId: number;
+  userId: string;
   quizId: string;
   quizName: string;
   numCorrect: number;
 }
 
 export interface QuizDetails {
-  userId: number;
+  userId: string;
   quizId: string;
   questionAnswersList: QuizQuestionDetails[];
 }
