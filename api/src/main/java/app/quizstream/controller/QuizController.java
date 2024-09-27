@@ -158,4 +158,18 @@ public class QuizController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    // GET leaderboard data
+    @GetMapping(value = "/leaderboard", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Returns leaderboard data")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "404", description = "Fetching data failed", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Successful retrieval data", content = @Content(schema = @Schema(implementation = QuizLeaderboardEntry.class))),
+    })
+    public ResponseEntity<Page<QuizLeaderboardEntry>> getQuizRequestsByUserId(Pageable pageable) {
+
+        Page<QuizLeaderboardEntry> data = quizService.getLeaderboardData(pageable);
+
+        return new ResponseEntity<>(data, HttpStatus.OK);
+    }
+
 }

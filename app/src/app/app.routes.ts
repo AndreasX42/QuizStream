@@ -1,7 +1,10 @@
 import { Routes } from '@angular/router';
 import { StartPageComponent } from './start/start.page.component';
 import { AuthGuard } from './shared/guards/auth.guard';
-import { canLeaveEditPage } from './shared/guards/leave.guard';
+import {
+  canLeaveEditPage,
+  canLeaveSolvePage,
+} from './shared/guards/leave.guard';
 
 export const routes: Routes = [
   {
@@ -36,6 +39,7 @@ export const routes: Routes = [
       import('./quiz/solve-quiz/solve-quiz.component').then(
         (mod) => mod.SolveQuizComponent
       ),
+    canDeactivate: [canLeaveSolvePage],
     canActivate: [AuthGuard],
   },
   {
@@ -48,6 +52,13 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () =>
       import('./auth/login/login.component').then((mod) => mod.LoginComponent),
+  },
+  {
+    path: 'leaderboard',
+    loadComponent: () =>
+      import('./leaderboard/leaderboard.component').then(
+        (mod) => mod.LeaderboardComponent
+      ),
   },
   {
     path: 'register',

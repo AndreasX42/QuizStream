@@ -15,7 +15,7 @@ import {
   QuizRequest,
   RequestStatus,
 } from '../models/quiz.model';
-import { Page } from './page.model';
+import { Page } from '../models/page.model';
 import { AuthService } from './auth.service';
 import { MessageService } from './message.service';
 import { Router } from '@angular/router';

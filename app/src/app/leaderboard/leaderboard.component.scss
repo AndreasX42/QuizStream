@@ -1,0 +1,63 @@
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+    text-align: center;
+    font-size: 1.2em;
+  }
+  
+  .loading-container mat-spinner {
+    margin-bottom: 15px;
+  }
+  
+  @media (max-width: 600px) {
+    .loading-container {
+      height: 60vh;
+    }
+  }
+
+.column-header {
+    font-weight: 500 !important;
+    justify-content: center;
+}
+
+table {
+    width: 100%;
+}  
+
+.leaderboard-table-container {
+  margin: 40px auto 5rem auto;
+  max-width: 50rem;
+  min-height: 500px;
+}
+
+.mat-column-username {
+  font-weight: normal;
+  text-align: center;
+}
+
+.mat-column-numberQuizzes {
+  font-weight: normal;
+  text-align: center;
+}
+
+.mat-column-numberAttempts {
+  font-weight: normal;
+  text-align: center;
+}
+
+.mat-column-numberQuestions {
+  font-weight: normal;
+  text-align: center;
+}
+
+.mat-column-numberCorrectAnswers {
+  font-weight: normal;
+  text-align: center;
+}
+.mat-column-score {
+  font-weight: normal;
+  text-align: center;
+}

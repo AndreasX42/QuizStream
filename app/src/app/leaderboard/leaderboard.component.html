@@ -1,0 +1,99 @@
+@if(isLoading()) {
+<div class="loading-container">
+  <mat-spinner />
+  <p>Loading data...</p>
+</div>
+} @else if(leaderboardEntries().length > 0) {
+
+<div class="leaderboard-table-container">
+  <table mat-table [dataSource]="leaderboardEntries()" class="mat-elevation-z8">
+    <!-- Define table columns -->
+    <ng-container matColumnDef="username">
+      <th mat-header-cell *matHeaderCellDef class="username-header">
+        <div class="header-content">
+          <span class="column-header">Username</span>
+        </div>
+      </th>
+      <td mat-cell *matCellDef="let entry">
+        <div class="username-row">
+          {{ entry.username }}
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="numberQuizzes">
+      <th mat-header-cell *matHeaderCellDef class="num-quizzes-header">
+        <div class="header-content">
+          <span class="column-header">#Quizzes</span>
+        </div>
+      </th>
+      <td mat-cell *matCellDef="let entry">
+        <div class="num-quizzes-row">
+          {{ entry.numberQuizzes }}
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="numberQuestions">
+      <th mat-header-cell *matHeaderCellDef class="num-questions-header">
+        <div class="header-content">
+          <span class="column-header">#Questions</span>
+        </div>
+      </th>
+      <td mat-cell *matCellDef="let entry">
+        <div class="num-questions-row">
+          {{ entry.numberQuestions }}
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="numberAttempts">
+      <th mat-header-cell *matHeaderCellDef class="num-attempts-header">
+        <div class="header-content">
+          <span class="column-header">#Attempts</span>
+        </div>
+      </th>
+      <td mat-cell *matCellDef="let entry">
+        <div class="num-attempts-row">
+          {{ entry.numberAttempts }}
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="numberCorrectAnswers">
+      <th mat-header-cell *matHeaderCellDef class="num-correct-header">
+        <div class="header-content">
+          <span class="column-header">#CorrectAnswers</span>
+        </div>
+      </th>
+      <td mat-cell *matCellDef="let entry">
+        <div class="num-correct-row">
+          {{ entry.numberCorrectAnswers }}
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="score">
+      <th mat-header-cell *matHeaderCellDef class="score-header">
+        <div class="header-content">
+          <span class="column-header">Score</span>
+        </div>
+      </th>
+      <td mat-cell *matCellDef="let entry">
+        <div class="score-row">{{ entry.score }}%</div>
+      </td>
+    </ng-container>
+
+    <!-- Table headers and rows -->
+    <tr mat-header-row *matHeaderRowDef="displayedRequestColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedRequestColumns"></tr>
+  </table>
+</div>
+
+} @else {
+<div class="main-page-container">
+  <div class="main-msg">
+    <p>Leaderboard currently empty.</p>
+  </div>
+</div>
+}

@@ -20,10 +20,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -34,7 +31,7 @@ public class UserService {
     private final EnvConfigs envConfigs;
 
     public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder,
-            UserMapper userMapper, EnvConfigs envConfigs) {
+                       UserMapper userMapper, EnvConfigs envConfigs) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userMapper = userMapper;
@@ -54,6 +51,10 @@ public class UserService {
     public Page<UserOutboundDto> getAll(Pageable pageable) {
         return userRepository.findAll(pageable)
                 .map(userMapper::mapFromEntityOutbound);
+    }
+
+    public List<User> getAll() {
+        return userRepository.findAll();
     }
 
     public UserOutboundDto create(UserRegisterDto userDto) {

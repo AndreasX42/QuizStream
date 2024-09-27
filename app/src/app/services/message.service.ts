@@ -32,6 +32,8 @@ export class MessageService {
     'Unexpected error loading quizzes, try again later.';
   static MSG_ERROR_LOADING_QUIZ_REQUESTS =
     'Unexpected error loading quiz requests, try again later.';
+  static MSG_ERROR_LOADING_LEADERBOARD_DATA =
+    'Unexpected error loading leaderboard data, try again later.';
   static MSG_ERROR_LOADING_QUIZ =
     'Something went wrong loading quiz details, try again later.';
   static MSG_ERROR_API_KEY_PROVIDER_ALREADY_EXISTS =

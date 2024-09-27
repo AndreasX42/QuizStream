@@ -17,6 +17,7 @@
     height: 60vh;
   }
 }
+
 .column-header {
     font-weight: 500 !important;
 }
@@ -32,6 +33,7 @@
 .quiz-name-header {
   padding-left: 30px;
 }
+
 .header-content {
   display: flex;
   align-items: center;
@@ -107,16 +109,19 @@
 .sort-label {
   font-size: 12px;
 }
+
 .sort-select {
   margin-right: 35px;
   width: 145px;
   font-size: 14px;
 }
+
 .req-sort-select {
   margin-right: 35px;
   width: 120px;
   font-size: 14px;
 }
+
 .sort-container {
   display: flex;
   align-items: center;

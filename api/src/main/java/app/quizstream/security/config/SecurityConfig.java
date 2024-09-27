@@ -1,5 +1,9 @@
 package app.quizstream.security.config;
 
+import app.quizstream.security.filter.AuthenticationFilter;
+import app.quizstream.security.filter.ExceptionHandlerFilter;
+import app.quizstream.security.filter.JWTAuthorizationFilter;
+import app.quizstream.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,11 +17,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import app.quizstream.security.filter.AuthenticationFilter;
-import app.quizstream.security.filter.ExceptionHandlerFilter;
-import app.quizstream.security.filter.JWTAuthorizationFilter;
-import app.quizstream.service.UserService;
 
 @Configuration
 @AllArgsConstructor
@@ -41,6 +40,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/swagger-ui/**", "/openapi/**", "/api-docs/**", "/v3/api-docs/**")
+                        .permitAll()
+                        .requestMatchers("/quizzes/leaderboard")
                         .permitAll()
                         .requestMatchers("/api/v1/actuator/**")
                         .hasRole("ADMIN")

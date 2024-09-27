@@ -15,7 +15,7 @@ import { Configs } from '../shared/api.configs';
 import { KeyService } from './key.service';
 import { MessageService } from './message.service';
 import { Router } from '@angular/router';
-import { Page } from './page.model';
+import { Page } from '../models/page.model';
 
 @Injectable({
   providedIn: 'root',
