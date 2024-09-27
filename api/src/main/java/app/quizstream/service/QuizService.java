@@ -12,9 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -93,6 +95,19 @@ public class QuizService {
 
     public Page<QuizLeaderboardEntry> getLeaderboardData(Pageable pageable) {
 
+        logger.warn(pageable.toString());
+
+        List<QuizLeaderboardEntry> entries = getLeaderboardEntries();
+        sortLeaderboardEntries(entries, pageable);
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), entries.size());
+
+        return new PageImpl<>(entries.subList(start, end), pageable, entries.size());
+    }
+
+    private List<QuizLeaderboardEntry> getLeaderboardEntries() {
+
         List<QuizLeaderboardEntry> entries = new ArrayList<>();
         List<User> users = userService.getAll();
 
@@ -127,10 +142,36 @@ public class QuizService {
             }
         }
 
-        int start = (int) pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), entries.size());
+        return entries;
+    }
 
-        return new PageImpl<>(entries.subList(start, end), pageable, entries.size());
+    private void sortLeaderboardEntries(List<QuizLeaderboardEntry> entries, Pageable pageable) {
+
+        // sorting entries based on the Pageable sorting criteria
+        Sort sort = pageable.getSort();
+        sort.forEach(order -> {
+            Comparator<QuizLeaderboardEntry> comparator = Comparator.comparing(QuizLeaderboardEntry::score);
+
+            if (order.getProperty()
+                    .equals("quizzes")) {
+                comparator = Comparator.comparing(QuizLeaderboardEntry::numberQuizzes);
+            } else if (order.getProperty()
+                    .equals("attempts")) {
+                comparator = Comparator.comparing(QuizLeaderboardEntry::numberAttempts);
+            } else if (order.getProperty()
+                    .equals("questions")) {
+                comparator = Comparator.comparing(QuizLeaderboardEntry::numberQuestions);
+            } else if (order.getProperty()
+                    .equals("answers")) {
+                comparator = Comparator.comparing(QuizLeaderboardEntry::numberCorrectAnswers);
+            }
+
+            if (order.getDirection()==Sort.Direction.DESC) {
+                comparator = comparator.reversed();
+            }
+
+            entries.sort(comparator);
+        });
 
     }
 }

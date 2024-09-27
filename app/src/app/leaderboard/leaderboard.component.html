@@ -4,6 +4,42 @@
   <p>Loading data...</p>
 </div>
 } @else if(leaderboardEntries().length > 0) {
+<div class="sort-container">
+  <label for="lbSort" class="sort-label">Sort by:</label>
+  <mat-select
+    id="lbSort"
+    class="sort-select"
+    [(value)]="sortBy"
+    (selectionChange)="reloadData()"
+  >
+    <mat-option value="score">Score</mat-option>
+    <mat-option value="quizzes">Quizzes</mat-option>
+    <mat-option value="attempts">Attempts</mat-option>
+    <mat-option value="questions">Questions</mat-option>
+    <mat-option value="answers">Answers</mat-option>
+  </mat-select>
+
+  <label for="lbDir" class="sort-label">Order:</label>
+  <mat-select
+    id="lbDir"
+    class="dir-sort-select"
+    [(value)]="sortDir"
+    (selectionChange)="reloadData()"
+  >
+    <mat-option value="desc">Descending</mat-option>
+    <mat-option value="asc">Ascending</mat-option>
+  </mat-select>
+
+  <mat-paginator
+    [length]="totalItems()"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="[5, 10, 25]"
+    aria-label="Select page"
+    [pageIndex]="currentPage()"
+    (page)="onPaginatorChange($event)"
+  >
+  </mat-paginator>
+</div>
 
 <div class="leaderboard-table-container">
   <table mat-table [dataSource]="leaderboardEntries()" class="mat-elevation-z8">

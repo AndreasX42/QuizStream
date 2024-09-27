@@ -20,33 +20,33 @@ export class LeaderboardService {
   // pagination and sorting signals
   totalItems = signal<number>(0);
   pageSize = signal<number>(10);
-  //   sortBy = signal<string>('dateCreated,desc');
+  sortBy = signal<string>('score');
+  sortDir = signal<string>('desc');
   currentPage = signal<number>(0);
   totalPages = signal<number>(0);
 
   loadLeaderboard(): void {
     this.isLoadingLeaderboard.set(true);
 
-    const sub = this
-      .getLeaderboardData
-      //   this.currentPage(),
-      //   this.pageSize(),
-      //   this.sortBy(),
-      ()
-      .subscribe({
-        next: (data) => {
-          console.log(data);
-          this.isLoadingLeaderboard.set(false);
-          this.leaderboardData.set(data.content);
-          console.log(this.leaderboardData());
-        },
-        error: () => {
-          this.isLoadingLeaderboard.set(false);
-          this.messageService.showErrorModal(
-            MessageService.MSG_ERROR_LOADING_LEADERBOARD_DATA
-          );
-        },
-      });
+    const sub = this.getLeaderboardData(
+      this.currentPage(),
+      this.pageSize(),
+      this.sortBy(),
+      this.sortDir()
+    ).subscribe({
+      next: (data) => {
+        this.totalItems.set(data.page.totalElements);
+        this.totalPages.set(data.page.totalPages);
+        this.leaderboardData.set(data.content);
+        this.isLoadingLeaderboard.set(false);
+      },
+      error: () => {
+        this.isLoadingLeaderboard.set(false);
+        this.messageService.showErrorModal(
+          MessageService.MSG_ERROR_LOADING_LEADERBOARD_DATA
+        );
+      },
+    });
 
     this.destroyRef.onDestroy(() => {
       sub.unsubscribe();
@@ -56,12 +56,13 @@ export class LeaderboardService {
   getLeaderboardData(
     page: number = 0,
     size: number = 10,
-    sort: string = ''
+    sort: string = 'score',
+    dir: string = 'desc'
   ): Observable<Page<LeaderboardEntry>> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString())
-      .set('sort', sort);
+      .set('sort', `${sort},${dir}`);
 
     return this.httpClient.get<Page<LeaderboardEntry>>(
       `${Configs.BASE_URL}${Configs.LEADERBOARD}`,

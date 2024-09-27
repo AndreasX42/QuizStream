@@ -61,3 +61,27 @@ table {
   font-weight: normal;
   text-align: center;
 }
+
+.sort-label {
+    font-size: 12px;
+}
+
+.sort-select {
+  margin-right: 35px;
+  width: 145px;
+  font-size: 14px;
+}
+
+.dir-sort-select {
+  margin-right: 35px;
+  width: 135px;
+  font-size: 14px;
+}
+
+.sort-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem auto;
+  gap: 20px;
+}
